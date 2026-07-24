@@ -1,0 +1,20 @@
+{% extends "usuarios/base_interno.html" %}
+
+{% block title %}Matérias{% endblock %}
+
+{% block content %}
+    <div class="page-heading">
+        <h1>Matérias</h1>
+        <p>Áreas iniciais previstas para estudo.</p>
+    </div>
+
+    <div class="row g-3">
+        {% for slug, titulo in materias.items %}
+            <div class="col-md-3">
+                <a class="subject-link" href="{% url 'usuarios:materia_detalhe' slug %}">
+                    {{ titulo }}
+                </a>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

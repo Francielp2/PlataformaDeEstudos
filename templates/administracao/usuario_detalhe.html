@@ -1,0 +1,30 @@
+{% extends "usuarios/base_interno.html" %}
+
+{% block title %}Usuário{% endblock %}
+
+{% block content %}
+    <div class="page-heading d-flex justify-content-between align-items-start">
+        <div>
+            <h1>{{ usuario_obj.get_full_name|default:usuario_obj.email }}</h1>
+            <p>Detalhes da conta.</p>
+        </div>
+        <a class="btn btn-outline-primary" href="{% url 'usuarios:admin_usuario_editar' usuario_obj.pk %}">Editar</a>
+    </div>
+
+    <section class="section-box">
+        <dl class="row mb-0">
+            <dt class="col-sm-3">Nome</dt><dd class="col-sm-9">{{ usuario_obj.first_name|default:"Não informado" }}</dd>
+            <dt class="col-sm-3">Sobrenome</dt><dd class="col-sm-9">{{ usuario_obj.last_name|default:"Não informado" }}</dd>
+            <dt class="col-sm-3">E-mail</dt><dd class="col-sm-9">{{ usuario_obj.email }}</dd>
+            <dt class="col-sm-3">Apelido</dt><dd class="col-sm-9">{{ perfil.apelido_ranking|default:"Não informado" }}</dd>
+            <dt class="col-sm-3">Etapa escolar</dt><dd class="col-sm-9">{{ perfil.get_etapa_escolar_display|default:"Não informada" }}</dd>
+            <dt class="col-sm-3">Ativo</dt><dd class="col-sm-9">{% if usuario_obj.is_active %}Sim{% else %}Não{% endif %}</dd>
+            <dt class="col-sm-3">Staff</dt><dd class="col-sm-9">{% if usuario_obj.is_staff %}Sim{% else %}Não{% endif %}</dd>
+            <dt class="col-sm-3">Cadastro</dt><dd class="col-sm-9">{{ usuario_obj.date_joined|date:"d/m/Y H:i" }}</dd>
+            <dt class="col-sm-3">Último login</dt><dd class="col-sm-9">{{ usuario_obj.last_login|date:"d/m/Y H:i"|default:"Nunca acessou" }}</dd>
+            <dt class="col-sm-3">Dificuldade</dt><dd class="col-sm-9">{{ preferencias.get_dificuldade_preferida_display|default:"Não informada" }}</dd>
+            <dt class="col-sm-3">Ranking público</dt><dd class="col-sm-9">{% if preferencias.exibir_ranking_publico %}Sim{% else %}Não{% endif %}</dd>
+            <dt class="col-sm-3">Percentil privado</dt><dd class="col-sm-9">{% if preferencias.permitir_percentil_privado %}Sim{% else %}Não{% endif %}</dd>
+        </dl>
+    </section>
+{% endblock %}

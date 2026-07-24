@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block body %}
+    <div class="app-shell">
+        <aside class="sidebar">
+            <div class="sidebar-title">
+                <span>Plataforma Inteligente de Estudos</span>
+            </div>
+
+            {% if request.user.is_staff %}
+                {% include "usuarios/sidebar_admin.html" %}
+            {% else %}
+                {% include "usuarios/sidebar_estudante.html" %}
+            {% endif %}
+        </aside>
+
+        <div class="app-main">
+            <header class="topbar">
+                <div>
+                    <strong>{{ request.user.first_name|default:request.user.email }}</strong>
+                    <span class="text-muted d-block small">{{ request.user.email }}</span>
+                </div>
+                <form method="post" action="{% url 'usuarios:logout' %}">
+                    {% csrf_token %}
+                    <button class="btn btn-outline-secondary btn-sm" type="submit">Sair</button>
+                </form>
+            </header>
+
+            <main class="content-area">
+                {% include "partials/mensagens.html" %}
+                {% block content %}{% endblock %}
+            </main>
+        </div>
+    </div>
+{% endblock %}

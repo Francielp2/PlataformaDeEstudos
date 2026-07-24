@@ -1,13 +1,20 @@
 {% extends "base.html" %}
 
 {% block title %}
-    Página inicial
+    Plataforma Inteligente de Estudos
 {% endblock %}
 
 {% block content %}
-    <h2>Ambiente configurado com sucesso</h2>
+    <section class="home-intro">
+        <h1>Plataforma Inteligente de Estudos</h1>
+        <p>
+            Protótipo acadêmico para acompanhamento de estudos voltado ao ENEM
+            e vestibulares.
+        </p>
 
-    <p>
-        O projeto Django está funcionando.
-    </p>
+        <div class="d-flex gap-2 flex-wrap">
+            <a class="btn btn-primary" href="{% url 'usuarios:login' %}">Entrar</a>
+            <a class="btn btn-outline-primary" href="{% url 'usuarios:cadastro' %}">Criar cadastro</a>
+        </div>
+    </section>
 {% endblock %}

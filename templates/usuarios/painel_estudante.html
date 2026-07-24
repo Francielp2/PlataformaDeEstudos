@@ -1,0 +1,52 @@
+{% extends "usuarios/base_interno.html" %}
+
+{% block title %}Painel do estudante{% endblock %}
+
+{% block content %}
+    <div class="page-heading">
+        <h1>Painel do estudante</h1>
+        <p>Olá, {{ request.user.first_name|default:"estudante" }}.</p>
+    </div>
+
+    <section class="section-box mb-4">
+        <h2 class="h5">Sua conta</h2>
+        <dl class="row mb-0">
+            <dt class="col-sm-3">E-mail</dt>
+            <dd class="col-sm-9">{{ request.user.email }}</dd>
+            <dt class="col-sm-3">Apelido</dt>
+            <dd class="col-sm-9">{{ perfil.apelido_ranking|default:"Não informado" }}</dd>
+            <dt class="col-sm-3">Etapa escolar</dt>
+            <dd class="col-sm-9">{{ perfil.get_etapa_escolar_display|default:"Não informada" }}</dd>
+        </dl>
+    </section>
+
+    <section class="section-box mb-4">
+        <h2 class="h5">Situação atual</h2>
+        <ul class="status-list">
+            <li>Nenhum simulado realizado.</li>
+            <li>Nenhuma recomendação disponível.</li>
+            <li>Nenhum conteúdo adicionado à lista.</li>
+        </ul>
+        <p class="mb-0 text-muted">
+            As funcionalidades acadêmicas serão adicionadas nas próximas etapas do projeto.
+        </p>
+    </section>
+
+    <section>
+        <h2 class="h5 mb-3">Atalhos</h2>
+        <div class="row g-3">
+            <div class="col-md-3">
+                <a class="shortcut" href="{% url 'usuarios:materias' %}">Matérias</a>
+            </div>
+            <div class="col-md-3">
+                <a class="shortcut" href="{% url 'usuarios:funcionalidade_futura' 'fazer-simulado' %}">Simulados</a>
+            </div>
+            <div class="col-md-3">
+                <a class="shortcut" href="{% url 'usuarios:funcionalidade_futura' 'videoaulas' %}">Videoaulas</a>
+            </div>
+            <div class="col-md-3">
+                <a class="shortcut" href="{% url 'usuarios:funcionalidade_futura' 'lista-estudos' %}">Lista de estudos</a>
+            </div>
+        </div>
+    </section>
+{% endblock %}

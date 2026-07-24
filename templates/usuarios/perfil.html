@@ -1,0 +1,25 @@
+{% extends "usuarios/base_interno.html" %}
+
+{% block title %}Meu perfil{% endblock %}
+
+{% block content %}
+    <div class="page-heading">
+        <h1>Meu perfil</h1>
+        <p>Dados básicos da conta e preferências de estudo.</p>
+    </div>
+
+    <section class="section-box mb-4">
+        <dl class="row mb-0">
+            <dt class="col-sm-3">E-mail</dt>
+            <dd class="col-sm-9">{{ request.user.email }}</dd>
+            <dt class="col-sm-3">Preferência de e-mail</dt>
+            <dd class="col-sm-9">{% if preferencias.notificacoes_email %}Ativada{% else %}Desativada{% endif %}</dd>
+        </dl>
+    </section>
+
+    <form method="post" class="section-box" novalidate>
+        {% csrf_token %}
+        {% include "usuarios/partials/form_campos.html" with form=form %}
+        <button class="btn btn-primary" type="submit">Salvar perfil</button>
+    </form>
+{% endblock %}

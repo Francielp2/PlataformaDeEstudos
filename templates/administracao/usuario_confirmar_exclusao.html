@@ -1,0 +1,18 @@
+{% extends "usuarios/base_interno.html" %}
+
+{% block title %}Confirmar exclusão{% endblock %}
+
+{% block content %}
+    <div class="section-box">
+        <h1 class="h4">Confirmar exclusão</h1>
+        <p>
+            Deseja excluir a conta de <strong>{{ usuario_obj.email }}</strong>?
+            Esta ação remove o usuário do banco de demonstração.
+        </p>
+        <form method="post">
+            {% csrf_token %}
+            <button class="btn btn-danger" type="submit">Excluir</button>
+            <a class="btn btn-outline-secondary" href="{% url 'usuarios:admin_usuario_detalhe' usuario_obj.pk %}">Cancelar</a>
+        </form>
+    </div>
+{% endblock %}

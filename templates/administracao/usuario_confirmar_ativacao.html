@@ -1,0 +1,18 @@
+{% extends "usuarios/base_interno.html" %}
+
+{% block title %}Confirmar status{% endblock %}
+
+{% block content %}
+    <div class="section-box">
+        <h1 class="h4">Confirmar alteração de status</h1>
+        <p>
+            Deseja {% if usuario_obj.is_active %}desativar{% else %}ativar{% endif %}
+            a conta de <strong>{{ usuario_obj.email }}</strong>?
+        </p>
+        <form method="post">
+            {% csrf_token %}
+            <button class="btn btn-primary" type="submit">Confirmar</button>
+            <a class="btn btn-outline-secondary" href="{% url 'usuarios:admin_usuarios_lista' %}">Cancelar</a>
+        </form>
+    </div>
+{% endblock %}

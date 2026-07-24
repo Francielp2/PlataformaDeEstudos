@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block body %}
+    <main class="auth-page">
+        <section class="auth-card">
+            <div class="mb-4">
+                <h1 class="h4 mb-1">Plataforma Inteligente de Estudos</h1>
+                <p class="text-muted mb-0">ENEM e vestibulares</p>
+            </div>
+
+            {% include "partials/mensagens.html" %}
+            {% block content %}{% endblock %}
+        </section>
+    </main>
+{% endblock %}

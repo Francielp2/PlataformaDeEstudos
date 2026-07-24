@@ -28,6 +28,7 @@ INSTALLED_APPS = [
 
     #Meus apps
     'core',
+    'usuarios.apps.UsuariosConfig',
 ]
 
 MIDDLEWARE = [
@@ -58,6 +59,8 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'config.wsgi.application'
+
+AUTH_USER_MODEL = "usuarios.Usuario"
 
 
 # Database

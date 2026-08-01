@@ -5,11 +5,8 @@
     <a class="{% if active == 'videoaulas' %}active{% endif %}" href="{% url 'usuarios:funcionalidade_futura' 'videoaulas' %}">Videoaulas</a>
     <a class="{% if active == 'fazer-simulado' %}active{% endif %}" href="{% url 'usuarios:funcionalidade_futura' 'fazer-simulado' %}">Fazer simulado</a>
     <a class="{% if active == 'meus-simulados' %}active{% endif %}" href="{% url 'usuarios:funcionalidade_futura' 'meus-simulados' %}">Meus simulados</a>
-    <a class="{% if active == 'recomendacoes' %}active{% endif %}" href="{% url 'usuarios:funcionalidade_futura' 'recomendacoes' %}">Recomendações</a>
     <a class="{% if active == 'lista-estudos' %}active{% endif %}" href="{% url 'usuarios:funcionalidade_futura' 'lista-estudos' %}">Minha lista de estudos</a>
-    <a class="{% if active == 'historico-evolucao' %}active{% endif %}" href="{% url 'usuarios:funcionalidade_futura' 'historico-evolucao' %}">Histórico e evolução</a>
     <a class="{% if active == 'desempenho' %}active{% endif %}" href="{% url 'usuarios:funcionalidade_futura' 'desempenho' %}">Meu desempenho</a>
-    <a class="{% if active == 'ranking-percentil' %}active{% endif %}" href="{% url 'usuarios:funcionalidade_futura' 'ranking-percentil' %}">Ranking e percentil</a>
     <a class="{% if active == 'perfil' %}active{% endif %}" href="{% url 'usuarios:perfil' %}">Meu perfil</a>
     <form method="post" action="{% url 'usuarios:logout' %}" class="mt-2">
         {% csrf_token %}

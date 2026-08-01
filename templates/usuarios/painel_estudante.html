@@ -13,8 +13,6 @@
         <dl class="row mb-0">
             <dt class="col-sm-3">E-mail</dt>
             <dd class="col-sm-9">{{ request.user.email }}</dd>
-            <dt class="col-sm-3">Apelido</dt>
-            <dd class="col-sm-9">{{ perfil.apelido_ranking|default:"Não informado" }}</dd>
             <dt class="col-sm-3">Etapa escolar</dt>
             <dd class="col-sm-9">{{ perfil.get_etapa_escolar_display|default:"Não informada" }}</dd>
         </dl>
@@ -24,7 +22,6 @@
         <h2 class="h5">Situação atual</h2>
         <ul class="status-list">
             <li>Nenhum simulado realizado.</li>
-            <li>Nenhuma recomendação disponível.</li>
             <li>Nenhum conteúdo adicionado à lista.</li>
         </ul>
         <p class="mb-0 text-muted">

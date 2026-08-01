@@ -2,9 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
 from .models import (
-    ConsentimentoPrivacidade,
     PerfilEstudante,
-    PreferenciaUsuario,
     Usuario,
 )
 
@@ -28,7 +26,7 @@ class UsuarioAdmin(UserAdmin):
         (None, {"fields": ("email", "password")}),
         (
             "Informações pessoais",
-            {"fields": ("first_name", "last_name", "anonimizado_em")},
+            {"fields": ("first_name", "last_name")},
         ),
         (
             "Permissões",
@@ -66,49 +64,11 @@ class UsuarioAdmin(UserAdmin):
 class PerfilEstudanteAdmin(admin.ModelAdmin):
     list_display = (
         "usuario",
-        "apelido_ranking",
         "etapa_escolar",
-        "fuso_horario",
         "criado_em",
         "atualizado_em",
     )
-    list_filter = ("etapa_escolar", "fuso_horario", "criado_em")
-    search_fields = ("usuario__email", "apelido_ranking")
+    list_filter = ("etapa_escolar", "criado_em")
+    search_fields = ("usuario__email", "usuario__first_name", "usuario__last_name")
     autocomplete_fields = ("usuario",)
     readonly_fields = ("criado_em", "atualizado_em")
-
-
-@admin.register(PreferenciaUsuario)
-class PreferenciaUsuarioAdmin(admin.ModelAdmin):
-    list_display = (
-        "usuario",
-        "exibir_ranking_publico",
-        "permitir_percentil_privado",
-        "notificacoes_email",
-        "dificuldade_preferida",
-        "atualizado_em",
-    )
-    list_filter = (
-        "exibir_ranking_publico",
-        "permitir_percentil_privado",
-        "notificacoes_email",
-        "dificuldade_preferida",
-    )
-    search_fields = ("usuario__email",)
-    autocomplete_fields = ("usuario",)
-    readonly_fields = ("atualizado_em",)
-
-
-@admin.register(ConsentimentoPrivacidade)
-class ConsentimentoPrivacidadeAdmin(admin.ModelAdmin):
-    list_display = (
-        "usuario",
-        "tipo_documento",
-        "versao_documento",
-        "aceito",
-        "registrado_em",
-    )
-    list_filter = ("tipo_documento", "versao_documento", "aceito")
-    search_fields = ("usuario__email", "versao_documento", "ip_hash")
-    autocomplete_fields = ("usuario",)
-    readonly_fields = ("id", "registrado_em")

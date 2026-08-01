@@ -4,7 +4,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 
-from .models import PerfilEstudante, PreferenciaUsuario
+from .models import PerfilEstudante
 
 
 class CampoBootstrapMixin:
@@ -40,7 +40,6 @@ class CadastroEstudanteForm(CampoBootstrapMixin, forms.Form):
         required=False,
     )
     email = forms.EmailField(label="E-mail")
-    apelido_ranking = forms.CharField(label="Apelido para ranking", max_length=50)
     etapa_escolar = forms.ChoiceField(
         label="Etapa escolar",
         choices=PerfilEstudante.EtapaEscolar.choices,
@@ -55,10 +54,6 @@ class CadastroEstudanteForm(CampoBootstrapMixin, forms.Form):
         strip=False,
         widget=forms.PasswordInput,
     )
-    aceite_privacidade = forms.BooleanField(
-        label="Li e aceito os termos e a política de privacidade.",
-    )
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._aplicar_bootstrap()
@@ -69,12 +64,6 @@ class CadastroEstudanteForm(CampoBootstrapMixin, forms.Form):
         if User.objects.filter(email=email).exists():
             raise ValidationError("Este e-mail já está cadastrado.")
         return email
-
-    def clean_apelido_ranking(self):
-        apelido = self.cleaned_data["apelido_ranking"].strip()
-        if PerfilEstudante.objects.filter(apelido_ranking__iexact=apelido).exists():
-            raise ValidationError("Este apelido já está cadastrado.")
-        return apelido
 
     def clean(self):
         cleaned_data = super().clean()
@@ -101,11 +90,6 @@ class UsuarioAdminForm(CampoBootstrapMixin, forms.Form):
         required=False,
     )
     email = forms.EmailField(label="E-mail")
-    apelido_ranking = forms.CharField(
-        label="Apelido para ranking",
-        max_length=50,
-        required=False,
-    )
     etapa_escolar = forms.ChoiceField(
         label="Etapa escolar",
         choices=[("", "---------")] + list(PerfilEstudante.EtapaEscolar.choices),
@@ -113,22 +97,6 @@ class UsuarioAdminForm(CampoBootstrapMixin, forms.Form):
     )
     is_active = forms.BooleanField(label="Usuário ativo", required=False)
     is_staff = forms.BooleanField(label="Usuário administrativo", required=False)
-    exibir_ranking_publico = forms.BooleanField(
-        label="Exibir no ranking público",
-        required=False,
-    )
-    permitir_percentil_privado = forms.BooleanField(
-        label="Permitir percentil privado",
-        required=False,
-    )
-    notificacoes_email = forms.BooleanField(
-        label="Receber notificações por e-mail",
-        required=False,
-    )
-    dificuldade_preferida = forms.ChoiceField(
-        label="Dificuldade preferida",
-        choices=PreferenciaUsuario.DificuldadePreferida.choices,
-    )
     password1 = forms.CharField(
         label="Senha",
         required=False,
@@ -161,15 +129,6 @@ class UsuarioAdminForm(CampoBootstrapMixin, forms.Form):
             raise ValidationError("Este e-mail já está cadastrado.")
         return email
 
-    def clean_apelido_ranking(self):
-        apelido = self.cleaned_data.get("apelido_ranking", "").strip()
-        queryset = PerfilEstudante.objects.filter(apelido_ranking__iexact=apelido)
-        if self.usuario:
-            queryset = queryset.exclude(usuario=self.usuario)
-        if apelido and queryset.exists():
-            raise ValidationError("Este apelido já está cadastrado.")
-        return apelido
-
     def clean(self):
         cleaned_data = super().clean()
         password1 = cleaned_data.get("password1")
@@ -201,34 +160,12 @@ class PerfilEstudanteForm(CampoBootstrapMixin, forms.Form):
         max_length=150,
         required=False,
     )
-    apelido_ranking = forms.CharField(label="Apelido para ranking", max_length=50)
     etapa_escolar = forms.ChoiceField(
         label="Etapa escolar",
         choices=PerfilEstudante.EtapaEscolar.choices,
-    )
-    dificuldade_preferida = forms.ChoiceField(
-        label="Dificuldade preferida",
-        choices=PreferenciaUsuario.DificuldadePreferida.choices,
-    )
-    exibir_ranking_publico = forms.BooleanField(
-        label="Exibir no ranking público",
-        required=False,
-    )
-    permitir_percentil_privado = forms.BooleanField(
-        label="Permitir percentil privado",
-        required=False,
     )
 
     def __init__(self, *args, usuario=None, **kwargs):
         self.usuario = usuario
         super().__init__(*args, **kwargs)
         self._aplicar_bootstrap()
-
-    def clean_apelido_ranking(self):
-        apelido = self.cleaned_data["apelido_ranking"].strip()
-        queryset = PerfilEstudante.objects.filter(apelido_ranking__iexact=apelido)
-        if self.usuario:
-            queryset = queryset.exclude(usuario=self.usuario)
-        if queryset.exists():
-            raise ValidationError("Este apelido já está cadastrado.")
-        return apelido

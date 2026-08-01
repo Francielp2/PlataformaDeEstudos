@@ -1,5 +1,3 @@
-import hashlib
-
 from django.contrib import messages
 from django.contrib.auth import get_user_model, login, logout
 from django.contrib.auth.decorators import login_required
@@ -18,11 +16,7 @@ from .forms import (
     PerfilEstudanteForm,
     UsuarioAdminForm,
 )
-from .models import (
-    ConsentimentoPrivacidade,
-    PerfilEstudante,
-    PreferenciaUsuario,
-)
+from .models import PerfilEstudante
 
 
 MATERIAS = {
@@ -37,11 +31,8 @@ FUNCIONALIDADES_ESTUDANTE = {
     "videoaulas": "Videoaulas",
     "fazer-simulado": "Fazer simulado",
     "meus-simulados": "Meus simulados",
-    "recomendacoes": "Recomendações",
     "lista-estudos": "Minha lista de estudos",
-    "historico-evolucao": "Histórico e evolução",
     "desempenho": "Meu desempenho",
-    "ranking-percentil": "Ranking e percentil",
 }
 
 FUNCIONALIDADES_ADMIN = {
@@ -70,13 +61,6 @@ def _redirect_seguro(request, fallback):
     return redirect(fallback)
 
 
-def _ip_hash(request):
-    endereco = request.META.get("REMOTE_ADDR", "")
-    if not endereco:
-        return ""
-    return hashlib.sha256(endereco.encode("utf-8")).hexdigest()
-
-
 def _staff_required(request):
     if not request.user.is_authenticated:
         return redirect(f"{reverse('usuarios:login')}?next={request.path}")
@@ -89,45 +73,19 @@ def _staff_required(request):
 def _criar_relacionamentos_usuario(usuario, dados, request=None):
     PerfilEstudante.objects.create(
         usuario=usuario,
-        apelido_ranking=dados.get("apelido_ranking", ""),
         etapa_escolar=dados.get("etapa_escolar", ""),
     )
-    PreferenciaUsuario.objects.create(usuario=usuario)
-    if dados.get("aceite_privacidade"):
-        ConsentimentoPrivacidade.objects.create(
-            usuario=usuario,
-            tipo_documento=ConsentimentoPrivacidade.TipoDocumento.PRIVACIDADE,
-            versao_documento="1.0",
-            aceito=True,
-            ip_hash=_ip_hash(request) if request else "",
-        )
 
 
 def _dados_iniciais_admin(usuario):
     perfil = getattr(usuario, "perfil_estudante", None)
-    preferencias = getattr(usuario, "preferencias", None)
     return {
         "first_name": usuario.first_name,
         "last_name": usuario.last_name,
         "email": usuario.email,
-        "apelido_ranking": perfil.apelido_ranking if perfil else "",
         "etapa_escolar": perfil.etapa_escolar if perfil else "",
         "is_active": usuario.is_active,
         "is_staff": usuario.is_staff,
-        "exibir_ranking_publico": (
-            preferencias.exibir_ranking_publico if preferencias else False
-        ),
-        "permitir_percentil_privado": (
-            preferencias.permitir_percentil_privado if preferencias else True
-        ),
-        "notificacoes_email": (
-            preferencias.notificacoes_email if preferencias else True
-        ),
-        "dificuldade_preferida": (
-            preferencias.dificuldade_preferida
-            if preferencias
-            else PreferenciaUsuario.DificuldadePreferida.ADAPTATIVA
-        ),
     }
 
 
@@ -193,26 +151,20 @@ def painel(request):
 @login_required(login_url="usuarios:login")
 def painel_estudante(request):
     perfil, _ = PerfilEstudante.objects.get_or_create(usuario=request.user)
-    preferencias, _ = PreferenciaUsuario.objects.get_or_create(usuario=request.user)
     return render(
         request,
         "usuarios/painel_estudante.html",
-        {"perfil": perfil, "preferencias": preferencias, "active": "inicio"},
+        {"perfil": perfil, "active": "inicio"},
     )
 
 
 @login_required(login_url="usuarios:login")
 def perfil(request):
     perfil_obj, _ = PerfilEstudante.objects.get_or_create(usuario=request.user)
-    preferencias, _ = PreferenciaUsuario.objects.get_or_create(usuario=request.user)
     initial = {
         "first_name": request.user.first_name,
         "last_name": request.user.last_name,
-        "apelido_ranking": perfil_obj.apelido_ranking,
         "etapa_escolar": perfil_obj.etapa_escolar,
-        "dificuldade_preferida": preferencias.dificuldade_preferida,
-        "exibir_ranking_publico": preferencias.exibir_ranking_publico,
-        "permitir_percentil_privado": preferencias.permitir_percentil_privado,
     }
     form = PerfilEstudanteForm(
         request.POST or None,
@@ -225,29 +177,15 @@ def perfil(request):
             request.user.first_name = dados["first_name"]
             request.user.last_name = dados["last_name"]
             request.user.save(update_fields=["first_name", "last_name"])
-            perfil_obj.apelido_ranking = dados["apelido_ranking"]
             perfil_obj.etapa_escolar = dados["etapa_escolar"]
-            perfil_obj.save(update_fields=["apelido_ranking", "etapa_escolar"])
-            preferencias.dificuldade_preferida = dados["dificuldade_preferida"]
-            preferencias.exibir_ranking_publico = dados["exibir_ranking_publico"]
-            preferencias.permitir_percentil_privado = dados[
-                "permitir_percentil_privado"
-            ]
-            preferencias.save(
-                update_fields=[
-                    "dificuldade_preferida",
-                    "exibir_ranking_publico",
-                    "permitir_percentil_privado",
-                    "atualizado_em",
-                ]
-            )
+            perfil_obj.save(update_fields=["etapa_escolar", "atualizado_em"])
         messages.success(request, "Perfil atualizado.")
         return redirect("usuarios:perfil")
 
     return render(
         request,
         "usuarios/perfil.html",
-        {"form": form, "perfil": perfil_obj, "preferencias": preferencias, "active": "perfil"},
+        {"form": form, "perfil": perfil_obj, "active": "perfil"},
     )
 
 
@@ -336,7 +274,6 @@ def admin_usuarios_lista(request):
             Q(first_name__icontains=busca)
             | Q(last_name__icontains=busca)
             | Q(email__icontains=busca)
-            | Q(perfil_estudante__apelido_ranking__icontains=busca)
         )
 
     paginator = Paginator(usuarios, 10)
@@ -355,14 +292,12 @@ def admin_usuario_detalhe(request, pk):
 
     usuario = get_object_or_404(get_user_model(), pk=pk)
     perfil_obj = getattr(usuario, "perfil_estudante", None)
-    preferencias = getattr(usuario, "preferencias", None)
     return render(
         request,
         "administracao/usuario_detalhe.html",
         {
             "usuario_obj": usuario,
             "perfil": perfil_obj,
-            "preferencias": preferencias,
             "active": "admin_usuarios",
         },
     )
@@ -375,9 +310,6 @@ def admin_usuario_criar(request):
 
     initial = {
         "is_active": True,
-        "permitir_percentil_privado": True,
-        "notificacoes_email": True,
-        "dificuldade_preferida": PreferenciaUsuario.DificuldadePreferida.ADAPTATIVA,
     }
     form = UsuarioAdminForm(request.POST or None, initial=initial, criando=True)
     if request.method == "POST" and form.is_valid():
@@ -394,14 +326,6 @@ def admin_usuario_criar(request):
                 is_superuser=False,
             )
             _criar_relacionamentos_usuario(usuario, dados)
-            preferencias = usuario.preferencias
-            preferencias.exibir_ranking_publico = dados["exibir_ranking_publico"]
-            preferencias.permitir_percentil_privado = dados[
-                "permitir_percentil_privado"
-            ]
-            preferencias.notificacoes_email = dados["notificacoes_email"]
-            preferencias.dificuldade_preferida = dados["dificuldade_preferida"]
-            preferencias.save()
         messages.success(request, "Usuário criado.")
         return redirect("usuarios:admin_usuario_detalhe", pk=usuario.pk)
 
@@ -435,20 +359,8 @@ def admin_usuario_editar(request, pk):
             usuario.save()
 
             perfil_obj, _ = PerfilEstudante.objects.get_or_create(usuario=usuario)
-            perfil_obj.apelido_ranking = dados["apelido_ranking"]
             perfil_obj.etapa_escolar = dados["etapa_escolar"]
             perfil_obj.save()
-
-            preferencias, _ = PreferenciaUsuario.objects.get_or_create(
-                usuario=usuario
-            )
-            preferencias.exibir_ranking_publico = dados["exibir_ranking_publico"]
-            preferencias.permitir_percentil_privado = dados[
-                "permitir_percentil_privado"
-            ]
-            preferencias.notificacoes_email = dados["notificacoes_email"]
-            preferencias.dificuldade_preferida = dados["dificuldade_preferida"]
-            preferencias.save()
         messages.success(request, "Usuário atualizado.")
         return redirect("usuarios:admin_usuario_detalhe", pk=usuario.pk)
 

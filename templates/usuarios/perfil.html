@@ -5,15 +5,13 @@
 {% block content %}
     <div class="page-heading">
         <h1>Meu perfil</h1>
-        <p>Dados básicos da conta e preferências de estudo.</p>
+        <p>Dados básicos da conta.</p>
     </div>
 
     <section class="section-box mb-4">
         <dl class="row mb-0">
             <dt class="col-sm-3">E-mail</dt>
             <dd class="col-sm-9">{{ request.user.email }}</dd>
-            <dt class="col-sm-3">Preferência de e-mail</dt>
-            <dd class="col-sm-9">{% if preferencias.notificacoes_email %}Ativada{% else %}Desativada{% endif %}</dd>
         </dl>
     </section>
 

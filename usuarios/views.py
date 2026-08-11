@@ -29,6 +29,7 @@ MATERIAS = {
 FUNCIONALIDADES_ESTUDANTE = {
     "conteudos": "Conteúdos de estudo",
     "videoaulas": "Videoaulas",
+    "favoritos": "Favoritos",
     "fazer-simulado": "Fazer simulado",
     "meus-simulados": "Meus simulados",
     "lista-estudos": "Minha lista de estudos",
@@ -39,6 +40,7 @@ FUNCIONALIDADES_ADMIN = {
     "cadastrar-materia": "Cadastro de matérias",
     "conteudos": "Gerenciamento de conteúdos",
     "videoaulas": "Gerenciamento de videoaulas",
+    "favoritos": "Favoritos",
     "questoes": "Gerenciamento de questões",
     "criar-simulado": "Criação de simulado",
     "simulados": "Gerenciamento de simulados",

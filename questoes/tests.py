@@ -488,6 +488,47 @@ class AdminQuestaoViewTests(QuestaoTestMixin, TestCase):
         questao.refresh_from_db()
         self.assertEqual(questao.status, Questao.StatusQuestao.ARQUIVADA)
 
+    def test_admin_publica_todos_os_rascunhos_validos(self):
+        valida = self.criar_questao(
+            "MAT-038-LOTE",
+            status=Questao.StatusQuestao.RASCUNHO,
+        )
+        invalida = Questao.objects.create(
+            codigo="MAT-038-INVALIDA",
+            materia=self.matematica,
+            enunciado="Questão ainda sem alternativas.",
+            status=Questao.StatusQuestao.RASCUNHO,
+            criado_por=self.staff,
+        )
+        self.client.force_login(self.staff)
+
+        response = self.client.post(
+            reverse("questoes_admin:admin_questoes_publicar_rascunhos"),
+            follow=True,
+        )
+
+        self.assertEqual(response.status_code, 200)
+        valida.refresh_from_db()
+        invalida.refresh_from_db()
+        self.assertEqual(valida.status, Questao.StatusQuestao.PUBLICADA)
+        self.assertEqual(invalida.status, Questao.StatusQuestao.RASCUNHO)
+        self.assertContains(response, "publicada(s) com sucesso")
+        self.assertContains(response, "permaneceram em rascunho")
+
+    def test_publicacao_em_lote_exige_post_e_usuario_staff(self):
+        questao = self.criar_questao(
+            "MAT-038-PERMISSAO",
+            status=Questao.StatusQuestao.RASCUNHO,
+        )
+        url = reverse("questoes_admin:admin_questoes_publicar_rascunhos")
+        self.client.force_login(self.staff)
+        self.assertEqual(self.client.get(url).status_code, 405)
+
+        self.client.force_login(self.estudante)
+        self.assertEqual(self.client.post(url).status_code, 403)
+        questao.refresh_from_db()
+        self.assertEqual(questao.status, Questao.StatusQuestao.RASCUNHO)
+
     def test_admin_busca_e_filtros(self):
         publicada = self.criar_questao("MAT-039", dificuldade=Questao.DificuldadeQuestao.FACIL)
         arquivada = self.criar_questao(

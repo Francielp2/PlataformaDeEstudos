@@ -369,9 +369,40 @@ def admin_questoes_lista(request):
             "status": status,
             "querystring": query_params.urlencode(),
             "total_encontrado": paginator.count,
+            "total_rascunhos": Questao.objects.filter(
+                status=Questao.StatusQuestao.RASCUNHO
+            ).count(),
             "active": "admin_questoes",
         },
     )
+
+
+@require_POST
+@staff_required
+def admin_questoes_publicar_rascunhos(request):
+    questoes = Questao.objects.filter(
+        status=Questao.StatusQuestao.RASCUNHO
+    ).prefetch_related("alternativas", "questao_conteudos__conteudo")
+    publicadas = 0
+    invalidas = 0
+
+    for questao in questoes:
+        try:
+            questao.publicar()
+            publicadas += 1
+        except ValidationError:
+            invalidas += 1
+
+    if publicadas:
+        messages.success(request, f"{publicadas} questão(ões) publicada(s) com sucesso.")
+    if invalidas:
+        messages.warning(
+            request,
+            f"{invalidas} questão(ões) permaneceram em rascunho por estarem incompletas.",
+        )
+    if not publicadas and not invalidas:
+        messages.info(request, "Não há questões em rascunho para publicar.")
+    return redirect("questoes_admin:admin_questoes_lista")
 
 
 @staff_required

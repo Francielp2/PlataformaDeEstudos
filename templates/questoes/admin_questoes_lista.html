@@ -8,7 +8,13 @@
             <h1>Gerenciar questões</h1>
             <p>Banco de questões individuais.</p>
         </div>
-        <div>
+        <div class="d-flex gap-2">
+            <form method="post" action="{% url 'questoes_admin:admin_questoes_publicar_rascunhos' %}" onsubmit="return confirm('Publicar todas as questões que estão em rascunho?');">
+                {% csrf_token %}
+                <button class="btn btn-success" type="submit" {% if not total_rascunhos %}disabled{% endif %}>
+                    <i class="bi bi-upload"></i> Publicar rascunhos ({{ total_rascunhos }})
+                </button>
+            </form>
             <a class="btn btn-outline-secondary" href="{% url 'questoes_admin:admin_respostas_lista' %}"><i class="bi bi-clock-history"></i> Respostas</a>
             <a class="btn btn-primary" href="{% url 'questoes_admin:admin_questao_criar' %}"><i class="bi bi-plus-circle"></i> Criar questão</a>
         </div>

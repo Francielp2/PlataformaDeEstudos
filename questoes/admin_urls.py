@@ -7,6 +7,11 @@ app_name = "questoes_admin"
 
 urlpatterns = [
     path("", views.admin_questoes_lista, name="admin_questoes_lista"),
+    path(
+        "publicar-rascunhos/",
+        views.admin_questoes_publicar_rascunhos,
+        name="admin_questoes_publicar_rascunhos",
+    ),
     path("criar/", views.admin_questao_criar, name="admin_questao_criar"),
     path("<uuid:pk>/", views.admin_questao_detalhe, name="admin_questao_detalhe"),
     path("<uuid:pk>/editar/", views.admin_questao_editar, name="admin_questao_editar"),

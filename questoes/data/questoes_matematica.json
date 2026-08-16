@@ -1,0 +1,2566 @@
+{
+  "materia": "matematica",
+  "metadados": {
+    "descricao": "Questões de Matemática dos ENEM 2024 e 2025 que não necessitam de imagem, organizadas para uso por data migration.",
+    "fontes_prova": [
+      "2024_PV_impresso_D2_CD7.pdf",
+      "2025_PV_impresso_D2_CD7.pdf"
+    ],
+    "fontes_gabarito": [
+      "2024_GB_impresso_D2_CD7.pdf",
+      "2025_GB_impresso_D2_CD7.pdf"
+    ],
+    "anos": [
+      2024,
+      2025
+    ],
+    "caderno_referencia": "7 - Azul",
+    "total_questoes": 46,
+    "total_2024": 25,
+    "total_2025": 21,
+    "status_inicial": "draft",
+    "observacao": "Foram excluídas questões que dependem de figura, gráfico, imagem, esquema ou dados visuais indispensáveis. Fórmulas extraídas da camada textual devem ser revisadas antes da publicação."
+  },
+  "cobertura_conteudos": {
+    "analise-combinatoria": 7,
+    "estatistica": 4,
+    "funcao-afim": 2,
+    "geometria-espacial": 3,
+    "geometria-plana": 4,
+    "introducao-as-funcoes": 4,
+    "logaritmos": 2,
+    "matematica-basica": 32,
+    "matematica-comercial-e-financeira": 7,
+    "probabilidade": 4
+  },
+  "questoes": [
+    {
+      "codigo": "ENEM-2025-MAT-CD7-136",
+      "ano": 2025,
+      "caderno": "7 - Azul",
+      "numero_questao": 136,
+      "pagina_pdf": 16,
+      "enunciado": "Uma pessoa pretende instalar um kit de gás natural veicular (GNV) em seu carro. Na loja que escolheu para realizar a compra e instalação desse kit, havia cinco modelos de cilindro para armazenamento do gás, cujas capacidades, em metro cúbico, eram, respectivamente: 10, 14, 17, 21 e 25. O preço do cilindro é proporcional à sua capacidade. Esse carro rodará 30 km diariamente, 7 dias por semana, e o consumo do GNV é de 1 m3 a cada 13 km rodados. A pessoa escolherá o modelo de cilindro de menor preço e que garanta apenas um abastecimento semanal. Nessas condições, qual será a capacidade, em metro cúbico, do cilindro escolhido por essa pessoa?",
+      "explicacao": "",
+      "dificuldade": "easy",
+      "tipo_fonte": "enem",
+      "fonte_nome": "ENEM",
+      "fonte_ano": 2025,
+      "fonte_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2025",
+      "gabarito_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2025",
+      "status": "draft",
+      "conteudo_principal": "matematica-basica",
+      "conteudos": [
+        "matematica-basica"
+      ],
+      "gabarito": "C",
+      "requer_imagem": false,
+      "observacao_revisao": "Texto e alternativas recuperados da camada textual do PDF; revisar antes da publicação definitiva.",
+      "alternativas": [
+        {
+          "chave": "A",
+          "texto": "10",
+          "correta": false,
+          "ordem": 1
+        },
+        {
+          "chave": "B",
+          "texto": "14",
+          "correta": false,
+          "ordem": 2
+        },
+        {
+          "chave": "C",
+          "texto": "17",
+          "correta": true,
+          "ordem": 3
+        },
+        {
+          "chave": "D",
+          "texto": "21",
+          "correta": false,
+          "ordem": 4
+        },
+        {
+          "chave": "E",
+          "texto": "25",
+          "correta": false,
+          "ordem": 5
+        }
+      ]
+    },
+    {
+      "codigo": "ENEM-2025-MAT-CD7-139",
+      "ano": 2025,
+      "caderno": "7 - Azul",
+      "numero_questao": 139,
+      "pagina_pdf": 18,
+      "enunciado": "No entorno de uma lagoa circular, cujo raio mede 1 km, há um uma ciclovia. Devido aos frequentes roubos de bicicleta, a prefeitura planeja alocar policiais em posições estratégicas para patrulhar essa ciclovia, de forma a torná-la totalmente protegida. Um ponto da ciclovia é considerado protegido se houver pelo menos um policial a, no máximo, 200 m de distância daquele ponto, posicionado sobre a ciclovia. A figura ilustra um ponto P sobre a ciclovia, que estará protegido se houver pelo menos um policial posicionado sobre a região de cor cinza escuro. Desconsidere a largura da pista da ciclovia e utilize 3 como aproximação para p. Nessas condições, a quantidade mínima necessária de policiais a serem alocados ao longo dessa ciclovia para torná-la protegida é",
+      "explicacao": "",
+      "dificuldade": "medium",
+      "tipo_fonte": "enem",
+      "fonte_nome": "ENEM",
+      "fonte_ano": 2025,
+      "fonte_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2025",
+      "gabarito_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2025",
+      "status": "draft",
+      "conteudo_principal": "geometria-plana",
+      "conteudos": [
+        "geometria-plana",
+        "matematica-basica"
+      ],
+      "gabarito": "C",
+      "requer_imagem": false,
+      "observacao_revisao": "Texto e alternativas recuperados da camada textual do PDF; revisar antes da publicação definitiva.",
+      "alternativas": [
+        {
+          "chave": "A",
+          "texto": "4.",
+          "correta": false,
+          "ordem": 1
+        },
+        {
+          "chave": "B",
+          "texto": "8.",
+          "correta": false,
+          "ordem": 2
+        },
+        {
+          "chave": "C",
+          "texto": "15.",
+          "correta": true,
+          "ordem": 3
+        },
+        {
+          "chave": "D",
+          "texto": "30.",
+          "correta": false,
+          "ordem": 4
+        },
+        {
+          "chave": "E",
+          "texto": "60.",
+          "correta": false,
+          "ordem": 5
+        }
+      ]
+    },
+    {
+      "codigo": "ENEM-2025-MAT-CD7-140",
+      "ano": 2025,
+      "caderno": "7 - Azul",
+      "numero_questao": 140,
+      "pagina_pdf": 18,
+      "enunciado": "Em um laboratório, um recipiente contém 10 litros de uma solução composta apenas pelas substâncias S1 e S2. Dessa solução, 99,95% é de S1. Uma quantidade de S1 será retirada dessa solução, mantendo a quantidade inicial de S2, de modo que 99,90% da nova solução seja de S1. Qual é a quantidade de S1, em litro, que será retirada?",
+      "explicacao": "",
+      "dificuldade": "medium",
+      "tipo_fonte": "enem",
+      "fonte_nome": "ENEM",
+      "fonte_ano": 2025,
+      "fonte_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2025",
+      "gabarito_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2025",
+      "status": "draft",
+      "conteudo_principal": "matematica-basica",
+      "conteudos": [
+        "matematica-basica"
+      ],
+      "gabarito": "E",
+      "requer_imagem": false,
+      "observacao_revisao": "Texto e alternativas recuperados da camada textual do PDF; revisar antes da publicação definitiva.",
+      "alternativas": [
+        {
+          "chave": "A",
+          "texto": "0,0050",
+          "correta": false,
+          "ordem": 1
+        },
+        {
+          "chave": "B",
+          "texto": "0,0100",
+          "correta": false,
+          "ordem": 2
+        },
+        {
+          "chave": "C",
+          "texto": "0,5000",
+          "correta": false,
+          "ordem": 3
+        },
+        {
+          "chave": "D",
+          "texto": "4,9775",
+          "correta": false,
+          "ordem": 4
+        },
+        {
+          "chave": "E",
+          "texto": "5,0000",
+          "correta": true,
+          "ordem": 5
+        }
+      ]
+    },
+    {
+      "codigo": "ENEM-2025-MAT-CD7-141",
+      "ano": 2025,
+      "caderno": "7 - Azul",
+      "numero_questao": 141,
+      "pagina_pdf": 18,
+      "enunciado": "Uma distribuidora de combustível possui caminhões-tanque com capacidade de 30 000 litros cada. Em qualquer transporte realizado por esses caminhões, um mesmo volume de combustível é descartado, pois fica com muitas impurezas. Esse volume descartado independe da quantidade transportada. Um posto de combustível encomendou 10 000 litros de gasolina dessa distribuidora, que enviou 10 200 litros, considerando o volume descartado no transporte. Mesmo assim, a quantidade de gasolina entregue ao posto foi de 9 900 litros. Em um novo pedido, esse posto solicitou que fosse entregue exatamente o dobro do volume de gasolina encomendado no pedido anterior. Utilizando o mesmo caminhão da entrega anterior, qual é o volume mínimo de gasolina, em litro, que a distribuidora deverá enviar para garantir a entrega da quantidade encomendada nesse novo pedido?",
+      "explicacao": "",
+      "dificuldade": "easy",
+      "tipo_fonte": "enem",
+      "fonte_nome": "ENEM",
+      "fonte_ano": 2025,
+      "fonte_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2025",
+      "gabarito_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2025",
+      "status": "draft",
+      "conteudo_principal": "matematica-basica",
+      "conteudos": [
+        "matematica-basica"
+      ],
+      "gabarito": "C",
+      "requer_imagem": false,
+      "observacao_revisao": "Texto e alternativas recuperados da camada textual do PDF; revisar antes da publicação definitiva.",
+      "alternativas": [
+        {
+          "chave": "A",
+          "texto": "20 100",
+          "correta": false,
+          "ordem": 1
+        },
+        {
+          "chave": "B",
+          "texto": "20 200",
+          "correta": false,
+          "ordem": 2
+        },
+        {
+          "chave": "C",
+          "texto": "20 300",
+          "correta": true,
+          "ordem": 3
+        },
+        {
+          "chave": "D",
+          "texto": "20 400",
+          "correta": false,
+          "ordem": 4
+        },
+        {
+          "chave": "E",
+          "texto": "20 600",
+          "correta": false,
+          "ordem": 5
+        }
+      ]
+    },
+    {
+      "codigo": "ENEM-2025-MAT-CD7-142",
+      "ano": 2025,
+      "caderno": "7 - Azul",
+      "numero_questao": 142,
+      "pagina_pdf": 18,
+      "enunciado": "Uma empresa de tecnologia vai padronizar a velocidade de conexão de internet que oferece a seus clientes em dez cidades. A direção da empresa decide que seu novo padrão de velocidade de referência será a mediana dos valores das velocidades de referência de conexões nessas dez cidades. Esses valores, em megabyte por segundo (MB/s), são apresentados no quadro. Cidades Velocidade de referência (MB/s) C1 390 C2 380 C3 320 C4 390 C5 340 C6 380 C7 390 C8 400 C9 350 C10 360 A velocidade de referência, em megabyte por segundo, a ser adotada por essa empresa é",
+      "explicacao": "",
+      "dificuldade": "easy",
+      "tipo_fonte": "enem",
+      "fonte_nome": "ENEM",
+      "fonte_ano": 2025,
+      "fonte_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2025",
+      "gabarito_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2025",
+      "status": "draft",
+      "conteudo_principal": "estatistica",
+      "conteudos": [
+        "estatistica"
+      ],
+      "gabarito": "C",
+      "requer_imagem": false,
+      "observacao_revisao": "Texto e alternativas recuperados da camada textual do PDF; revisar antes da publicação definitiva.",
+      "alternativas": [
+        {
+          "chave": "A",
+          "texto": "360.",
+          "correta": false,
+          "ordem": 1
+        },
+        {
+          "chave": "B",
+          "texto": "370.",
+          "correta": false,
+          "ordem": 2
+        },
+        {
+          "chave": "C",
+          "texto": "380.",
+          "correta": true,
+          "ordem": 3
+        },
+        {
+          "chave": "D",
+          "texto": "390.",
+          "correta": false,
+          "ordem": 4
+        },
+        {
+          "chave": "E",
+          "texto": "400.",
+          "correta": false,
+          "ordem": 5
+        }
+      ]
+    },
+    {
+      "codigo": "ENEM-2025-MAT-CD7-146",
+      "ano": 2025,
+      "caderno": "7 - Azul",
+      "numero_questao": 146,
+      "pagina_pdf": 19,
+      "enunciado": "No atletismo, um grande desafio da prova de 100 metros rasos é a sua conclusão num tempo abaixo da marca de referência dos 10,00 segundos. Vários atletas já alcançaram esse feito. Em 2009, o jamaicano Usain Bolt estabeleceu o recorde mundial masculino dessa prova, com o tempo de 9,58 segundos. Qual é a diferença, em segundo, entre a marca de referência e a marca estabelecida por Usain Bolt em 2009?",
+      "explicacao": "",
+      "dificuldade": "easy",
+      "tipo_fonte": "enem",
+      "fonte_nome": "ENEM",
+      "fonte_ano": 2025,
+      "fonte_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2025",
+      "gabarito_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2025",
+      "status": "draft",
+      "conteudo_principal": "matematica-basica",
+      "conteudos": [
+        "matematica-basica"
+      ],
+      "gabarito": "B",
+      "requer_imagem": false,
+      "observacao_revisao": "Texto e alternativas recuperados da camada textual do PDF; revisar antes da publicação definitiva.",
+      "alternativas": [
+        {
+          "chave": "A",
+          "texto": "0,02",
+          "correta": false,
+          "ordem": 1
+        },
+        {
+          "chave": "B",
+          "texto": "0,42",
+          "correta": true,
+          "ordem": 2
+        },
+        {
+          "chave": "C",
+          "texto": "0,52",
+          "correta": false,
+          "ordem": 3
+        },
+        {
+          "chave": "D",
+          "texto": "1,02",
+          "correta": false,
+          "ordem": 4
+        },
+        {
+          "chave": "E",
+          "texto": "1,42",
+          "correta": false,
+          "ordem": 5
+        }
+      ]
+    },
+    {
+      "codigo": "ENEM-2025-MAT-CD7-150",
+      "ano": 2025,
+      "caderno": "7 - Azul",
+      "numero_questao": 150,
+      "pagina_pdf": 21,
+      "enunciado": "Uma fábrica de tijolos ecológicos com 3 funcionários, cada um trabalhando 6 horas diárias, produz 720 unidades por dia. Para atender ao crescimento da demanda por esse tipo de tijolo, essa fábrica passou a ter 5 funcionários, cada um trabalhando 9 horas por dia, aumentando, assim, sua capacidade de produção. Todos os funcionários produzem igual quantidade de tijolos a cada hora, independentemente de trabalharem 6 ou 9 horas diárias. O número de tijolos fabricados diariamente após o aumento da capacidade de produção é",
+      "explicacao": "",
+      "dificuldade": "easy",
+      "tipo_fonte": "enem",
+      "fonte_nome": "ENEM",
+      "fonte_ano": 2025,
+      "fonte_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2025",
+      "gabarito_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2025",
+      "status": "draft",
+      "conteudo_principal": "matematica-basica",
+      "conteudos": [
+        "matematica-basica"
+      ],
+      "gabarito": "D",
+      "requer_imagem": false,
+      "observacao_revisao": "Texto e alternativas recuperados da camada textual do PDF; revisar antes da publicação definitiva.",
+      "alternativas": [
+        {
+          "chave": "A",
+          "texto": "800.",
+          "correta": false,
+          "ordem": 1
+        },
+        {
+          "chave": "B",
+          "texto": "1 080.",
+          "correta": false,
+          "ordem": 2
+        },
+        {
+          "chave": "C",
+          "texto": "1 200.",
+          "correta": false,
+          "ordem": 3
+        },
+        {
+          "chave": "D",
+          "texto": "1 800.",
+          "correta": true,
+          "ordem": 4
+        },
+        {
+          "chave": "E",
+          "texto": "2 520.",
+          "correta": false,
+          "ordem": 5
+        }
+      ]
+    },
+    {
+      "codigo": "ENEM-2025-MAT-CD7-151",
+      "ano": 2025,
+      "caderno": "7 - Azul",
+      "numero_questao": 151,
+      "pagina_pdf": 21,
+      "enunciado": "Para acompanhar o fluxo de visitantes em seu prédio, uma empresa estabeleceu um código de identificação para a visitação. De acordo com a regra estabelecida, cada visitante será identificado com um código sequencial numérico com 7 dígitos, determinado, da esquerda para a direita, da seguinte forma: • o primeiro dígito indica o andar ao qual o visitante se dirige, que é um número de 1 a 4; • os dois próximos dígitos correspondem ao número do setor da empresa ao qual o visitante se destina. Esse número varia de 01 a 20; • os três dígitos seguintes correspondem ao número do funcionário da empresa com quem o visitante irá se reunir. Esse número varia de 001 a 135; • o último dígito indica se o visitante chegou à empresa pela manhã, dígito 0, ou à tarde, dígito 1. Um visitante chegou à empresa às 10 horas da manhã para se reunir com o funcionário identificado pelo número 109, que trabalha no setor 08 da empresa, localizado no 2º andar. O código de identificação desse visitante é",
+      "explicacao": "",
+      "dificuldade": "easy",
+      "tipo_fonte": "enem",
+      "fonte_nome": "ENEM",
+      "fonte_ano": 2025,
+      "fonte_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2025",
+      "gabarito_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2025",
+      "status": "draft",
+      "conteudo_principal": "matematica-basica",
+      "conteudos": [
+        "matematica-basica"
+      ],
+      "gabarito": "D",
+      "requer_imagem": false,
+      "observacao_revisao": "Texto e alternativas recuperados da camada textual do PDF; revisar antes da publicação definitiva.",
+      "alternativas": [
+        {
+          "chave": "A",
+          "texto": "0109082.",
+          "correta": false,
+          "ordem": 1
+        },
+        {
+          "chave": "B",
+          "texto": "0281090.",
+          "correta": false,
+          "ordem": 2
+        },
+        {
+          "chave": "C",
+          "texto": "1010982.",
+          "correta": false,
+          "ordem": 3
+        },
+        {
+          "chave": "D",
+          "texto": "2081090.",
+          "correta": true,
+          "ordem": 4
+        },
+        {
+          "chave": "E",
+          "texto": "2810910.",
+          "correta": false,
+          "ordem": 5
+        }
+      ]
+    },
+    {
+      "codigo": "ENEM-2025-MAT-CD7-152",
+      "ano": 2025,
+      "caderno": "7 - Azul",
+      "numero_questao": 152,
+      "pagina_pdf": 21,
+      "enunciado": "Quatro candidatos se apresentaram para realizar a prova de um concurso. Antes de iniciar a prova, os celulares dos quatro candidatos foram recolhidos pelo aplicador, que os guardou, cada um, dentro de um envelope preto. Ao término da prova, o aplicador devolveu os quatro envelopes com os celulares aos quatro candidatos, de maneira aleatória, já que não havia feito a identificação dos envelopes. A probabilidade de que todos os candidatos tenham recebido de volta os envelopes com os seus respectivos celulares é",
+      "explicacao": "",
+      "dificuldade": "medium",
+      "tipo_fonte": "enem",
+      "fonte_nome": "ENEM",
+      "fonte_ano": 2025,
+      "fonte_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2025",
+      "gabarito_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2025",
+      "status": "draft",
+      "conteudo_principal": "probabilidade",
+      "conteudos": [
+        "probabilidade",
+        "analise-combinatoria"
+      ],
+      "gabarito": "D",
+      "requer_imagem": false,
+      "observacao_revisao": "Texto e alternativas recuperados da camada textual do PDF; revisar antes da publicação definitiva.",
+      "alternativas": [
+        {
+          "chave": "A",
+          "texto": "1 2",
+          "correta": false,
+          "ordem": 1
+        },
+        {
+          "chave": "B",
+          "texto": "1 10",
+          "correta": false,
+          "ordem": 2
+        },
+        {
+          "chave": "C",
+          "texto": "1 16",
+          "correta": false,
+          "ordem": 3
+        },
+        {
+          "chave": "D",
+          "texto": "1 24",
+          "correta": true,
+          "ordem": 4
+        },
+        {
+          "chave": "E",
+          "texto": "1 256",
+          "correta": false,
+          "ordem": 5
+        }
+      ]
+    },
+    {
+      "codigo": "ENEM-2025-MAT-CD7-155",
+      "ano": 2025,
+      "caderno": "7 - Azul",
+      "numero_questao": 155,
+      "pagina_pdf": 23,
+      "enunciado": "Dez casais fundaram um grupo de dança e decidiram constituir uma diretoria com três cargos: presidente, secretário e tesoureiro. Para maior representatividade, decidiu-se que no máximo uma pessoa por casal poderá ocupar um cargo nessa diretoria. Quantas diretorias diferentes podem ser constituídas por esses 10 casais?",
+      "explicacao": "",
+      "dificuldade": "medium",
+      "tipo_fonte": "enem",
+      "fonte_nome": "ENEM",
+      "fonte_ano": 2025,
+      "fonte_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2025",
+      "gabarito_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2025",
+      "status": "draft",
+      "conteudo_principal": "analise-combinatoria",
+      "conteudos": [
+        "analise-combinatoria"
+      ],
+      "gabarito": "B",
+      "requer_imagem": false,
+      "observacao_revisao": "Texto e alternativas recuperados da camada textual do PDF; revisar antes da publicação definitiva.",
+      "alternativas": [
+        {
+          "chave": "A",
+          "texto": "10 × 9 × 8",
+          "correta": false,
+          "ordem": 1
+        },
+        {
+          "chave": "B",
+          "texto": "20 × 18 × 16",
+          "correta": true,
+          "ordem": 2
+        },
+        {
+          "chave": "C",
+          "texto": "20 × 19 × 18",
+          "correta": false,
+          "ordem": 3
+        },
+        {
+          "chave": "D",
+          "texto": "10 × 9 × 8 × 2",
+          "correta": false,
+          "ordem": 4
+        },
+        {
+          "chave": "E",
+          "texto": "20 × 18 × 16 × 2",
+          "correta": false,
+          "ordem": 5
+        }
+      ]
+    },
+    {
+      "codigo": "ENEM-2025-MAT-CD7-157",
+      "ano": 2025,
+      "caderno": "7 - Azul",
+      "numero_questao": 157,
+      "pagina_pdf": 23,
+      "enunciado": "O cortisol é um hormônio produzido pelas glândulas adrenais e pode ser considerado um importante marcador do estresse fisiológico. Em um estudo desenvolvido com enfermeiros, foi verificado que a concentração de cortisol salivar em um dia de trabalho, denotada por T, era, em média, 1,59 vezes a concentração de cortisol salivar em um dia de folga, denotada por F. ROCHA, M. C. P. et al. Estresse em enfermeiros: o uso do cortisol salivar no dia de trabalho e de folga. Rev. Esc. Enferm. USP, n. 5, 2013 (adaptado). Nesse estudo, a relação obtida entre T e F foi",
+      "explicacao": "",
+      "dificuldade": "easy",
+      "tipo_fonte": "enem",
+      "fonte_nome": "ENEM",
+      "fonte_ano": 2025,
+      "fonte_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2025",
+      "gabarito_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2025",
+      "status": "draft",
+      "conteudo_principal": "introducao-as-funcoes",
+      "conteudos": [
+        "introducao-as-funcoes",
+        "matematica-basica"
+      ],
+      "gabarito": "C",
+      "requer_imagem": false,
+      "observacao_revisao": "Texto e alternativas recuperados da camada textual do PDF; revisar antes da publicação definitiva.",
+      "alternativas": [
+        {
+          "chave": "A",
+          "texto": "T = 1,59 + F",
+          "correta": false,
+          "ordem": 1
+        },
+        {
+          "chave": "B",
+          "texto": "F = 1,59 + T",
+          "correta": false,
+          "ordem": 2
+        },
+        {
+          "chave": "C",
+          "texto": "T F = 1 59 ,",
+          "correta": true,
+          "ordem": 3
+        },
+        {
+          "chave": "D",
+          "texto": "F T = 1 59 ,",
+          "correta": false,
+          "ordem": 4
+        },
+        {
+          "chave": "E",
+          "texto": "F ⋅ T = 1,59",
+          "correta": false,
+          "ordem": 5
+        }
+      ]
+    },
+    {
+      "codigo": "ENEM-2025-MAT-CD7-158",
+      "ano": 2025,
+      "caderno": "7 - Azul",
+      "numero_questao": 158,
+      "pagina_pdf": 23,
+      "enunciado": "Um estacionamento possui 120 vagas para veículos, e todas essas vagas estão ocupadas. Cada cliente paga uma mensalidade para utilizar uma vaga, que é calculada com base nas despesas mensais do estacionamento e no lucro pretendido. As despesas mensais do estacionamento são: R$ 14 240,00 com manutenção mais R$ 36,00 de seguro por veículo. O lucro do estacionamento é determinado pela diferença do valor arrecadado com as mensalidades pelas despesas efetuadas. A partir do mês seguinte, o valor do seguro por veículo aumentará em 20%, e as despesas com manutenção permanecerão sem alterações. Com isso, o dono do estacionamento reajustará as mensalidades para obter um lucro mensal de R$ 10 000,00. Apesar desse reajuste, todas as vagas continuarão ocupadas. O valor, em real, da mensalidade reajustada será",
+      "explicacao": "",
+      "dificuldade": "medium",
+      "tipo_fonte": "enem",
+      "fonte_nome": "ENEM",
+      "fonte_ano": 2025,
+      "fonte_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2025",
+      "gabarito_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2025",
+      "status": "draft",
+      "conteudo_principal": "matematica-comercial-e-financeira",
+      "conteudos": [
+        "matematica-comercial-e-financeira",
+        "matematica-basica"
+      ],
+      "gabarito": "C",
+      "requer_imagem": false,
+      "observacao_revisao": "Texto e alternativas recuperados da camada textual do PDF; revisar antes da publicação definitiva.",
+      "alternativas": [
+        {
+          "chave": "A",
+          "texto": "185,60.",
+          "correta": false,
+          "ordem": 1
+        },
+        {
+          "chave": "B",
+          "texto": "226,09.",
+          "correta": false,
+          "ordem": 2
+        },
+        {
+          "chave": "C",
+          "texto": "245,20.",
+          "correta": true,
+          "ordem": 3
+        },
+        {
+          "chave": "D",
+          "texto": "268,93.",
+          "correta": false,
+          "ordem": 4
+        },
+        {
+          "chave": "E",
+          "texto": "285,60.",
+          "correta": false,
+          "ordem": 5
+        }
+      ]
+    },
+    {
+      "codigo": "ENEM-2025-MAT-CD7-159",
+      "ano": 2025,
+      "caderno": "7 - Azul",
+      "numero_questao": 159,
+      "pagina_pdf": 23,
+      "enunciado": "O dono de uma sorveteria armazena sorvete em potes de 20 000 cm3. Ele serve o sorvete em taças, em porções de 250 mL. A quantidade de taças que ele consegue servir a partir de um pote cheio de sorvete é",
+      "explicacao": "",
+      "dificuldade": "easy",
+      "tipo_fonte": "enem",
+      "fonte_nome": "ENEM",
+      "fonte_ano": 2025,
+      "fonte_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2025",
+      "gabarito_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2025",
+      "status": "draft",
+      "conteudo_principal": "geometria-espacial",
+      "conteudos": [
+        "geometria-espacial",
+        "matematica-basica"
+      ],
+      "gabarito": "D",
+      "requer_imagem": false,
+      "observacao_revisao": "Texto e alternativas recuperados da camada textual do PDF; revisar antes da publicação definitiva.",
+      "alternativas": [
+        {
+          "chave": "A",
+          "texto": "5.",
+          "correta": false,
+          "ordem": 1
+        },
+        {
+          "chave": "B",
+          "texto": "8.",
+          "correta": false,
+          "ordem": 2
+        },
+        {
+          "chave": "C",
+          "texto": "50.",
+          "correta": false,
+          "ordem": 3
+        },
+        {
+          "chave": "D",
+          "texto": "80.",
+          "correta": true,
+          "ordem": 4
+        },
+        {
+          "chave": "E",
+          "texto": "800.",
+          "correta": false,
+          "ordem": 5
+        }
+      ]
+    },
+    {
+      "codigo": "ENEM-2025-MAT-CD7-162",
+      "ano": 2025,
+      "caderno": "7 - Azul",
+      "numero_questao": 162,
+      "pagina_pdf": 24,
+      "enunciado": "Uma empresa produziu, em um determinado mês, 110 toneladas de plástico a partir de derivados de petróleo e 80 toneladas a partir de plásticos reciclados. O custo para reciclar uma tonelada de plástico é de R$ 500,00, que equivale a 5% do custo para produzir a mesma quantidade de plástico a partir de derivados de petróleo. Para o mês seguinte, a meta dessa empresa é produzir a mesma quantidade de plástico que foi produzida nesse mês, mas com redução de, pelo menos, 50% no custo de produção. Para que no mês seguinte a empresa atinja a meta, a quantidade mínima de toneladas de plástico que devem ser produzidas a partir de reciclagem deverá ser",
+      "explicacao": "",
+      "dificuldade": "medium",
+      "tipo_fonte": "enem",
+      "fonte_nome": "ENEM",
+      "fonte_ano": 2025,
+      "fonte_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2025",
+      "gabarito_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2025",
+      "status": "draft",
+      "conteudo_principal": "matematica-comercial-e-financeira",
+      "conteudos": [
+        "matematica-comercial-e-financeira",
+        "matematica-basica"
+      ],
+      "gabarito": "B",
+      "requer_imagem": false,
+      "observacao_revisao": "Texto e alternativas recuperados da camada textual do PDF; revisar antes da publicação definitiva.",
+      "alternativas": [
+        {
+          "chave": "A",
+          "texto": "135.",
+          "correta": false,
+          "ordem": 1
+        },
+        {
+          "chave": "B",
+          "texto": "140.",
+          "correta": true,
+          "ordem": 2
+        },
+        {
+          "chave": "C",
+          "texto": "155.",
+          "correta": false,
+          "ordem": 3
+        },
+        {
+          "chave": "D",
+          "texto": "160.",
+          "correta": false,
+          "ordem": 4
+        },
+        {
+          "chave": "E",
+          "texto": "175.",
+          "correta": false,
+          "ordem": 5
+        }
+      ]
+    },
+    {
+      "codigo": "ENEM-2025-MAT-CD7-168",
+      "ano": 2025,
+      "caderno": "7 - Azul",
+      "numero_questao": 168,
+      "pagina_pdf": 27,
+      "enunciado": "Em um país, a primeira etapa para obtenção da carteira de motorista é a contratação de três produtos: • pacote com 20 aulas teóricas; • pacote com 10 aulas práticas; • aluguel do veículo para realização das aulas práticas. Uma pessoa que pretende obter a carteira de motorista pesquisou o valor do aluguel do veículo e os valores de cada aula teórica e de cada aula prática em três autoescolas. O quadro apresenta esses valores. Autoescola Valor de cada aula teórica (R$) Valor de cada aula prática (R$) Aluguel do veículo (R$) I 10 80 400 II 30 50 200 III 20 40 400 Ela contratará os três produtos numa mesma autoescola de modo que o custo total nessa primeira etapa seja o menor possível. A autoescola que será contratada é a",
+      "explicacao": "",
+      "dificuldade": "easy",
+      "tipo_fonte": "enem",
+      "fonte_nome": "ENEM",
+      "fonte_ano": 2025,
+      "fonte_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2025",
+      "gabarito_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2025",
+      "status": "draft",
+      "conteudo_principal": "matematica-comercial-e-financeira",
+      "conteudos": [
+        "matematica-comercial-e-financeira",
+        "matematica-basica"
+      ],
+      "gabarito": "E",
+      "requer_imagem": false,
+      "observacao_revisao": "Texto e alternativas recuperados da camada textual do PDF; revisar antes da publicação definitiva.",
+      "alternativas": [
+        {
+          "chave": "A",
+          "texto": "I, com o custo total de R$ 1 400,00.",
+          "correta": false,
+          "ordem": 1
+        },
+        {
+          "chave": "B",
+          "texto": "II, com o custo total de R$ 280,00.",
+          "correta": false,
+          "ordem": 2
+        },
+        {
+          "chave": "C",
+          "texto": "II, com o custo total de R$ 1 300,00.",
+          "correta": false,
+          "ordem": 3
+        },
+        {
+          "chave": "D",
+          "texto": "III, com o custo total de R$ 460,00.",
+          "correta": false,
+          "ordem": 4
+        },
+        {
+          "chave": "E",
+          "texto": "III, com o custo total de R$ 1 200,00.",
+          "correta": true,
+          "ordem": 5
+        }
+      ]
+    },
+    {
+      "codigo": "ENEM-2025-MAT-CD7-170",
+      "ano": 2025,
+      "caderno": "7 - Azul",
+      "numero_questao": 170,
+      "pagina_pdf": 29,
+      "enunciado": "Uma caixa de descarga, acoplada a um vaso sanitário, tem a forma de paralelepípedo reto retângulo cujas dimensões internas da base são 2,5 dm e 1,5 dm. Nessa caixa há uma boia que interrompe o abastecimento quando a altura da coluna de água atinge 2 dm, conforme a figura. A cada acionamento da descarga, todo o volume de água contida na caixa é despejado no vaso. Para reduzir o volume de água despejado a cada acionamento, uma pessoa colocará, no interior dessa caixa, garrafas de 300 mL, cheias de areia e tampadas, de modo a ficarem submersas quando o abastecimento for interrompido. Para garantir o funcionamento eficiente, o mínimo de água despejada a cada acionamento deve ser de 5 L. A quantidade máxima de garrafas que serão colocadas nessa caixa, garantindo um funcionamento eficiente, é igual a",
+      "explicacao": "",
+      "dificuldade": "easy",
+      "tipo_fonte": "enem",
+      "fonte_nome": "ENEM",
+      "fonte_ano": 2025,
+      "fonte_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2025",
+      "gabarito_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2025",
+      "status": "draft",
+      "conteudo_principal": "geometria-espacial",
+      "conteudos": [
+        "geometria-espacial",
+        "matematica-basica"
+      ],
+      "gabarito": "B",
+      "requer_imagem": false,
+      "observacao_revisao": "Texto e alternativas recuperados da camada textual do PDF; revisar antes da publicação definitiva.",
+      "alternativas": [
+        {
+          "chave": "A",
+          "texto": "10.",
+          "correta": false,
+          "ordem": 1
+        },
+        {
+          "chave": "B",
+          "texto": "8.",
+          "correta": true,
+          "ordem": 2
+        },
+        {
+          "chave": "C",
+          "texto": "4.",
+          "correta": false,
+          "ordem": 3
+        },
+        {
+          "chave": "D",
+          "texto": "3.",
+          "correta": false,
+          "ordem": 4
+        },
+        {
+          "chave": "E",
+          "texto": "2.",
+          "correta": false,
+          "ordem": 5
+        }
+      ]
+    },
+    {
+      "codigo": "ENEM-2025-MAT-CD7-172",
+      "ano": 2025,
+      "caderno": "7 - Azul",
+      "numero_questao": 172,
+      "pagina_pdf": 29,
+      "enunciado": "Um empresário utiliza máquinas cuja pressão interna P, em atmosfera, depende do tempo contínuo de utilização t, em hora, e de um parâmetro positivo K, que define o modelo da máquina, segundo a expressão: P = 4 ⋅ log[−K ⋅ (t + 1) ⋅ (t − 19)] O fabricante dessas máquinas recomenda ao usuário que a pressão interna desse tipo de máquina não ultrapasse 10 atmosferas durante seu funcionamento. O empresário pretende comprar novas máquinas desse tipo que deverão funcionar, diariamente, por um período contínuo de 10 horas. Para isso, precisa definir o modelo de máquina a ser adquirida escolhendo o maior valor possível do parâmetro K, atendendo à recomendação do fabricante. O maior valor a ser escolhido para K é",
+      "explicacao": "",
+      "dificuldade": "hard",
+      "tipo_fonte": "enem",
+      "fonte_nome": "ENEM",
+      "fonte_ano": 2025,
+      "fonte_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2025",
+      "gabarito_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2025",
+      "status": "draft",
+      "conteudo_principal": "logaritmos",
+      "conteudos": [
+        "logaritmos",
+        "introducao-as-funcoes"
+      ],
+      "gabarito": "A",
+      "requer_imagem": false,
+      "observacao_revisao": "Texto e alternativas recuperados da camada textual do PDF; revisar antes da publicação definitiva.",
+      "alternativas": [
+        {
+          "chave": "A",
+          "texto": "100,5",
+          "correta": true,
+          "ordem": 1
+        },
+        {
+          "chave": "B",
+          "texto": "108",
+          "correta": false,
+          "ordem": 2
+        },
+        {
+          "chave": "C",
+          "texto": "10 84 2 5,",
+          "correta": false,
+          "ordem": 3
+        },
+        {
+          "chave": "D",
+          "texto": "10 99 2 5,",
+          "correta": false,
+          "ordem": 4
+        },
+        {
+          "chave": "E",
+          "texto": "25 × 10−2",
+          "correta": false,
+          "ordem": 5
+        }
+      ]
+    },
+    {
+      "codigo": "ENEM-2025-MAT-CD7-175",
+      "ano": 2025,
+      "caderno": "7 - Azul",
+      "numero_questao": 175,
+      "pagina_pdf": 30,
+      "enunciado": "Um pai comprou oito presentes diferentes (dentre os quais, uma bicicleta e um celular) para dar a seus três filhos. Ele pretende distribuir os presentes de modo que o filho mais velho e o mais novo recebam três presentes cada um, e o do meio receba os dois presentes restantes. O mais velho ganhará, entre seus presentes, ou uma bicicleta ou um celular, mas não ambos. De quantas maneiras distintas a distribuição dos presentes pode ser feita?",
+      "explicacao": "",
+      "dificuldade": "hard",
+      "tipo_fonte": "enem",
+      "fonte_nome": "ENEM",
+      "fonte_ano": 2025,
+      "fonte_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2025",
+      "gabarito_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2025",
+      "status": "draft",
+      "conteudo_principal": "analise-combinatoria",
+      "conteudos": [
+        "analise-combinatoria"
+      ],
+      "gabarito": "C",
+      "requer_imagem": false,
+      "observacao_revisao": "Texto e alternativas recuperados da camada textual do PDF; revisar antes da publicação definitiva.",
+      "alternativas": [
+        {
+          "chave": "A",
+          "texto": "36",
+          "correta": false,
+          "ordem": 1
+        },
+        {
+          "chave": "B",
+          "texto": "53",
+          "correta": false,
+          "ordem": 2
+        },
+        {
+          "chave": "C",
+          "texto": "300",
+          "correta": true,
+          "ordem": 3
+        },
+        {
+          "chave": "D",
+          "texto": "360",
+          "correta": false,
+          "ordem": 4
+        },
+        {
+          "chave": "E",
+          "texto": "560",
+          "correta": false,
+          "ordem": 5
+        }
+      ]
+    },
+    {
+      "codigo": "ENEM-2025-MAT-CD7-176",
+      "ano": 2025,
+      "caderno": "7 - Azul",
+      "numero_questao": 176,
+      "pagina_pdf": 30,
+      "enunciado": "A final de um campeonato de futebol foi disputada em 2 tempos regulamentares, de 45 minutos cada, sem acréscimos, com uma prorrogação de 30 minutos, também sem acréscimos. Um jogador entrou no início do segundo tempo, com um equipamento para medir a distância percorrida durante sua participação no jogo. Ao final do segundo tempo regulamentar, esse jogador havia percorrido 4,5 km. Ele manteve na prorrogação a mesma velocidade média que havia mantido no segundo tempo regulamentar. A distância percorrida por esse jogador durante sua participação na partida, em quilômetro, foi",
+      "explicacao": "",
+      "dificuldade": "easy",
+      "tipo_fonte": "enem",
+      "fonte_nome": "ENEM",
+      "fonte_ano": 2025,
+      "fonte_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2025",
+      "gabarito_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2025",
+      "status": "draft",
+      "conteudo_principal": "matematica-basica",
+      "conteudos": [
+        "matematica-basica"
+      ],
+      "gabarito": "C",
+      "requer_imagem": false,
+      "observacao_revisao": "Texto e alternativas recuperados da camada textual do PDF; revisar antes da publicação definitiva.",
+      "alternativas": [
+        {
+          "chave": "A",
+          "texto": "4,5.",
+          "correta": false,
+          "ordem": 1
+        },
+        {
+          "chave": "B",
+          "texto": "6,0.",
+          "correta": false,
+          "ordem": 2
+        },
+        {
+          "chave": "C",
+          "texto": "7,5.",
+          "correta": true,
+          "ordem": 3
+        },
+        {
+          "chave": "D",
+          "texto": "9,0.",
+          "correta": false,
+          "ordem": 4
+        },
+        {
+          "chave": "E",
+          "texto": "12,0.",
+          "correta": false,
+          "ordem": 5
+        }
+      ]
+    },
+    {
+      "codigo": "ENEM-2025-MAT-CD7-178",
+      "ano": 2025,
+      "caderno": "7 - Azul",
+      "numero_questao": 178,
+      "pagina_pdf": 31,
+      "enunciado": "Três dados cúbicos, com faces numeradas de 1 a 6, foram utilizados em um jogo. Artur escolheu dois dados, e João ficou com o terceiro. O jogo consiste em ambos lançarem seus dados, observarem os números nas faces voltadas para cima e compararem o maior número obtido por Artur com o número obtido por João. Vence o jogador que obtiver o maior número. Em caso de empate, a vitória é de João. O jogador que tem a maior probabilidade de vitória é",
+      "explicacao": "",
+      "dificuldade": "hard",
+      "tipo_fonte": "enem",
+      "fonte_nome": "ENEM",
+      "fonte_ano": 2025,
+      "fonte_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2025",
+      "gabarito_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2025",
+      "status": "draft",
+      "conteudo_principal": "probabilidade",
+      "conteudos": [
+        "probabilidade",
+        "analise-combinatoria"
+      ],
+      "gabarito": "E",
+      "requer_imagem": false,
+      "observacao_revisao": "Texto e alternativas recuperados da camada textual do PDF; revisar antes da publicação definitiva.",
+      "alternativas": [
+        {
+          "chave": "A",
+          "texto": "Artur, com probabilidade de 2 3",
+          "correta": false,
+          "ordem": 1
+        },
+        {
+          "chave": "B",
+          "texto": "João, com probabilidade de 4 9",
+          "correta": false,
+          "ordem": 2
+        },
+        {
+          "chave": "C",
+          "texto": "Artur, com probabilidade de 91 216",
+          "correta": false,
+          "ordem": 3
+        },
+        {
+          "chave": "D",
+          "texto": "João, com probabilidade de 91 216",
+          "correta": false,
+          "ordem": 4
+        },
+        {
+          "chave": "E",
+          "texto": "Artur, com probabilidade de 125 216",
+          "correta": true,
+          "ordem": 5
+        }
+      ]
+    },
+    {
+      "codigo": "ENEM-2025-MAT-CD7-179",
+      "ano": 2025,
+      "caderno": "7 - Azul",
+      "numero_questao": 179,
+      "pagina_pdf": 31,
+      "enunciado": "A luminância de um objeto é a grandeza que descreve a quantidade de luz produzida ou refletida por sua superfície. Ela está definida como a razão entre a intensidade luminosa, medida em candela (cd), e o quadrado da distância do objeto até o foco de luz, medida em metro (m). A unidade de medida da luminância de um objeto é",
+      "explicacao": "",
+      "dificuldade": "easy",
+      "tipo_fonte": "enem",
+      "fonte_nome": "ENEM",
+      "fonte_ano": 2025,
+      "fonte_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2025",
+      "gabarito_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2025",
+      "status": "draft",
+      "conteudo_principal": "matematica-basica",
+      "conteudos": [
+        "matematica-basica"
+      ],
+      "gabarito": "A",
+      "requer_imagem": false,
+      "observacao_revisao": "Texto e alternativas recuperados da camada textual do PDF; revisar antes da publicação definitiva.",
+      "alternativas": [
+        {
+          "chave": "A",
+          "texto": "cd m2",
+          "correta": true,
+          "ordem": 1
+        },
+        {
+          "chave": "B",
+          "texto": "m cd 2",
+          "correta": false,
+          "ordem": 2
+        },
+        {
+          "chave": "C",
+          "texto": "cd m",
+          "correta": false,
+          "ordem": 3
+        },
+        {
+          "chave": "D",
+          "texto": "m cd",
+          "correta": false,
+          "ordem": 4
+        },
+        {
+          "chave": "E",
+          "texto": "m cd2",
+          "correta": false,
+          "ordem": 5
+        }
+      ]
+    },
+    {
+      "codigo": "ENEM-2024-MAT-CD7-136",
+      "ano": 2024,
+      "caderno": "7 - Azul",
+      "numero_questao": 136,
+      "enunciado": "O tamanho mínimo que a visão humana é capaz de visualizar sem o uso de equipamento auxiliar é equivalente a 100 micrômetros (1 micrômetro = 10-3 milímetros). Uma estudante pretende visualizar e analisar hemácias do sangue humano, que medem 0,007 mm de diâmetro. Ela adquiriu um microscópio óptico que tem uma lente ocular que amplia em 10 vezes a imagem do objeto em observação, e um conjunto de lentes objetivas com estas capacidades de ampliação: • lente I: 2 vezes; • lente II: 10 vezes; • lente III: 15 vezes; • lente IV: 1,1 vez; • lente V: 1,4 vez. O funcionamento desse microscópio permite o uso da lente ocular sozinha ou a combinação dela com uma de suas lentes objetivas, proporcionando, nesse caso, um aumento de sua capacidade de ampliação final, que é dada pelo produto entre as capacidades de ampliação da ocular e da objetiva. Essa estudante pretende selecionar a lente objetiva de menor capacidade de ampliação que permita, na combinação com a ocular, visualizar hemácias do sangue humano. A lente objetiva a ser selecionada pela estudante é a",
+      "explicacao": "",
+      "dificuldade": "medium",
+      "tipo_fonte": "enem",
+      "fonte_nome": "ENEM",
+      "fonte_ano": 2024,
+      "fonte_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2024",
+      "gabarito_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2024",
+      "status": "draft",
+      "conteudo_principal": "analise-combinatoria",
+      "conteudos": [
+        "analise-combinatoria"
+      ],
+      "gabarito": "A",
+      "requer_imagem": false,
+      "observacao_revisao": "Questão selecionada do Caderno 7 Azul do ENEM 2024 por não depender de recurso visual externo. Manter em rascunho para revisão de fórmulas antes da publicação.",
+      "alternativas": [
+        {
+          "chave": "A",
+          "texto": "I.",
+          "correta": true,
+          "ordem": 1
+        },
+        {
+          "chave": "B",
+          "texto": "II.",
+          "correta": false,
+          "ordem": 2
+        },
+        {
+          "chave": "C",
+          "texto": "III.",
+          "correta": false,
+          "ordem": 3
+        },
+        {
+          "chave": "D",
+          "texto": "IV.",
+          "correta": false,
+          "ordem": 4
+        },
+        {
+          "chave": "E",
+          "texto": "V.",
+          "correta": false,
+          "ordem": 5
+        }
+      ]
+    },
+    {
+      "codigo": "ENEM-2024-MAT-CD7-137",
+      "ano": 2024,
+      "caderno": "7 - Azul",
+      "numero_questao": 137,
+      "enunciado": "Ao calcular a média de suas notas em 4 provas, um estudante dividiu, por engano, a soma das notas por 5. Com isso, a média obtida foi 1 unidade menor do que deveria ser, caso fosse calculada corretamente. O valor correto da média das notas desse estudante é",
+      "explicacao": "",
+      "dificuldade": "medium",
+      "tipo_fonte": "enem",
+      "fonte_nome": "ENEM",
+      "fonte_ano": 2024,
+      "fonte_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2024",
+      "gabarito_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2024",
+      "status": "draft",
+      "conteudo_principal": "estatistica",
+      "conteudos": [
+        "estatistica",
+        "matematica-basica"
+      ],
+      "gabarito": "B",
+      "requer_imagem": false,
+      "observacao_revisao": "Questão selecionada do Caderno 7 Azul do ENEM 2024 por não depender de recurso visual externo. Manter em rascunho para revisão de fórmulas antes da publicação.",
+      "alternativas": [
+        {
+          "chave": "A",
+          "texto": "4.",
+          "correta": false,
+          "ordem": 1
+        },
+        {
+          "chave": "B",
+          "texto": "5.",
+          "correta": true,
+          "ordem": 2
+        },
+        {
+          "chave": "C",
+          "texto": "6.",
+          "correta": false,
+          "ordem": 3
+        },
+        {
+          "chave": "D",
+          "texto": "19.",
+          "correta": false,
+          "ordem": 4
+        },
+        {
+          "chave": "E",
+          "texto": "21.",
+          "correta": false,
+          "ordem": 5
+        }
+      ]
+    },
+    {
+      "codigo": "ENEM-2024-MAT-CD7-139",
+      "ano": 2024,
+      "caderno": "7 - Azul",
+      "numero_questao": 139,
+      "enunciado": "Um artesão utiliza dois tipos de componentes, X e Y, nos enfeites que produz. Ele sempre compra todos os componentes em uma mesma loja. O quadro apresenta os preços dos dois tipos de componentes nas lojas I e II. Lojas Preços dos componentes (R$) X Y I 3,00 1,00 II 2,00 4,00 Ele confeccionará enfeites formados por duas unidades do componente X e uma unidade do componente Y e efetuará a compra na loja que oferecer o menor valor total para a confecção de um enfeite. O artesão efetuará a compra na loja",
+      "explicacao": "",
+      "dificuldade": "medium",
+      "tipo_fonte": "enem",
+      "fonte_nome": "ENEM",
+      "fonte_ano": 2024,
+      "fonte_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2024",
+      "gabarito_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2024",
+      "status": "draft",
+      "conteudo_principal": "matematica-comercial-e-financeira",
+      "conteudos": [
+        "matematica-comercial-e-financeira",
+        "matematica-basica"
+      ],
+      "gabarito": "A",
+      "requer_imagem": false,
+      "observacao_revisao": "Questão selecionada do Caderno 7 Azul do ENEM 2024 por não depender de recurso visual externo. Manter em rascunho para revisão de fórmulas antes da publicação.",
+      "alternativas": [
+        {
+          "chave": "A",
+          "texto": "I, pois o valor é R$ 7,00.",
+          "correta": true,
+          "ordem": 1
+        },
+        {
+          "chave": "B",
+          "texto": "I, pois o valor é R$ 4,00.",
+          "correta": false,
+          "ordem": 2
+        },
+        {
+          "chave": "C",
+          "texto": "II, pois o valor é R$ 6,00.",
+          "correta": false,
+          "ordem": 3
+        },
+        {
+          "chave": "D",
+          "texto": "I, pois anuncia o componente com o menor preço.",
+          "correta": false,
+          "ordem": 4
+        },
+        {
+          "chave": "E",
+          "texto": "II, pois o componente X, que é o mais utilizado, tem menor preço.",
+          "correta": false,
+          "ordem": 5
+        }
+      ]
+    },
+    {
+      "codigo": "ENEM-2024-MAT-CD7-140",
+      "ano": 2024,
+      "caderno": "7 - Azul",
+      "numero_questao": 140,
+      "enunciado": "João e Felipe participaram, na escola, de uma maratona de matemática na qual, durante uma semana, resolveram 200 questões cada. Nessa maratona, a porcentagem P de acertos de cada participante é convertida em um conceito: • insatisfatório: se 0 ≤ P < 50; • regular: se 50 ≤ P < 60; • bom: se 60 ≤ P < 75; • muito bom: se 75 ≤ P < 90; • excelente: se 90 ≤ P ≤ 100. João acertou 75% das questões da maratona e Felipe acertou 30% a menos que a quantidade de questões que João acertou. Os conceitos de João e Felipe foram, respectivamente,",
+      "explicacao": "",
+      "dificuldade": "medium",
+      "tipo_fonte": "enem",
+      "fonte_nome": "ENEM",
+      "fonte_ano": 2024,
+      "fonte_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2024",
+      "gabarito_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2024",
+      "status": "draft",
+      "conteudo_principal": "matematica-basica",
+      "conteudos": [
+        "matematica-basica"
+      ],
+      "gabarito": "B",
+      "requer_imagem": false,
+      "observacao_revisao": "Questão selecionada do Caderno 7 Azul do ENEM 2024 por não depender de recurso visual externo. Manter em rascunho para revisão de fórmulas antes da publicação.",
+      "alternativas": [
+        {
+          "chave": "A",
+          "texto": "muito bom e bom.",
+          "correta": false,
+          "ordem": 1
+        },
+        {
+          "chave": "B",
+          "texto": "muito bom e regular.",
+          "correta": true,
+          "ordem": 2
+        },
+        {
+          "chave": "C",
+          "texto": "muito bom e insatisfatório.",
+          "correta": false,
+          "ordem": 3
+        },
+        {
+          "chave": "D",
+          "texto": "bom e regular.",
+          "correta": false,
+          "ordem": 4
+        },
+        {
+          "chave": "E",
+          "texto": "bom e insatisfatório.",
+          "correta": false,
+          "ordem": 5
+        }
+      ]
+    },
+    {
+      "codigo": "ENEM-2024-MAT-CD7-143",
+      "ano": 2024,
+      "caderno": "7 - Azul",
+      "numero_questao": 143,
+      "enunciado": "Uma casa de shows terá um evento cujo custo total de produção é de R$ 34 350,00, sendo que comporta 500 pessoas. O preço do ingresso será de R$ 130,00 e, normalmente, 60% das pessoas adquirem meia-entrada, pagando R$ 65,00 pelo ingresso. Além do faturamento proveniente da venda de ingressos, a casa de shows vende, com 60% de lucro, bebidas e petiscos ao público no dia do evento. Após ter vendido todos os 500 ingressos, constatou-se que a quantidade de meias-entradas vendidas superou em 50% o que estava previsto, impactando o faturamento estimado com a venda de ingressos. No dia do evento, decidiu-se manter o percentual de 60% de lucro sobre as bebidas e petiscos, pois todo o público que comprou ingresso compareceu ao show. Com isso, espera-se ter lucro de R$ 17 000,00 nesse evento. Para que se alcance o lucro esperado, o gasto médio por pessoa com bebidas e petiscos, em real, deverá ser de",
+      "explicacao": "",
+      "dificuldade": "medium",
+      "tipo_fonte": "enem",
+      "fonte_nome": "ENEM",
+      "fonte_ano": 2024,
+      "fonte_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2024",
+      "gabarito_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2024",
+      "status": "draft",
+      "conteudo_principal": "matematica-comercial-e-financeira",
+      "conteudos": [
+        "matematica-comercial-e-financeira",
+        "matematica-basica"
+      ],
+      "gabarito": "D",
+      "requer_imagem": false,
+      "observacao_revisao": "Questão selecionada do Caderno 7 Azul do ENEM 2024 por não depender de recurso visual externo. Manter em rascunho para revisão de fórmulas antes da publicação.",
+      "alternativas": [
+        {
+          "chave": "A",
+          "texto": "19,50.",
+          "correta": false,
+          "ordem": 1
+        },
+        {
+          "chave": "B",
+          "texto": "28,80.",
+          "correta": false,
+          "ordem": 2
+        },
+        {
+          "chave": "C",
+          "texto": "34,00.",
+          "correta": false,
+          "ordem": 3
+        },
+        {
+          "chave": "D",
+          "texto": "52,00.",
+          "correta": true,
+          "ordem": 4
+        },
+        {
+          "chave": "E",
+          "texto": "68,70.",
+          "correta": false,
+          "ordem": 5
+        }
+      ]
+    },
+    {
+      "codigo": "ENEM-2024-MAT-CD7-145",
+      "ano": 2024,
+      "caderno": "7 - Azul",
+      "numero_questao": 145,
+      "enunciado": "O estádio do Maracanã passou por algumas modificações estruturais para a realização da Copa do Mundo de 2014, como, por exemplo, as dimensões do campo retangular. Para se adaptar aos padrões da Fifa, as dimensões do campo foram reduzidas de 110 m × 75 m para 105 m × 68 m. Disponível em: http://virgula.uol.com.br. Acesso em: 14 ago. 2013 (adaptado). Em quantos metros quadrados a área do campo do Maracanã foi reduzida?",
+      "explicacao": "",
+      "dificuldade": "medium",
+      "tipo_fonte": "enem",
+      "fonte_nome": "ENEM",
+      "fonte_ano": 2024,
+      "fonte_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2024",
+      "gabarito_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2024",
+      "status": "draft",
+      "conteudo_principal": "geometria-plana",
+      "conteudos": [
+        "geometria-plana",
+        "matematica-basica"
+      ],
+      "gabarito": "D",
+      "requer_imagem": false,
+      "observacao_revisao": "Questão selecionada do Caderno 7 Azul do ENEM 2024 por não depender de recurso visual externo. Manter em rascunho para revisão de fórmulas antes da publicação.",
+      "alternativas": [
+        {
+          "chave": "A",
+          "texto": "24",
+          "correta": false,
+          "ordem": 1
+        },
+        {
+          "chave": "B",
+          "texto": "35",
+          "correta": false,
+          "ordem": 2
+        },
+        {
+          "chave": "C",
+          "texto": "555",
+          "correta": false,
+          "ordem": 3
+        },
+        {
+          "chave": "D",
+          "texto": "1 110",
+          "correta": true,
+          "ordem": 4
+        },
+        {
+          "chave": "E",
+          "texto": "1 145",
+          "correta": false,
+          "ordem": 5
+        }
+      ]
+    },
+    {
+      "codigo": "ENEM-2024-MAT-CD7-146",
+      "ano": 2024,
+      "caderno": "7 - Azul",
+      "numero_questao": 146,
+      "enunciado": "Um fazendeiro pretende construir um galinheiro ocupando uma região plana de formato retangular, com lados de comprimentos L metro e C metro. Os lados serão cercados por telas de tipos diferentes. Nos lados de comprimento L metro, será utilizada uma tela cujo metro linear custa R$ 20,00, enquanto, nos outros dois lados, uma que custa R$ 15,00. O fazendeiro quer gastar, no máximo, R$ 6 000,00 na compra de toda a tela necessária para o galinheiro, e deseja que o galinheiro tenha a maior área possível. Qual será a medida, em metro, do maior lado do galinheiro?",
+      "explicacao": "",
+      "dificuldade": "medium",
+      "tipo_fonte": "enem",
+      "fonte_nome": "ENEM",
+      "fonte_ano": 2024,
+      "fonte_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2024",
+      "gabarito_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2024",
+      "status": "draft",
+      "conteudo_principal": "geometria-plana",
+      "conteudos": [
+        "geometria-plana",
+        "matematica-basica"
+      ],
+      "gabarito": "B",
+      "requer_imagem": false,
+      "observacao_revisao": "Questão selecionada do Caderno 7 Azul do ENEM 2024 por não depender de recurso visual externo. Manter em rascunho para revisão de fórmulas antes da publicação.",
+      "alternativas": [
+        {
+          "chave": "A",
+          "texto": "85",
+          "correta": false,
+          "ordem": 1
+        },
+        {
+          "chave": "B",
+          "texto": "100",
+          "correta": true,
+          "ordem": 2
+        },
+        {
+          "chave": "C",
+          "texto": "175",
+          "correta": false,
+          "ordem": 3
+        },
+        {
+          "chave": "D",
+          "texto": "200",
+          "correta": false,
+          "ordem": 4
+        },
+        {
+          "chave": "E",
+          "texto": "350",
+          "correta": false,
+          "ordem": 5
+        }
+      ]
+    },
+    {
+      "codigo": "ENEM-2024-MAT-CD7-149",
+      "ano": 2024,
+      "caderno": "7 - Azul",
+      "numero_questao": 149,
+      "enunciado": "Em uma empresa é comercializado um produto em embalagens em formato de cilindro circular reto, com raio medindo 3 cm, e altura medindo 15 cm. Essa empresa planeja comercializar o mesmo produto em embalagens em formato de cubo, com capacidade igual a 80% da capacidade da embalagem cilíndrica utilizada atualmente. Use 3 como valor aproximado para π. A medida da aresta da nova embalagem, em centímetro, deve ser",
+      "explicacao": "",
+      "dificuldade": "medium",
+      "tipo_fonte": "enem",
+      "fonte_nome": "ENEM",
+      "fonte_ano": 2024,
+      "fonte_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2024",
+      "gabarito_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2024",
+      "status": "draft",
+      "conteudo_principal": "geometria-espacial",
+      "conteudos": [
+        "geometria-espacial",
+        "matematica-basica"
+      ],
+      "gabarito": "E",
+      "requer_imagem": false,
+      "observacao_revisao": "Questão selecionada do Caderno 7 Azul do ENEM 2024 por não depender de recurso visual externo. Manter em rascunho para revisão de fórmulas antes da publicação.",
+      "alternativas": [
+        {
+          "chave": "A",
+          "texto": "6",
+          "correta": false,
+          "ordem": 1
+        },
+        {
+          "chave": "B",
+          "texto": "18",
+          "correta": false,
+          "ordem": 2
+        },
+        {
+          "chave": "C",
+          "texto": "6 6",
+          "correta": false,
+          "ordem": 3
+        },
+        {
+          "chave": "D",
+          "texto": "6 6 3",
+          "correta": false,
+          "ordem": 4
+        },
+        {
+          "chave": "E",
+          "texto": "3 12 3",
+          "correta": true,
+          "ordem": 5
+        }
+      ]
+    },
+    {
+      "codigo": "ENEM-2024-MAT-CD7-151",
+      "ano": 2024,
+      "caderno": "7 - Azul",
+      "numero_questao": 151,
+      "enunciado": "O arquiteto Renzo Piano exibiu a maquete da nova sede do Museu Whitney de Arte Americana, um prédio assimétrico que tem um vão aberto para a galeria principal, cuja medida da área é 1 672 m2. Considere que a escala da maquete exibida é 1 : 200. Época, n. 682, jun. 2011 (adaptado). A medida da área do vão aberto nessa maquete, em centímetro quadrado, é",
+      "explicacao": "",
+      "dificuldade": "medium",
+      "tipo_fonte": "enem",
+      "fonte_nome": "ENEM",
+      "fonte_ano": 2024,
+      "fonte_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2024",
+      "gabarito_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2024",
+      "status": "draft",
+      "conteudo_principal": "matematica-basica",
+      "conteudos": [
+        "matematica-basica"
+      ],
+      "gabarito": "E",
+      "requer_imagem": false,
+      "observacao_revisao": "Questão selecionada do Caderno 7 Azul do ENEM 2024 por não depender de recurso visual externo. Manter em rascunho para revisão de fórmulas antes da publicação.",
+      "alternativas": [
+        {
+          "chave": "A",
+          "texto": "4,18.",
+          "correta": false,
+          "ordem": 1
+        },
+        {
+          "chave": "B",
+          "texto": "8,36.",
+          "correta": false,
+          "ordem": 2
+        },
+        {
+          "chave": "C",
+          "texto": "41,80.",
+          "correta": false,
+          "ordem": 3
+        },
+        {
+          "chave": "D",
+          "texto": "83,60.",
+          "correta": false,
+          "ordem": 4
+        },
+        {
+          "chave": "E",
+          "texto": "418,00.",
+          "correta": true,
+          "ordem": 5
+        }
+      ]
+    },
+    {
+      "codigo": "ENEM-2024-MAT-CD7-153",
+      "ano": 2024,
+      "caderno": "7 - Azul",
+      "numero_questao": 153,
+      "enunciado": "Um instituto de pesquisa constatou que, nos últimos dez anos, o crescimento populacional de uma cidade foi de 135,25%. Qual é a representação decimal da taxa percentual desse crescimento populacional?",
+      "explicacao": "",
+      "dificuldade": "medium",
+      "tipo_fonte": "enem",
+      "fonte_nome": "ENEM",
+      "fonte_ano": 2024,
+      "fonte_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2024",
+      "gabarito_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2024",
+      "status": "draft",
+      "conteudo_principal": "matematica-basica",
+      "conteudos": [
+        "matematica-basica"
+      ],
+      "gabarito": "D",
+      "requer_imagem": false,
+      "observacao_revisao": "Questão selecionada do Caderno 7 Azul do ENEM 2024 por não depender de recurso visual externo. Manter em rascunho para revisão de fórmulas antes da publicação.",
+      "alternativas": [
+        {
+          "chave": "A",
+          "texto": "13 525,0",
+          "correta": false,
+          "ordem": 1
+        },
+        {
+          "chave": "B",
+          "texto": "135,25",
+          "correta": false,
+          "ordem": 2
+        },
+        {
+          "chave": "C",
+          "texto": "13,525",
+          "correta": false,
+          "ordem": 3
+        },
+        {
+          "chave": "D",
+          "texto": "1,3525",
+          "correta": true,
+          "ordem": 4
+        },
+        {
+          "chave": "E",
+          "texto": "0,13525",
+          "correta": false,
+          "ordem": 5
+        }
+      ]
+    },
+    {
+      "codigo": "ENEM-2024-MAT-CD7-154",
+      "ano": 2024,
+      "caderno": "7 - Azul",
+      "numero_questao": 154,
+      "enunciado": "Contratos de vários serviços disponíveis na internet apresentam uma quantidade excessiva de informações. Isso faz com que o tempo necessário para a leitura desses contratos possa ser longo. O quadro apresenta uma amostra do tempo considerado necessário para a leitura completa do contrato de alguns serviços digitais. Tipo de serviço Tempo necessário para a leitura completa do contrato (em minuto) A 36 B 17 C 27 D 13 E 13 F 13 ROMERO, L. Não li e concordo. Superinteressante, n. 307, ago. 2012 (adaptado). O tempo médio, em minuto, necessário para a leitura completa de um contrato de serviço dentre os listados no quadro é, com uma casa decimal, aproximadamente,",
+      "explicacao": "",
+      "dificuldade": "medium",
+      "tipo_fonte": "enem",
+      "fonte_nome": "ENEM",
+      "fonte_ano": 2024,
+      "fonte_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2024",
+      "gabarito_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2024",
+      "status": "draft",
+      "conteudo_principal": "matematica-basica",
+      "conteudos": [
+        "matematica-basica"
+      ],
+      "gabarito": "C",
+      "requer_imagem": false,
+      "observacao_revisao": "Questão selecionada do Caderno 7 Azul do ENEM 2024 por não depender de recurso visual externo. Manter em rascunho para revisão de fórmulas antes da publicação.",
+      "alternativas": [
+        {
+          "chave": "A",
+          "texto": "13,0.",
+          "correta": false,
+          "ordem": 1
+        },
+        {
+          "chave": "B",
+          "texto": "15,0.",
+          "correta": false,
+          "ordem": 2
+        },
+        {
+          "chave": "C",
+          "texto": "19,8.",
+          "correta": true,
+          "ordem": 3
+        },
+        {
+          "chave": "D",
+          "texto": "20,0.",
+          "correta": false,
+          "ordem": 4
+        },
+        {
+          "chave": "E",
+          "texto": "23,3.",
+          "correta": false,
+          "ordem": 5
+        }
+      ]
+    },
+    {
+      "codigo": "ENEM-2024-MAT-CD7-156",
+      "ano": 2024,
+      "caderno": "7 - Azul",
+      "numero_questao": 156,
+      "enunciado": "O uso de aplicativos de transporte tem sido uma alternativa à população que busca preços mais competitivos para se locomover, principalmente nas grandes cidades. As formas usadas para determinar o valor cobrado por cada viagem variam de um aplicativo para outro, mas, em geral, o valor V a ser pago, em real, varia em função de: • tarifa base F: valor fixo, em real, cobrado no início da viagem; • tempo T: tempo, em minuto, de duração da viagem; • distância D: distância percorrida, em quilômetro. Um desses aplicativos cobra R$ 2,00 de valor fixo, acrescido de R$ 0,26 por minuto de viagem e de R$ 1,40 por quilômetro rodado. Nessas condições, a expressão que fornece o valor V a ser pago por uma viagem desse aplicativo é",
+      "explicacao": "",
+      "dificuldade": "medium",
+      "tipo_fonte": "enem",
+      "fonte_nome": "ENEM",
+      "fonte_ano": 2024,
+      "fonte_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2024",
+      "gabarito_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2024",
+      "status": "draft",
+      "conteudo_principal": "funcao-afim",
+      "conteudos": [
+        "funcao-afim",
+        "introducao-as-funcoes"
+      ],
+      "gabarito": "B",
+      "requer_imagem": false,
+      "observacao_revisao": "Questão selecionada do Caderno 7 Azul do ENEM 2024 por não depender de recurso visual externo. Manter em rascunho para revisão de fórmulas antes da publicação.",
+      "alternativas": [
+        {
+          "chave": "A",
+          "texto": "2,00F + 0,26T + 1,40D",
+          "correta": false,
+          "ordem": 1
+        },
+        {
+          "chave": "B",
+          "texto": "2,00 + 0,26T + 1,40D",
+          "correta": true,
+          "ordem": 2
+        },
+        {
+          "chave": "C",
+          "texto": "2,00 + 0,26T + D",
+          "correta": false,
+          "ordem": 3
+        },
+        {
+          "chave": "D",
+          "texto": "0,26T + 1,40D",
+          "correta": false,
+          "ordem": 4
+        },
+        {
+          "chave": "E",
+          "texto": "F + T + D",
+          "correta": false,
+          "ordem": 5
+        }
+      ]
+    },
+    {
+      "codigo": "ENEM-2024-MAT-CD7-157",
+      "ano": 2024,
+      "caderno": "7 - Azul",
+      "numero_questao": 157,
+      "enunciado": "Uma doceira vende e entrega, em seu bairro, porções de 100 g de docinhos de aniversário. Atualmente, a taxa única de entrega é R$ 10,00, e o valor cobrado por uma porção é R$ 25,00. Por uma estratégia de vendas, a partir da próxima semana, a taxa única de entrega será R$ 15,00, e um novo valor será cobrado por uma porção, de maneira que o valor total a ser pago por um cliente na compra de 5 porções permaneça o mesmo. A partir da próxima semana, qual será o novo valor cobrado, em real, por uma porção?",
+      "explicacao": "",
+      "dificuldade": "medium",
+      "tipo_fonte": "enem",
+      "fonte_nome": "ENEM",
+      "fonte_ano": 2024,
+      "fonte_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2024",
+      "gabarito_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2024",
+      "status": "draft",
+      "conteudo_principal": "matematica-comercial-e-financeira",
+      "conteudos": [
+        "matematica-comercial-e-financeira",
+        "matematica-basica"
+      ],
+      "gabarito": "C",
+      "requer_imagem": false,
+      "observacao_revisao": "Questão selecionada do Caderno 7 Azul do ENEM 2024 por não depender de recurso visual externo. Manter em rascunho para revisão de fórmulas antes da publicação.",
+      "alternativas": [
+        {
+          "chave": "A",
+          "texto": "12,50",
+          "correta": false,
+          "ordem": 1
+        },
+        {
+          "chave": "B",
+          "texto": "20,00",
+          "correta": false,
+          "ordem": 2
+        },
+        {
+          "chave": "C",
+          "texto": "24,00",
+          "correta": true,
+          "ordem": 3
+        },
+        {
+          "chave": "D",
+          "texto": "30,00",
+          "correta": false,
+          "ordem": 4
+        },
+        {
+          "chave": "E",
+          "texto": "37,50",
+          "correta": false,
+          "ordem": 5
+        }
+      ]
+    },
+    {
+      "codigo": "ENEM-2024-MAT-CD7-159",
+      "ano": 2024,
+      "caderno": "7 - Azul",
+      "numero_questao": 159,
+      "enunciado": "Uma tubulação despeja sempre o mesmo volume de água por unidade de tempo em uma caixa-d’água, o que significa dizer que a vazão de água nessa tubulação é constante. Na junção dessa tubulação com a caixa-d’água, está instalada uma membrana de filtragem cujo objetivo é filtrar eventuais impurezas presentes na água, combinado a um bom fluxo de água. O fluxo (φ) de água através da superfície da membrana é diretamente proporcional à vazão de água na tubulação, medida em mililitro por segundo, e inversamente proporcional à área da superfície da membrana, medida em centímetro quadrado. A unidade de medida adequada para descrever o fluxo (φ) de água que atravessa a superfície da membrana é",
+      "explicacao": "",
+      "dificuldade": "medium",
+      "tipo_fonte": "enem",
+      "fonte_nome": "ENEM",
+      "fonte_ano": 2024,
+      "fonte_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2024",
+      "gabarito_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2024",
+      "status": "draft",
+      "conteudo_principal": "analise-combinatoria",
+      "conteudos": [
+        "analise-combinatoria"
+      ],
+      "gabarito": "C",
+      "requer_imagem": false,
+      "observacao_revisao": "Questão selecionada do Caderno 7 Azul do ENEM 2024 por não depender de recurso visual externo. Manter em rascunho para revisão de fórmulas antes da publicação.",
+      "alternativas": [
+        {
+          "chave": "A",
+          "texto": "mL · s · cm²",
+          "correta": false,
+          "ordem": 1
+        },
+        {
+          "chave": "B",
+          "texto": "(mL/s) · cm²",
+          "correta": false,
+          "ordem": 2
+        },
+        {
+          "chave": "C",
+          "texto": "mL/(cm² · s)",
+          "correta": true,
+          "ordem": 3
+        },
+        {
+          "chave": "D",
+          "texto": "(cm² · s)/mL",
+          "correta": false,
+          "ordem": 4
+        },
+        {
+          "chave": "E",
+          "texto": "cm²/(mL · s)",
+          "correta": false,
+          "ordem": 5
+        }
+      ]
+    },
+    {
+      "codigo": "ENEM-2024-MAT-CD7-160",
+      "ano": 2024,
+      "caderno": "7 - Azul",
+      "numero_questao": 160,
+      "enunciado": "Uma piscina tem capacidade de 2 500 000 litros. Seu sistema de abastecimento foi regulado para ter uma vazão constante de 6 000 litros de água por minuto. O mesmo sistema foi instalado em uma segunda piscina, com capacidade de 2 750 000 litros, e regulado para ter uma vazão, também constante, capaz de enchê-la em um tempo 20% maior que o gasto para encher a primeira piscina. A vazão do sistema de abastecimento da segunda piscina, em litro por minuto, é",
+      "explicacao": "",
+      "dificuldade": "medium",
+      "tipo_fonte": "enem",
+      "fonte_nome": "ENEM",
+      "fonte_ano": 2024,
+      "fonte_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2024",
+      "gabarito_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2024",
+      "status": "draft",
+      "conteudo_principal": "matematica-basica",
+      "conteudos": [
+        "matematica-basica"
+      ],
+      "gabarito": "D",
+      "requer_imagem": false,
+      "observacao_revisao": "Questão selecionada do Caderno 7 Azul do ENEM 2024 por não depender de recurso visual externo. Manter em rascunho para revisão de fórmulas antes da publicação.",
+      "alternativas": [
+        {
+          "chave": "A",
+          "texto": "8 250.",
+          "correta": false,
+          "ordem": 1
+        },
+        {
+          "chave": "B",
+          "texto": "7 920.",
+          "correta": false,
+          "ordem": 2
+        },
+        {
+          "chave": "C",
+          "texto": "6 545.",
+          "correta": false,
+          "ordem": 3
+        },
+        {
+          "chave": "D",
+          "texto": "5 500.",
+          "correta": true,
+          "ordem": 4
+        },
+        {
+          "chave": "E",
+          "texto": "5 280.",
+          "correta": false,
+          "ordem": 5
+        }
+      ]
+    },
+    {
+      "codigo": "ENEM-2024-MAT-CD7-162",
+      "ano": 2024,
+      "caderno": "7 - Azul",
+      "numero_questao": 162,
+      "enunciado": "Uma imobiliária iniciou uma campanha de divulgação para promover a venda de apartamentos que podem ser pagos em 100 parcelas mensais. O valor da primeira delas é fixado no momento da compra, com o pagamento dessa primeira parcela. A partir da segunda parcela, o valor é determinado pela aplicação de um acréscimo percentual fixo ao valor da parcela anterior. Como atrativo, a imobiliária fará o pagamento de todas as parcelas correspondentes ao mês de aniversário do comprador. Um cliente, que faz aniversário no mês de maio, decidiu comprar um desses apartamentos por meio do financiamento oferecido pela imobiliária, e pretende escolher o mês mais adequado para realizar essa compra, de modo que o valor total dos pagamentos seja o menor possível. Qual é o mês que esse cliente deverá escolher para realizar a compra do apartamento?",
+      "explicacao": "",
+      "dificuldade": "medium",
+      "tipo_fonte": "enem",
+      "fonte_nome": "ENEM",
+      "fonte_ano": 2024,
+      "fonte_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2024",
+      "gabarito_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2024",
+      "status": "draft",
+      "conteudo_principal": "funcao-afim",
+      "conteudos": [
+        "funcao-afim",
+        "introducao-as-funcoes"
+      ],
+      "gabarito": "A",
+      "requer_imagem": false,
+      "observacao_revisao": "Questão selecionada do Caderno 7 Azul do ENEM 2024 por não depender de recurso visual externo. Manter em rascunho para revisão de fórmulas antes da publicação.",
+      "alternativas": [
+        {
+          "chave": "A",
+          "texto": "Fevereiro.",
+          "correta": true,
+          "ordem": 1
+        },
+        {
+          "chave": "B",
+          "texto": "Abril.",
+          "correta": false,
+          "ordem": 2
+        },
+        {
+          "chave": "C",
+          "texto": "Maio.",
+          "correta": false,
+          "ordem": 3
+        },
+        {
+          "chave": "D",
+          "texto": "Junho.",
+          "correta": false,
+          "ordem": 4
+        },
+        {
+          "chave": "E",
+          "texto": "Agosto.",
+          "correta": false,
+          "ordem": 5
+        }
+      ]
+    },
+    {
+      "codigo": "ENEM-2024-MAT-CD7-165",
+      "ano": 2024,
+      "caderno": "7 - Azul",
+      "numero_questao": 165,
+      "enunciado": "Para melhorar o fluxo de ônibus em uma avenida que tem dois semáforos, a prefeitura reduzirá o tempo em que cada sinal ficará vermelho, que atualmente é de 15 segundos a cada 60 segundos. Admita que o instante de chegada de um ônibus a cada semáforo é aleatório. O engenheiro de tráfego da prefeitura calculou a probabilidade de um ônibus encontrar cada um deles vermelho, obtendo 15 60 . A partir daí, estabeleceu uma mesma redução na quantidade do tempo, em segundo, em que cada sinal ficará vermelho, de maneira que a probabilidade de um ônibus encontrar ambos os sinais vermelhos numa mesma viagem seja igual a 4 100 , considerando os eventos independentes. Para isso, a redução do tempo em que o sinal ficará vermelho, em segundo, estabelecida pelo engenheiro foi de",
+      "explicacao": "",
+      "dificuldade": "medium",
+      "tipo_fonte": "enem",
+      "fonte_nome": "ENEM",
+      "fonte_ano": 2024,
+      "fonte_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2024",
+      "gabarito_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2024",
+      "status": "draft",
+      "conteudo_principal": "probabilidade",
+      "conteudos": [
+        "probabilidade"
+      ],
+      "gabarito": "B",
+      "requer_imagem": false,
+      "observacao_revisao": "Questão selecionada do Caderno 7 Azul do ENEM 2024 por não depender de recurso visual externo. Manter em rascunho para revisão de fórmulas antes da publicação.",
+      "alternativas": [
+        {
+          "chave": "A",
+          "texto": "1,35.",
+          "correta": false,
+          "ordem": 1
+        },
+        {
+          "chave": "B",
+          "texto": "3,00.",
+          "correta": true,
+          "ordem": 2
+        },
+        {
+          "chave": "C",
+          "texto": "9,00.",
+          "correta": false,
+          "ordem": 3
+        },
+        {
+          "chave": "D",
+          "texto": "12,60.",
+          "correta": false,
+          "ordem": 4
+        },
+        {
+          "chave": "E",
+          "texto": "13,80.",
+          "correta": false,
+          "ordem": 5
+        }
+      ]
+    },
+    {
+      "codigo": "ENEM-2024-MAT-CD7-166",
+      "ano": 2024,
+      "caderno": "7 - Azul",
+      "numero_questao": 166,
+      "enunciado": "A densidade demográfica de uma região é definida como sendo a razão entre o número de habitantes dessa região e sua área, expressa na unidade habitantes por quilômetro quadrado. Uma região R é subdividida em várias outras, sendo uma delas a região Q. A área de Q é igual a três quartos da área de R, e o número de habitantes de Q é igual à metade do número de habitantes de R. As densidades demográficas correspondentes a essas regiões são denotadas por d(Q) e d(R). A expressão que relaciona d(Q) e d(R) é",
+      "explicacao": "",
+      "dificuldade": "medium",
+      "tipo_fonte": "enem",
+      "fonte_nome": "ENEM",
+      "fonte_ano": 2024,
+      "fonte_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2024",
+      "gabarito_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2024",
+      "status": "draft",
+      "conteudo_principal": "matematica-basica",
+      "conteudos": [
+        "matematica-basica"
+      ],
+      "gabarito": "E",
+      "requer_imagem": false,
+      "observacao_revisao": "Questão selecionada do Caderno 7 Azul do ENEM 2024 por não depender de recurso visual externo. Manter em rascunho para revisão de fórmulas antes da publicação.",
+      "alternativas": [
+        {
+          "chave": "A",
+          "texto": "d(Q) = (1/4) · d(R)",
+          "correta": false,
+          "ordem": 1
+        },
+        {
+          "chave": "B",
+          "texto": "d(Q) = (1/2) · d(R)",
+          "correta": false,
+          "ordem": 2
+        },
+        {
+          "chave": "C",
+          "texto": "d(Q) = (3/4) · d(R)",
+          "correta": false,
+          "ordem": 3
+        },
+        {
+          "chave": "D",
+          "texto": "d(Q) = (3/2) · d(R)",
+          "correta": false,
+          "ordem": 4
+        },
+        {
+          "chave": "E",
+          "texto": "d(Q) = (2/3) · d(R)",
+          "correta": true,
+          "ordem": 5
+        }
+      ]
+    },
+    {
+      "codigo": "ENEM-2024-MAT-CD7-169",
+      "ano": 2024,
+      "caderno": "7 - Azul",
+      "numero_questao": 169,
+      "enunciado": "A criptografia refere-se à construção e análise de protocolos que impedem terceiros de lerem mensagens privadas. Júlio César, imperador romano, utilizava um código para proteger as mensagens enviadas a seus generais. Assim, se a mensagem caísse em mãos inimigas, a informação não poderia ser compreendida. Nesse código, cada letra do alfabeto era substituída pela letra três posições à frente, ou seja, o “A” era substituído pelo “D”, o “B” pelo “E”, o “C” pelo “F”, e assim sucessivamente. Qualquer código que tenha um padrão de substituição de letras como o descrito é considerado uma Cifra de César ou um Código de César. Note que, para decifrar uma Cifra de César, basta descobrir por qual letra o “A” foi substituído, pois isso define todas as demais substituições a serem feitas. Uma mensagem, em um alfabeto de 26 letras, foi codificada usando uma Cifra de César. Considere a probabilidade de se descobrir, aleatoriamente, o padrão utilizado nessa codificação, e que uma tentativa frustrada deverá ser eliminada nas tentativas seguintes. A probabilidade de se descobrir o padrão dessa Cifra de César apenas na terceira tentativa é dada por",
+      "explicacao": "",
+      "dificuldade": "medium",
+      "tipo_fonte": "enem",
+      "fonte_nome": "ENEM",
+      "fonte_ano": 2024,
+      "fonte_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2024",
+      "gabarito_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2024",
+      "status": "draft",
+      "conteudo_principal": "probabilidade",
+      "conteudos": [
+        "probabilidade"
+      ],
+      "gabarito": "E",
+      "requer_imagem": false,
+      "observacao_revisao": "Questão selecionada do Caderno 7 Azul do ENEM 2024 por não depender de recurso visual externo. Manter em rascunho para revisão de fórmulas antes da publicação.",
+      "alternativas": [
+        {
+          "chave": "A",
+          "texto": "1/25 + 1/25 + 1/25",
+          "correta": false,
+          "ordem": 1
+        },
+        {
+          "chave": "B",
+          "texto": "24/25 + 23/24 + 1/23",
+          "correta": false,
+          "ordem": 2
+        },
+        {
+          "chave": "C",
+          "texto": "1/25 × 1/24 × 1/23",
+          "correta": false,
+          "ordem": 3
+        },
+        {
+          "chave": "D",
+          "texto": "24/25 × 23/25 × 1/25",
+          "correta": false,
+          "ordem": 4
+        },
+        {
+          "chave": "E",
+          "texto": "24/25 × 23/24 × 1/23",
+          "correta": true,
+          "ordem": 5
+        }
+      ]
+    },
+    {
+      "codigo": "ENEM-2024-MAT-CD7-170",
+      "ano": 2024,
+      "caderno": "7 - Azul",
+      "numero_questao": 170,
+      "enunciado": "Em uma região com grande incidência de terremotos, observou-se que dois terremotos ocorridos apresentaram magnitudes M1 e M2, medidas segundo a escala Richter, e liberaram energias iguais a E1 e E2, respectivamente. Entre os estudiosos do assunto, é conhecida a expressão M2 − M1 = (2/3) · log(E2/E1). Estudos mais abrangentes observaram que o primeiro terremoto apresentou magnitude M1 = 6,9 e a energia liberada foi um décimo da observada no segundo terremoto. O valor aproximado da magnitude M2 do segundo terremoto, expresso com uma casa decimal, é igual a",
+      "explicacao": "",
+      "dificuldade": "medium",
+      "tipo_fonte": "enem",
+      "fonte_nome": "ENEM",
+      "fonte_ano": 2024,
+      "fonte_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2024",
+      "gabarito_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2024",
+      "status": "draft",
+      "conteudo_principal": "logaritmos",
+      "conteudos": [
+        "logaritmos"
+      ],
+      "gabarito": "C",
+      "requer_imagem": false,
+      "observacao_revisao": "Questão selecionada do Caderno 7 Azul do ENEM 2024 por não depender de recurso visual externo. Manter em rascunho para revisão de fórmulas antes da publicação.",
+      "alternativas": [
+        {
+          "chave": "A",
+          "texto": "5,4.",
+          "correta": false,
+          "ordem": 1
+        },
+        {
+          "chave": "B",
+          "texto": "6,2.",
+          "correta": false,
+          "ordem": 2
+        },
+        {
+          "chave": "C",
+          "texto": "7,6.",
+          "correta": true,
+          "ordem": 3
+        },
+        {
+          "chave": "D",
+          "texto": "8,2.",
+          "correta": false,
+          "ordem": 4
+        },
+        {
+          "chave": "E",
+          "texto": "8,4.",
+          "correta": false,
+          "ordem": 5
+        }
+      ]
+    },
+    {
+      "codigo": "ENEM-2024-MAT-CD7-171",
+      "ano": 2024,
+      "caderno": "7 - Azul",
+      "numero_questao": 171,
+      "enunciado": "Um jardineiro dispõe de k metros lineares de cerca baixa para fazer um jardim ornamental. O jardim, delimitado por essa cerca, deve ter a forma de um triângulo equilátero, um quadrado ou um hexágono regular. A escolha será pela forma que resulte na maior área. O jardineiro escolherá a forma de",
+      "explicacao": "",
+      "dificuldade": "medium",
+      "tipo_fonte": "enem",
+      "fonte_nome": "ENEM",
+      "fonte_ano": 2024,
+      "fonte_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2024",
+      "gabarito_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2024",
+      "status": "draft",
+      "conteudo_principal": "geometria-plana",
+      "conteudos": [
+        "geometria-plana",
+        "matematica-basica"
+      ],
+      "gabarito": "A",
+      "requer_imagem": false,
+      "observacao_revisao": "Questão selecionada do Caderno 7 Azul do ENEM 2024 por não depender de recurso visual externo. Manter em rascunho para revisão de fórmulas antes da publicação.",
+      "alternativas": [
+        {
+          "chave": "A",
+          "texto": "hexágono regular, pois a área do jardim, em metro quadrado, será k 2 3 24 .",
+          "correta": true,
+          "ordem": 1
+        },
+        {
+          "chave": "B",
+          "texto": "hexágono regular, pois a área do jardim, em metro quadrado, será 3 3 2 2 k .",
+          "correta": false,
+          "ordem": 2
+        },
+        {
+          "chave": "C",
+          "texto": "quadrado, pois a área do jardim, em metro quadrado, será k 2 16 .",
+          "correta": false,
+          "ordem": 3
+        },
+        {
+          "chave": "D",
+          "texto": "triângulo equilátero, pois a área do jardim, em metro quadrado, será k 2 3 36 .",
+          "correta": false,
+          "ordem": 4
+        },
+        {
+          "chave": "E",
+          "texto": "triângulo equilátero, pois a área do jardim, em metro quadrado, será k 2 3 4 .",
+          "correta": false,
+          "ordem": 5
+        }
+      ]
+    },
+    {
+      "codigo": "ENEM-2024-MAT-CD7-177",
+      "ano": 2024,
+      "caderno": "7 - Azul",
+      "numero_questao": 177,
+      "enunciado": "Uma empresa produz mochilas escolares sob encomenda. Essa empresa tem um custo total de produção, composto por um custo fixo, que não depende do número de mochilas, mais um custo variável, que é proporcional ao número de mochilas produzidas. O custo total cresce de forma linear, e a tabela apresenta esse custo para três quantidades de mochilas produzidas. Quantidade de mochilas 30 50 100 Custo total (R$) 1 050,00 1 650,00 3 150,00 O custo total, em real, para a produção de 80 mochilas será",
+      "explicacao": "",
+      "dificuldade": "medium",
+      "tipo_fonte": "enem",
+      "fonte_nome": "ENEM",
+      "fonte_ano": 2024,
+      "fonte_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2024",
+      "gabarito_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2024",
+      "status": "draft",
+      "conteudo_principal": "estatistica",
+      "conteudos": [
+        "estatistica",
+        "matematica-basica"
+      ],
+      "gabarito": "C",
+      "requer_imagem": false,
+      "observacao_revisao": "Questão selecionada do Caderno 7 Azul do ENEM 2024 por não depender de recurso visual externo. Manter em rascunho para revisão de fórmulas antes da publicação.",
+      "alternativas": [
+        {
+          "chave": "A",
+          "texto": "2 400,00.",
+          "correta": false,
+          "ordem": 1
+        },
+        {
+          "chave": "B",
+          "texto": "2 520,00.",
+          "correta": false,
+          "ordem": 2
+        },
+        {
+          "chave": "C",
+          "texto": "2 550,00.",
+          "correta": true,
+          "ordem": 3
+        },
+        {
+          "chave": "D",
+          "texto": "2 700,00.",
+          "correta": false,
+          "ordem": 4
+        },
+        {
+          "chave": "E",
+          "texto": "2 800,00.",
+          "correta": false,
+          "ordem": 5
+        }
+      ]
+    },
+    {
+      "codigo": "ENEM-2024-MAT-CD7-178",
+      "ano": 2024,
+      "caderno": "7 - Azul",
+      "numero_questao": 178,
+      "enunciado": "A umidade relativa do ar é um dos indicadores utilizados na meteorologia para fazer previsões sobre o clima. O quadro apresenta as médias mensais, em porcentagem, da umidade relativa do ar em um período de seis meses consecutivos em uma cidade. Meses Maio Jun. Jul. Ago. Set. Out. Média mensal da umidade relativa do ar (%) 66 64 54 46 60 64 Nessa cidade, a mediana desses dados, em porcentagem, da umidade relativa do ar no período considerado foi",
+      "explicacao": "",
+      "dificuldade": "medium",
+      "tipo_fonte": "enem",
+      "fonte_nome": "ENEM",
+      "fonte_ano": 2024,
+      "fonte_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2024",
+      "gabarito_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2024",
+      "status": "draft",
+      "conteudo_principal": "estatistica",
+      "conteudos": [
+        "estatistica",
+        "matematica-basica"
+      ],
+      "gabarito": "E",
+      "requer_imagem": false,
+      "observacao_revisao": "Questão selecionada do Caderno 7 Azul do ENEM 2024 por não depender de recurso visual externo. Manter em rascunho para revisão de fórmulas antes da publicação.",
+      "alternativas": [
+        {
+          "chave": "A",
+          "texto": "56.",
+          "correta": false,
+          "ordem": 1
+        },
+        {
+          "chave": "B",
+          "texto": "58.",
+          "correta": false,
+          "ordem": 2
+        },
+        {
+          "chave": "C",
+          "texto": "59.",
+          "correta": false,
+          "ordem": 3
+        },
+        {
+          "chave": "D",
+          "texto": "60.",
+          "correta": false,
+          "ordem": 4
+        },
+        {
+          "chave": "E",
+          "texto": "62.",
+          "correta": true,
+          "ordem": 5
+        }
+      ]
+    },
+    {
+      "codigo": "ENEM-2024-MAT-CD7-179",
+      "ano": 2024,
+      "caderno": "7 - Azul",
+      "numero_questao": 179,
+      "enunciado": "Uma empresa de engenharia foi contratada para realizar um serviço no valor de R$ 71 250,00. Os sócios da empresa decidiram que 40% desse valor seria destinado ao pagamento de três engenheiros que gerenciaram o serviço. O pagamento para cada um deles será feito de forma diretamente proporcional ao total de horas trabalhadas. O número de dias e o número de horas diárias trabalhadas pelos engenheiros foram, respectivamente: • engenheiro I: 4 dias, numa jornada de 5 horas e meia por dia; • engenheiro II: 5 dias, numa jornada de 4 horas por dia; • engenheiro III: 6 dias, numa jornada de 2 horas e meia por dia. Qual a maior diferença, em real, entre os valores recebidos por esse serviço entre dois desses engenheiros?",
+      "explicacao": "",
+      "dificuldade": "medium",
+      "tipo_fonte": "enem",
+      "fonte_nome": "ENEM",
+      "fonte_ano": 2024,
+      "fonte_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2024",
+      "gabarito_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2024",
+      "status": "draft",
+      "conteudo_principal": "matematica-comercial-e-financeira",
+      "conteudos": [
+        "matematica-comercial-e-financeira",
+        "matematica-basica"
+      ],
+      "gabarito": "C",
+      "requer_imagem": false,
+      "observacao_revisao": "Questão selecionada do Caderno 7 Azul do ENEM 2024 por não depender de recurso visual externo. Manter em rascunho para revisão de fórmulas antes da publicação.",
+      "alternativas": [
+        {
+          "chave": "A",
+          "texto": "1 000",
+          "correta": false,
+          "ordem": 1
+        },
+        {
+          "chave": "B",
+          "texto": "1 500",
+          "correta": false,
+          "ordem": 2
+        },
+        {
+          "chave": "C",
+          "texto": "3 500",
+          "correta": true,
+          "ordem": 3
+        },
+        {
+          "chave": "D",
+          "texto": "3 800",
+          "correta": false,
+          "ordem": 4
+        },
+        {
+          "chave": "E",
+          "texto": "5 250",
+          "correta": false,
+          "ordem": 5
+        }
+      ]
+    },
+    {
+      "codigo": "ENEM-2024-MAT-CD7-180",
+      "ano": 2024,
+      "caderno": "7 - Azul",
+      "numero_questao": 180,
+      "enunciado": "Um hospital tem 7 médicos cardiologistas e 6 médicos neurologistas em seu quadro de funcionários. Para executar determinada atividade, a direção desse hospital formará uma equipe com 5 médicos, sendo, pelo menos, 3 cardiologistas. A expressão numérica que representa o número máximo de maneiras distintas de formar essa equipe é",
+      "explicacao": "",
+      "dificuldade": "medium",
+      "tipo_fonte": "enem",
+      "fonte_nome": "ENEM",
+      "fonte_ano": 2024,
+      "fonte_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2024",
+      "gabarito_url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2024",
+      "status": "draft",
+      "conteudo_principal": "analise-combinatoria",
+      "conteudos": [
+        "analise-combinatoria"
+      ],
+      "gabarito": "E",
+      "requer_imagem": false,
+      "observacao_revisao": "Questão selecionada do Caderno 7 Azul do ENEM 2024 por não depender de recurso visual externo. Manter em rascunho para revisão de fórmulas antes da publicação.",
+      "alternativas": [
+        {
+          "chave": "A",
+          "texto": "(7!/4!) × (6!/4!)",
+          "correta": false,
+          "ordem": 1
+        },
+        {
+          "chave": "B",
+          "texto": "[7!/(3! × 4!)] × [6!/(2! × 4!)]",
+          "correta": false,
+          "ordem": 2
+        },
+        {
+          "chave": "C",
+          "texto": "7!/(3! × 4!) + 6!/(2! × 4!) + 5!/(1! × 4!)",
+          "correta": false,
+          "ordem": 3
+        },
+        {
+          "chave": "D",
+          "texto": "([7!/(3! × 4!)] + [6!/(2! × 4!)]) × ([7!/(4! × 3!)] + [6!/(1! × 5!)]) × ([7!/(5! × 2!)] + [6!/(0! × 6!)])",
+          "correta": false,
+          "ordem": 4
+        },
+        {
+          "chave": "E",
+          "texto": "[7!/(3! × 4!)] × [6!/(2! × 4!)] + [7!/(4! × 3!)] × [6!/(1! × 5!)] + [7!/(5! × 2!)] × [6!/(0! × 6!)]",
+          "correta": true,
+          "ordem": 5
+        }
+      ]
+    }
+  ]
+}

@@ -9,12 +9,13 @@
             <p>Banco de questões individuais.</p>
         </div>
         <div>
-            <a class="btn btn-outline-secondary" href="{% url 'questoes_admin:admin_respostas_lista' %}">Respostas</a>
-            <a class="btn btn-primary" href="{% url 'questoes_admin:admin_questao_criar' %}">Criar questão</a>
+            <a class="btn btn-outline-secondary" href="{% url 'questoes_admin:admin_respostas_lista' %}"><i class="bi bi-clock-history"></i> Respostas</a>
+            <a class="btn btn-primary" href="{% url 'questoes_admin:admin_questao_criar' %}"><i class="bi bi-plus-circle"></i> Criar questão</a>
         </div>
     </div>
 
-    <form method="get" class="row g-2 mb-3">
+    <form method="get" class="filters-box">
+        <div class="row g-2">
         <div class="col-md-2"><input class="form-control" type="search" name="q" value="{{ busca }}" placeholder="Buscar"></div>
         <div class="col-md-2">
             <select class="form-select" name="materia">
@@ -41,6 +42,7 @@
             </select>
         </div>
         <div class="col-md-1 d-grid"><button class="btn btn-outline-primary" type="submit">Filtrar</button></div>
+        </div>
     </form>
 
     <p class="text-muted small">{{ total_encontrado }} {% if total_encontrado == 1 %}questão encontrada{% else %}questões encontradas{% endif %}</p>
@@ -59,13 +61,13 @@
                         <td>{{ questao.get_status_display }}</td>
                         <td>{{ questao.atualizado_em|date:"d/m/Y H:i" }}</td>
                         <td class="actions">
-                            <a href="{% url 'questoes_admin:admin_questao_detalhe' questao.pk %}">ver</a>
-                            <a href="{% url 'questoes_admin:admin_questao_editar' questao.pk %}">editar</a>
+                            <a class="btn btn-sm btn-outline-secondary" href="{% url 'questoes_admin:admin_questao_detalhe' questao.pk %}"><i class="bi bi-eye"></i> Ver</a>
+                            <a class="btn btn-sm btn-outline-primary" href="{% url 'questoes_admin:admin_questao_editar' questao.pk %}"><i class="bi bi-pencil"></i> Editar</a>
                             {% if questao.status != "published" %}
-                                <form method="post" action="{% url 'questoes_admin:admin_questao_alterar_status' questao.pk 'published' %}" class="d-inline">{% csrf_token %}<button class="btn btn-link p-0 align-baseline" type="submit">publicar</button></form>
+                                <form method="post" action="{% url 'questoes_admin:admin_questao_alterar_status' questao.pk 'published' %}" class="d-inline">{% csrf_token %}<button class="btn btn-sm btn-outline-secondary" type="submit"><i class="bi bi-upload"></i> Publicar</button></form>
                             {% endif %}
                             {% if questao.status != "archived" %}
-                                <form method="post" action="{% url 'questoes_admin:admin_questao_alterar_status' questao.pk 'archived' %}" class="d-inline">{% csrf_token %}<button class="btn btn-link p-0 align-baseline" type="submit">arquivar</button></form>
+                                <form method="post" action="{% url 'questoes_admin:admin_questao_alterar_status' questao.pk 'archived' %}" class="d-inline">{% csrf_token %}<button class="btn btn-sm btn-outline-secondary" type="submit"><i class="bi bi-archive"></i> Arquivar</button></form>
                             {% endif %}
                         </td>
                     </tr>

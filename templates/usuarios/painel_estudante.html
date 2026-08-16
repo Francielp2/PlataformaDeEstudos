@@ -5,12 +5,21 @@
 {% block content %}
     <div class="page-heading">
         <h1>Painel do estudante</h1>
-        <p>Olá, {{ request.user.first_name|default:"estudante" }}.</p>
+        <p>Olá, {{ request.user.first_name|default:"estudante" }}. Organize seus estudos e continue praticando.</p>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-md-3"><div class="metric"><div class="metric-icon"><i class="bi bi-star"></i></div><span>Minha Lista</span><strong>{{ total_minha_lista }}</strong><span>itens salvos</span></div></div>
+        <div class="col-md-3"><div class="metric"><div class="metric-icon"><i class="bi bi-check-circle"></i></div><span>Estudados</span><strong>{{ total_estudados }}</strong><span>conteúdos marcados</span></div></div>
+        <div class="col-md-3"><div class="metric"><div class="metric-icon"><i class="bi bi-pencil-square"></i></div><span>Exercícios</span><strong>{{ total_respostas }}</strong><span>respostas realizadas</span></div></div>
+        <div class="col-md-3"><div class="metric"><div class="metric-icon"><i class="bi bi-clipboard-check"></i></div><span>Simulados</span><strong>0</strong><span>realizados</span></div></div>
     </div>
 
     <section class="section-box mb-4">
-        <h2 class="h5">Sua conta</h2>
+        <h2 class="h5">Dados da conta</h2>
         <dl class="row mb-0">
+            <dt class="col-sm-3">Nome</dt>
+            <dd class="col-sm-9">{{ request.user.get_full_name|default:"Não informado" }}</dd>
             <dt class="col-sm-3">E-mail</dt>
             <dd class="col-sm-9">{{ request.user.email }}</dd>
             <dt class="col-sm-3">Etapa escolar</dt>
@@ -18,32 +27,20 @@
         </dl>
     </section>
 
-    <section class="section-box mb-4">
-        <h2 class="h5">Situação atual</h2>
-        <ul class="status-list">
-            <li>Nenhum simulado realizado.</li>
-            <li>{{ total_minha_lista }} {% if total_minha_lista == 1 %}item na Minha lista{% else %}itens na Minha lista{% endif %}.</li>
-            <li>{{ total_estudados }} {% if total_estudados == 1 %}conteúdo estudado{% else %}conteúdos estudados{% endif %}.</li>
-        </ul>
-        <p class="mb-0 text-muted">
-            As marcações são manuais e independentes entre si.
-        </p>
-    </section>
-
     <section>
         <h2 class="h5 mb-3">Atalhos</h2>
         <div class="row g-3">
             <div class="col-md-3">
-                <a class="shortcut" href="{% url 'curriculo:materias_lista' %}">Matérias</a>
+                <a class="shortcut" href="{% url 'curriculo:materias_lista' %}"><strong><i class="bi bi-journal-bookmark"></i> Matérias</strong><span>Explore as disciplinas disponíveis</span></a>
             </div>
             <div class="col-md-3">
-                <a class="shortcut" href="{% url 'usuarios:funcionalidade_futura' 'fazer-simulado' %}">Simulados</a>
+                <a class="shortcut" href="{% url 'questoes:exercicios_lista' %}"><strong><i class="bi bi-pencil-square"></i> Exercícios</strong><span>Pratique questões por matéria</span></a>
             </div>
             <div class="col-md-3">
-                <a class="shortcut" href="{% url 'estudos:minha_lista' %}">Minha lista</a>
+                <a class="shortcut" href="{% url 'estudos:minha_lista' %}"><strong><i class="bi bi-star"></i> Minha lista</strong><span>Veja o que você salvou</span></a>
             </div>
             <div class="col-md-3">
-                <a class="shortcut" href="{% url 'estudos:conteudos_estudados' %}">Estudados</a>
+                <a class="shortcut" href="{% url 'estudos:conteudos_estudados' %}"><strong><i class="bi bi-check-circle"></i> Estudados</strong><span>Consulte conteúdos concluídos</span></a>
             </div>
         </div>
     </section>

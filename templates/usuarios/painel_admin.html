@@ -5,24 +5,24 @@
 {% block content %}
     <div class="page-heading">
         <h1>Painel administrativo</h1>
-        <p>Visão geral da plataforma.</p>
+        <p>Visão geral das contas e atalhos de gerenciamento.</p>
     </div>
 
     <div class="row g-3 mb-4">
-        <div class="col-md-2"><div class="metric"><span>Total</span><strong>{{ total_usuarios }}</strong></div></div>
-        <div class="col-md-2"><div class="metric"><span>Estudantes</span><strong>{{ total_estudantes }}</strong></div></div>
-        <div class="col-md-2"><div class="metric"><span>Staff</span><strong>{{ total_staff }}</strong></div></div>
-        <div class="col-md-2"><div class="metric"><span>Ativos</span><strong>{{ total_ativos }}</strong></div></div>
-        <div class="col-md-2"><div class="metric"><span>Inativos</span><strong>{{ total_inativos }}</strong></div></div>
+        <div class="col-md-2"><div class="metric"><div class="metric-icon"><i class="bi bi-people"></i></div><span>Total</span><strong>{{ total_usuarios }}</strong><span>contas</span></div></div>
+        <div class="col-md-2"><div class="metric"><div class="metric-icon"><i class="bi bi-mortarboard"></i></div><span>Estudantes</span><strong>{{ total_estudantes }}</strong><span>contas</span></div></div>
+        <div class="col-md-2"><div class="metric"><div class="metric-icon"><i class="bi bi-person-gear"></i></div><span>Staff</span><strong>{{ total_staff }}</strong><span>administrativos</span></div></div>
+        <div class="col-md-2"><div class="metric"><div class="metric-icon"><i class="bi bi-person-check"></i></div><span>Ativos</span><strong>{{ total_ativos }}</strong><span>contas ativas</span></div></div>
+        <div class="col-md-2"><div class="metric"><div class="metric-icon"><i class="bi bi-person-dash"></i></div><span>Inativos</span><strong>{{ total_inativos }}</strong><span>contas inativas</span></div></div>
     </div>
 
     <section class="section-box mb-4">
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h2 class="h5 mb-0">Cadastros recentes</h2>
-            <a class="btn btn-sm btn-outline-primary" href="{% url 'usuarios:admin_usuarios_lista' %}">Ver usuários</a>
+            <a class="btn btn-sm btn-outline-primary" href="{% url 'usuarios:admin_usuarios_lista' %}"><i class="bi bi-people"></i> Ver usuários</a>
         </div>
         <div class="table-responsive">
-            <table class="table table-sm align-middle mb-0">
+            <table class="table table-sm table-hover align-middle mb-0">
                 <thead>
                     <tr>
                         <th>Nome</th>
@@ -36,7 +36,15 @@
                         <tr>
                             <td>{{ usuario.get_full_name|default:"Não informado" }}</td>
                             <td>{{ usuario.email }}</td>
-                            <td>{% if usuario.is_staff %}Administrador{% else %}Estudante{% endif %}</td>
+                            <td>
+                                {% if usuario.is_superuser %}
+                                    <span class="badge text-bg-dark">Superusuário</span>
+                                {% elif usuario.is_staff %}
+                                    <span class="badge text-bg-primary">Administrador</span>
+                                {% else %}
+                                    <span class="badge text-bg-secondary">Estudante</span>
+                                {% endif %}
+                            </td>
                             <td>{{ usuario.date_joined|date:"d/m/Y H:i" }}</td>
                         </tr>
                     {% empty %}
@@ -50,12 +58,12 @@
     <section>
         <h2 class="h5 mb-3">Atalhos administrativos</h2>
         <div class="row g-3">
-            <div class="col-md-3"><a class="shortcut" href="{% url 'usuarios:admin_usuarios_lista' %}">Listar usuários</a></div>
-            <div class="col-md-3"><a class="shortcut" href="{% url 'usuarios:admin_usuario_criar' %}">Criar usuário</a></div>
-            <div class="col-md-3"><a class="shortcut" href="{% url 'curriculo_admin:admin_materias_lista' %}">Matérias</a></div>
-            <div class="col-md-3"><a class="shortcut" href="{% url 'curriculo_admin:admin_conteudos_lista' %}">Conteúdos</a></div>
-            <div class="col-md-3"><a class="shortcut" href="{% url 'questoes_admin:admin_questoes_lista' %}">Questões</a></div>
-            <div class="col-md-3"><a class="shortcut" href="{% url 'usuarios:admin_funcionalidade_futura' 'simulados' %}">Simulados</a></div>
+            <div class="col-md-3"><a class="shortcut" href="{% url 'usuarios:admin_usuarios_lista' %}"><strong><i class="bi bi-people"></i> Usuários</strong><span>Gerenciar contas</span></a></div>
+            <div class="col-md-3"><a class="shortcut" href="{% url 'usuarios:admin_usuario_criar' %}"><strong><i class="bi bi-person-plus"></i> Criar usuário</strong><span>Novo cadastro administrativo</span></a></div>
+            <div class="col-md-3"><a class="shortcut" href="{% url 'curriculo_admin:admin_materias_lista' %}"><strong><i class="bi bi-journal-bookmark"></i> Matérias</strong><span>Gerenciar disciplinas</span></a></div>
+            <div class="col-md-3"><a class="shortcut" href="{% url 'curriculo_admin:admin_conteudos_lista' %}"><strong><i class="bi bi-book"></i> Conteúdos</strong><span>Temas de estudo</span></a></div>
+            <div class="col-md-3"><a class="shortcut" href="{% url 'questoes_admin:admin_questoes_lista' %}"><strong><i class="bi bi-question-circle"></i> Questões</strong><span>Banco de exercícios</span></a></div>
+            <div class="col-md-3"><a class="shortcut" href="{% url 'usuarios:admin_funcionalidade_futura' 'simulados' %}"><strong><i class="bi bi-clipboard-check"></i> Simulados</strong><span>Em breve</span></a></div>
         </div>
     </section>
 {% endblock %}

@@ -18,6 +18,7 @@ from .forms import (
 )
 from .models import PerfilEstudante
 from estudos.models import ConteudoEstudado, ItemMinhaLista
+from questoes.models import RespostaQuestao
 
 
 FUNCIONALIDADES_ESTUDANTE = {
@@ -159,6 +160,7 @@ def painel_estudante(request):
     perfil, _ = PerfilEstudante.objects.get_or_create(usuario=request.user)
     total_minha_lista = ItemMinhaLista.objects.filter(usuario=request.user).count()
     total_estudados = ConteudoEstudado.objects.filter(usuario=request.user).count()
+    total_respostas = RespostaQuestao.objects.filter(usuario=request.user).count()
     return render(
         request,
         "usuarios/painel_estudante.html",
@@ -166,6 +168,7 @@ def painel_estudante(request):
             "perfil": perfil,
             "total_minha_lista": total_minha_lista,
             "total_estudados": total_estudados,
+            "total_respostas": total_respostas,
             "active": "inicio",
         },
     )

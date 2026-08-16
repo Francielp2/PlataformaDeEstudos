@@ -5,19 +5,72 @@
 {% block content %}
     <div class="page-heading">
         <h1>Meu perfil</h1>
-        <p>Dados básicos da conta.</p>
+        <p>Gerencie seus dados pessoais e sua senha.</p>
     </div>
 
-    <section class="section-box mb-4">
-        <dl class="row mb-0">
-            <dt class="col-sm-3">E-mail</dt>
-            <dd class="col-sm-9">{{ request.user.email }}</dd>
-        </dl>
-    </section>
+    <div class="form-panel">
+        <section class="form-section">
+            <h2 class="form-section-title">Dados da conta</h2>
+            <dl class="row mb-0">
+                <dt class="col-sm-3">E-mail</dt>
+                <dd class="col-sm-9">{{ request.user.email }}</dd>
+            </dl>
+        </section>
 
-    <form method="post" class="section-box" novalidate>
-        {% csrf_token %}
-        {% include "usuarios/partials/form_campos.html" with form=form %}
-        <button class="btn btn-primary" type="submit">Salvar perfil</button>
-    </form>
+        <form method="post" novalidate>
+            {% csrf_token %}
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {% for error in form.non_field_errors %}
+                        <div>{{ error }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <section class="form-section">
+                <h2 class="form-section-title">Informações pessoais</h2>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label" for="{{ form.first_name.id_for_label }}">{{ form.first_name.label }}</label>
+                        {{ form.first_name }}
+                        {% for error in form.first_name.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="{{ form.last_name.id_for_label }}">{{ form.last_name.label }}</label>
+                        {{ form.last_name }}
+                        {% for error in form.last_name.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="{{ form.etapa_escolar.id_for_label }}">{{ form.etapa_escolar.label }}</label>
+                        {{ form.etapa_escolar }}
+                        {% for error in form.etapa_escolar.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                    </div>
+                </div>
+            </section>
+
+            <section class="form-section">
+                <h2 class="form-section-title">Alterar senha</h2>
+                <p class="form-text mb-3">Preencha estes campos somente se quiser trocar sua senha.</p>
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label" for="{{ form.senha_atual.id_for_label }}">{{ form.senha_atual.label }}</label>
+                        {{ form.senha_atual }}
+                        {% for error in form.senha_atual.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label" for="{{ form.nova_senha1.id_for_label }}">{{ form.nova_senha1.label }}</label>
+                        {{ form.nova_senha1 }}
+                        {% for error in form.nova_senha1.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label" for="{{ form.nova_senha2.id_for_label }}">{{ form.nova_senha2.label }}</label>
+                        {{ form.nova_senha2 }}
+                        {% for error in form.nova_senha2.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                    </div>
+                </div>
+            </section>
+
+            <button class="btn btn-primary" type="submit"><i class="bi bi-check2"></i> Salvar alterações</button>
+        </form>
+    </div>
 {% endblock %}

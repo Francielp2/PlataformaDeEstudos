@@ -9,12 +9,14 @@
             <p>Questões individuais publicadas para estudo.</p>
         </div>
         <div>
-            <a class="btn btn-outline-secondary" href="{% url 'questoes:historico' %}">Histórico</a>
-            <a class="btn btn-primary" href="{% url 'questoes:iniciar_sequencia' %}{% if querystring %}?{{ querystring }}{% endif %}">Iniciar sequência</a>
+            <a class="btn btn-outline-secondary" href="{% url 'questoes:historico' %}"><i class="bi bi-clock-history"></i> Histórico</a>
+            <a class="btn btn-primary" href="{% url 'questoes:iniciar_sequencia' %}{% if querystring %}?{{ querystring }}{% endif %}"><i class="bi bi-play-circle"></i> Iniciar sequência</a>
         </div>
     </div>
 
-    <form method="get" class="row g-2 mb-4">
+    <form method="get" class="filters-box">
+        <h2 class="h6 mb-3">Filtros</h2>
+        <div class="row g-2">
         <div class="col-md-3"><input class="form-control" type="search" name="q" value="{{ busca }}" placeholder="Buscar por código ou enunciado"></div>
         <div class="col-md-3">
             <select class="form-select" name="materia">
@@ -41,30 +43,35 @@
             </select>
         </div>
         <div class="col-md-1 d-grid"><button class="btn btn-outline-primary" type="submit">Filtrar</button></div>
+        </div>
     </form>
 
-    <p class="text-muted small">{{ total_encontrado }} {% if total_encontrado == 1 %}questão encontrada{% else %}questões encontradas{% endif %}</p>
+    <p class="text-muted small mb-3">{{ total_encontrado }} {% if total_encontrado == 1 %}questão encontrada{% else %}questões encontradas{% endif %}</p>
 
-    <div class="row g-3">
+    <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-3">
         {% for questao in page_obj %}
-            <div class="col-md-4">
-                <div class="section-box h-100">
-                    <p class="small text-muted mb-1">{{ questao.codigo }} | {{ questao.materia.nome }}</p>
-                    <span class="badge text-bg-secondary mb-2">{{ questao.get_dificuldade_display }}</span>
+            <div class="col">
+                <div class="app-card h-100 d-flex flex-column">
+                    <div class="d-flex justify-content-between gap-2 mb-2">
+                        <strong>{{ questao.codigo }}</strong>
+                        <span class="badge text-bg-secondary">{{ questao.get_dificuldade_display }}</span>
+                    </div>
+                    <p class="small text-muted mb-2">{{ questao.materia.nome }}</p>
                     <p>{{ questao.enunciado|truncatewords:28 }}</p>
+                    <strong class="small">Conteúdos</strong>
                     <p class="small text-muted">
                         {% for relacao in questao.questao_conteudos.all %}
                             {{ relacao.conteudo.titulo }}{% if not forloop.last %}, {% endif %}
                         {% endfor %}
                     </p>
-                    <div class="d-flex flex-wrap gap-2">
-                        <a class="btn btn-sm btn-outline-primary" href="{% url 'questoes:questao_detalhe' questao.pk %}">Resolver questão</a>
+                    <div class="card-actions">
+                        <a class="btn btn-sm btn-primary" href="{% url 'questoes:questao_detalhe' questao.pk %}">Resolver questão</a>
                         {% include "estudos/partials/botao_minha_lista_questao.html" %}
                     </div>
                 </div>
             </div>
         {% empty %}
-            <div class="col-12"><div class="section-box"><p class="mb-0">Nenhuma questão publicada encontrada.</p></div></div>
+            <div class="col-12"><div class="empty-state"><i class="bi bi-question-circle"></i><strong>Nenhuma questão publicada encontrada.</strong><p class="mb-0">Tente alterar os filtros ou volte mais tarde.</p></div></div>
         {% endfor %}
     </div>
 

@@ -8,10 +8,12 @@
         <p>Dados do tema de estudo.</p>
     </div>
 
-    <form method="post" class="section-box" novalidate>
-        {% csrf_token %}
-        {% include "usuarios/partials/form_campos.html" with form=form %}
-        <button class="btn btn-primary" type="submit">Salvar</button>
-        <a class="btn btn-outline-secondary" href="{% url 'curriculo_admin:admin_conteudos_lista' %}">Cancelar</a>
-    </form>
+    <div class="form-panel">
+        <form method="post" class="form-section" novalidate>
+            {% csrf_token %}
+            {% include "usuarios/partials/form_campos.html" with form=form %}
+            <button class="btn btn-primary" type="submit"><i class="bi bi-check2"></i> Salvar</button>
+            <a class="btn btn-outline-secondary" href="{% url 'curriculo_admin:admin_conteudos_lista' %}">Cancelar</a>
+        </form>
+    </div>
 {% endblock %}

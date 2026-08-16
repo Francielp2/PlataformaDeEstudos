@@ -8,10 +8,11 @@
             <h1>Gerenciar conteúdos</h1>
             <p>Cadastro e publicação dos temas de estudo.</p>
         </div>
-        <a class="btn btn-primary" href="{% url 'curriculo_admin:admin_conteudo_criar' %}">Criar conteúdo</a>
+        <a class="btn btn-primary" href="{% url 'curriculo_admin:admin_conteudo_criar' %}"><i class="bi bi-plus-circle"></i> Criar conteúdo</a>
     </div>
 
-    <form method="get" class="row g-2 mb-3">
+    <form method="get" class="filters-box">
+        <div class="row g-2">
         <div class="col-md-3">
             <input class="form-control" type="search" name="q" value="{{ busca }}" placeholder="Buscar conteúdo">
         </div>
@@ -41,6 +42,7 @@
         </div>
         <div class="col-md-2 d-grid">
             <button class="btn btn-outline-primary" type="submit">Filtrar</button>
+        </div>
         </div>
     </form>
 
@@ -81,18 +83,18 @@
                         <td>{{ conteudo.ordem_sugerida }}</td>
                         <td>{{ conteudo.atualizado_em|date:"d/m/Y H:i" }}</td>
                         <td class="actions">
-                            <a href="{% url 'curriculo_admin:admin_conteudo_detalhe' conteudo.pk %}">ver</a>
-                            <a href="{% url 'curriculo_admin:admin_conteudo_editar' conteudo.pk %}">editar</a>
+                            <a class="btn btn-sm btn-outline-secondary" href="{% url 'curriculo_admin:admin_conteudo_detalhe' conteudo.pk %}"><i class="bi bi-eye"></i> Ver</a>
+                            <a class="btn btn-sm btn-outline-primary" href="{% url 'curriculo_admin:admin_conteudo_editar' conteudo.pk %}"><i class="bi bi-pencil"></i> Editar</a>
                             {% if conteudo.status != "published" %}
                                 <form method="post" action="{% url 'curriculo_admin:admin_conteudo_alterar_status' conteudo.pk 'published' %}" class="d-inline">
                                     {% csrf_token %}
-                                    <button class="btn btn-link p-0 align-baseline" type="submit">publicar</button>
+                                    <button class="btn btn-sm btn-outline-secondary" type="submit"><i class="bi bi-upload"></i> Publicar</button>
                                 </form>
                             {% endif %}
                             {% if conteudo.status != "archived" %}
                                 <form method="post" action="{% url 'curriculo_admin:admin_conteudo_alterar_status' conteudo.pk 'archived' %}" class="d-inline">
                                     {% csrf_token %}
-                                    <button class="btn btn-link p-0 align-baseline" type="submit">arquivar</button>
+                                    <button class="btn btn-sm btn-outline-secondary" type="submit"><i class="bi bi-archive"></i> Arquivar</button>
                                 </form>
                             {% endif %}
                         </td>

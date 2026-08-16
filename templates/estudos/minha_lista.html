@@ -8,7 +8,8 @@
         <p>Itens salvos manualmente para organizar seus estudos.</p>
     </div>
 
-    <form method="get" class="row g-2 mb-4">
+    <form method="get" class="filters-box">
+        <div class="row g-2">
         <div class="col-md-10">
             <select class="form-select" name="tipo" aria-label="Filtrar por tipo">
                 <option value="" {% if not tipo %}selected{% endif %}>Todos</option>
@@ -20,12 +21,13 @@
         <div class="col-md-2 d-grid">
             <button class="btn btn-outline-primary" type="submit">Filtrar</button>
         </div>
+        </div>
     </form>
 
-    <div class="row g-3">
+    <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-3">
         {% for item in itens %}
-            <div class="col-md-4">
-                <div class="section-box h-100">
+            <div class="col">
+                <div class="app-card h-100 d-flex flex-column">
                     <span class="badge text-bg-secondary mb-2">{{ item.tipo_display }}</span>
 
                     {% if item.materia %}
@@ -34,7 +36,7 @@
                             <p class="text-muted">{{ item.materia.descricao|truncatewords:24 }}</p>
                         {% endif %}
                         {% if item.materia.ativa %}
-                            <a class="btn btn-sm btn-outline-primary" href="{% url 'curriculo:materia_detalhe' item.materia.slug %}">Acessar</a>
+                            <a class="btn btn-sm btn-primary" href="{% url 'curriculo:materia_detalhe' item.materia.slug %}">Acessar</a>
                         {% else %}
                             <span class="badge text-bg-warning">Indisponível</span>
                         {% endif %}
@@ -47,7 +49,7 @@
                         {% endif %}
                         <p class="text-muted">{{ item.conteudo.resumo|truncatewords:24 }}</p>
                         {% if item.conteudo.materia.ativa and item.conteudo.status == "published" %}
-                            <a class="btn btn-sm btn-outline-primary" href="{% url 'curriculo:conteudo_detalhe' item.conteudo.materia.slug item.conteudo.slug %}">Acessar</a>
+                            <a class="btn btn-sm btn-primary" href="{% url 'curriculo:conteudo_detalhe' item.conteudo.materia.slug item.conteudo.slug %}">Acessar</a>
                         {% else %}
                             <span class="badge text-bg-warning">Indisponível</span>
                         {% endif %}
@@ -62,7 +64,7 @@
                         </p>
                         <p>{{ item.questao.enunciado|truncatewords:24 }}</p>
                         {% if item.questao.materia.ativa and item.questao.status == "published" %}
-                            <a class="btn btn-sm btn-outline-primary" href="{% url 'questoes:questao_detalhe' item.questao.pk %}">Resolver</a>
+                            <a class="btn btn-sm btn-primary" href="{% url 'questoes:questao_detalhe' item.questao.pk %}">Resolver</a>
                         {% else %}
                             <span class="badge text-bg-warning">Indisponível</span>
                         {% endif %}
@@ -77,8 +79,10 @@
             </div>
         {% empty %}
             <div class="col-12">
-                <div class="section-box">
-                    <p class="mb-0">Nenhum item salvo na Minha Lista.</p>
+                <div class="empty-state">
+                    <i class="bi bi-star"></i>
+                    <strong>Sua lista está vazia.</strong>
+                    <p class="mb-0">Use a estrela nas matérias, conteúdos ou questões para salvá-los aqui.</p>
                 </div>
             </div>
         {% endfor %}

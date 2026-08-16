@@ -8,7 +8,7 @@
         <p>Cadastre o enunciado, classifique por matéria/conteúdo e informe as alternativas.</p>
     </div>
 
-    <form method="post" novalidate>
+    <form method="post" class="form-panel" novalidate>
         {% csrf_token %}
 
         {% if form.non_field_errors %}
@@ -19,7 +19,7 @@
             </div>
         {% endif %}
 
-        <section class="section-box mb-4">
+        <section class="form-section">
             <h2 class="h5 mb-3">Dados da questão</h2>
             <div class="row g-3">
                 <div class="col-md-3">
@@ -55,12 +55,12 @@
             </div>
         </section>
 
-        <section class="section-box mb-4">
+        <section class="form-section">
             <h2 class="h5 mb-3">Conteúdos relacionados</h2>
             <div class="row g-3">
                 <div class="col-lg-8">
                     <label class="form-label">{{ form.conteudos.label }}</label>
-                    <div class="border rounded p-3 bg-light" style="max-height: 260px; overflow: auto;">
+                    <div class="scroll-choice-list">
                         {% for checkbox in form.conteudos %}
                             <div class="form-check mb-2">
                                 {{ checkbox.tag }}
@@ -80,7 +80,7 @@
             </div>
         </section>
 
-        <section class="section-box mb-4">
+        <section class="form-section">
             <h2 class="h5 mb-3">Fonte</h2>
             <div class="row g-3">
                 <div class="col-md-3">
@@ -106,7 +106,7 @@
             </div>
         </section>
 
-        <section class="section-box mb-4">
+        <section class="form-section">
             <div class="d-flex justify-content-between align-items-start mb-3">
                 <div>
                     <h2 class="h5 mb-1">Alternativas</h2>

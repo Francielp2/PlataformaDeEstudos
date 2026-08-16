@@ -8,7 +8,9 @@
         <p>Temas publicados para estudar por matéria e dificuldade.</p>
     </div>
 
-    <form method="get" class="row g-2 mb-4">
+    <form method="get" class="filters-box">
+        <h2 class="h6 mb-3">Filtros</h2>
+        <div class="row g-2">
         <div class="col-md-4">
             <input class="form-control" type="search" name="q" value="{{ busca }}" placeholder="Buscar por título">
         </div>
@@ -31,21 +33,22 @@
         <div class="col-md-1 d-grid">
             <button class="btn btn-outline-primary" type="submit">Filtrar</button>
         </div>
+        </div>
     </form>
 
-    <div class="row g-3">
+    <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-3">
         {% for conteudo in conteudos %}
-            <div class="col-md-4">
-                <div class="section-box h-100">
+            <div class="col">
+                <div class="app-card h-100 d-flex flex-column">
                     <p class="small text-muted mb-1">{{ conteudo.materia.nome }}</p>
-                    <h2 class="h5">{{ conteudo.titulo }}</h2>
+                    <h2 class="app-card-title">{{ conteudo.titulo }}</h2>
                     {% if conteudo.pai %}
                         <p class="small text-muted mb-1">Pertence a: {{ conteudo.pai.titulo }}</p>
                     {% endif %}
                     <span class="badge text-bg-secondary mb-2">{{ conteudo.get_dificuldade_display }}</span>
                     <p class="text-muted">{{ conteudo.resumo|truncatewords:24 }}</p>
-                    <div class="d-flex flex-wrap gap-2">
-                        <a class="btn btn-sm btn-outline-primary" href="{% url 'curriculo:conteudo_detalhe' conteudo.materia.slug conteudo.slug %}">Estudar</a>
+                    <div class="card-actions">
+                        <a class="btn btn-sm btn-primary" href="{% url 'curriculo:conteudo_detalhe' conteudo.materia.slug conteudo.slug %}">Estudar</a>
                         {% include "estudos/partials/botao_minha_lista_conteudo.html" %}
                         {% include "estudos/partials/botao_estudado_conteudo.html" %}
                     </div>
@@ -53,8 +56,10 @@
             </div>
         {% empty %}
             <div class="col-12">
-                <div class="section-box">
-                    <p class="mb-0">Nenhum conteúdo publicado encontrado.</p>
+                <div class="empty-state">
+                    <i class="bi bi-book"></i>
+                    <strong>Nenhum conteúdo publicado encontrado.</strong>
+                    <p class="mb-0">Tente alterar os filtros ou volte mais tarde.</p>
                 </div>
             </div>
         {% endfor %}

@@ -2,8 +2,8 @@
     {% csrf_token %}
     <input type="hidden" name="next" value="{{ request.get_full_path }}">
     {% if conteudo.pk in ids_conteudos_estudados %}
-        <button class="btn btn-sm btn-success" type="submit">Estudado</button>
+        <button class="btn btn-sm btn-success" type="submit" title="Desmarcar como estudado"><i class="bi bi-check-circle-fill"></i> Estudado</button>
     {% else %}
-        <button class="btn btn-sm btn-outline-success" type="submit">Marcar como estudado</button>
+        <button class="btn btn-sm btn-outline-success" type="submit" title="Marcar como estudado"><i class="bi bi-check-circle"></i> Estudado</button>
     {% endif %}
 </form>

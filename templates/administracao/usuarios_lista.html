@@ -8,10 +8,11 @@
             <h1>Gerenciar usuários</h1>
             <p>Cadastro e acompanhamento de contas da plataforma.</p>
         </div>
-        <a class="btn btn-primary" href="{% url 'usuarios:admin_usuario_criar' %}">Criar usuário</a>
+        <a class="btn btn-primary" href="{% url 'usuarios:admin_usuario_criar' %}"><i class="bi bi-person-plus"></i> Criar usuário</a>
     </div>
 
-    <form method="get" class="row g-2 mb-3">
+    <form method="get" class="filters-box">
+        <div class="row g-2">
         <div class="col-md-5">
             <input class="form-control" type="search" name="q" value="{{ busca }}" placeholder="Buscar por nome ou e-mail">
         </div>
@@ -32,6 +33,7 @@
         </div>
         <div class="col-md-2 d-grid">
             <button class="btn btn-outline-primary" type="submit">Filtrar</button>
+        </div>
         </div>
     </form>
 
@@ -79,13 +81,13 @@
                         </td>
                         <td>{{ usuario.date_joined|date:"d/m/Y H:i" }}</td>
                         <td class="actions">
-                            <a href="{% url 'usuarios:admin_usuario_detalhe' usuario.pk %}">ver</a>
-                            <a href="{% url 'usuarios:admin_usuario_editar' usuario.pk %}">editar</a>
+                            <a class="btn btn-sm btn-outline-secondary" href="{% url 'usuarios:admin_usuario_detalhe' usuario.pk %}"><i class="bi bi-eye"></i> Ver</a>
+                            <a class="btn btn-sm btn-outline-primary" href="{% url 'usuarios:admin_usuario_editar' usuario.pk %}"><i class="bi bi-pencil"></i> Editar</a>
                             {% if usuario != request.user and not usuario.is_superuser or request.user.is_superuser and usuario != request.user %}
-                                <a href="{% url 'usuarios:admin_usuario_ativar' usuario.pk %}">{% if usuario.is_active %}desativar{% else %}ativar{% endif %}</a>
+                                <a class="btn btn-sm btn-outline-secondary" href="{% url 'usuarios:admin_usuario_ativar' usuario.pk %}"><i class="bi {% if usuario.is_active %}bi-pause-circle{% else %}bi-play-circle{% endif %}"></i> {% if usuario.is_active %}Desativar{% else %}Ativar{% endif %}</a>
                             {% endif %}
                             {% if usuario != request.user and not usuario.is_superuser or request.user.is_superuser and usuario != request.user %}
-                                <a href="{% url 'usuarios:admin_usuario_excluir' usuario.pk %}">excluir</a>
+                                <a class="btn btn-sm btn-outline-danger" href="{% url 'usuarios:admin_usuario_excluir' usuario.pk %}"><i class="bi bi-trash"></i> Excluir</a>
                             {% endif %}
                         </td>
                     </tr>

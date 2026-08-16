@@ -8,10 +8,12 @@
         <p>Dados básicos e perfil.</p>
     </div>
 
-    <form method="post" class="section-box" novalidate>
-        {% csrf_token %}
-        {% include "usuarios/partials/form_campos.html" with form=form %}
-        <button class="btn btn-primary" type="submit">Salvar</button>
-        <a class="btn btn-outline-secondary" href="{% url 'usuarios:admin_usuarios_lista' %}">Cancelar</a>
-    </form>
+    <div class="form-panel">
+        <form method="post" class="form-section" novalidate>
+            {% csrf_token %}
+            {% include "usuarios/partials/form_campos.html" with form=form %}
+            <button class="btn btn-primary" type="submit"><i class="bi bi-check2"></i> Salvar</button>
+            <a class="btn btn-outline-secondary" href="{% url 'usuarios:admin_usuarios_lista' %}">Cancelar</a>
+        </form>
+    </div>
 {% endblock %}

@@ -8,7 +8,9 @@
         <p>Conteúdos que você marcou manualmente como estudados.</p>
     </div>
 
-    <form method="get" class="row g-2 mb-4">
+    <form method="get" class="filters-box">
+        <h2 class="h6 mb-3">Filtros</h2>
+        <div class="row g-2">
         <div class="col-md-4">
             <input class="form-control" type="search" name="q" value="{{ busca }}" placeholder="Buscar por título">
         </div>
@@ -31,13 +33,14 @@
         <div class="col-md-2 d-grid">
             <button class="btn btn-outline-primary" type="submit">Filtrar</button>
         </div>
+        </div>
     </form>
 
-    <div class="row g-3">
+    <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-3">
         {% for estudado in estudados %}
             {% with conteudo=estudado.conteudo %}
-                <div class="col-md-4">
-                    <div class="section-box h-100">
+                <div class="col">
+                    <div class="app-card h-100 d-flex flex-column">
                         <p class="small text-muted mb-1">{{ conteudo.materia.nome }}</p>
                         <h2 class="h5">{{ conteudo.titulo }}</h2>
                         <span class="badge text-bg-secondary mb-2">{{ conteudo.get_dificuldade_display }}</span>
@@ -47,7 +50,7 @@
                         <p class="small text-muted">Marcado em {{ estudado.marcado_em|date:"d/m/Y H:i" }}</p>
                         <p class="text-muted">{{ conteudo.resumo|truncatewords:24 }}</p>
                         {% if conteudo.materia.ativa and conteudo.status == "published" %}
-                            <a class="btn btn-sm btn-outline-primary" href="{% url 'curriculo:conteudo_detalhe' conteudo.materia.slug conteudo.slug %}">Acessar</a>
+                            <a class="btn btn-sm btn-primary" href="{% url 'curriculo:conteudo_detalhe' conteudo.materia.slug conteudo.slug %}">Acessar</a>
                         {% else %}
                             <span class="badge text-bg-warning">Indisponível</span>
                         {% endif %}
@@ -61,8 +64,10 @@
             {% endwith %}
         {% empty %}
             <div class="col-12">
-                <div class="section-box">
-                    <p class="mb-0">Nenhum conteúdo marcado como estudado.</p>
+                <div class="empty-state">
+                    <i class="bi bi-check-circle"></i>
+                    <strong>Nenhum conteúdo marcado como estudado.</strong>
+                    <p class="mb-0">Marque conteúdos como estudados quando concluir a revisão.</p>
                 </div>
             </div>
         {% endfor %}

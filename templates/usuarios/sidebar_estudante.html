@@ -1,16 +1,21 @@
 <nav class="sidebar-nav" aria-label="Menu do estudante">
-    <a class="{% if active == 'inicio' %}active{% endif %}" href="{% url 'usuarios:painel_estudante' %}">Início</a>
-    <a class="{% if active == 'materias' %}active{% endif %}" href="{% url 'curriculo:materias_lista' %}">Matérias</a>
-    <a class="{% if active == 'conteudos' %}active{% endif %}" href="{% url 'curriculo:conteudos_lista' %}">Conteúdos de estudo</a>
-    <a class="{% if active == 'exercicios' %}active{% endif %}" href="{% url 'questoes:exercicios_lista' %}">Exercícios</a>
-    <a class="{% if active == 'fazer-simulado' %}active{% endif %}" href="{% url 'usuarios:funcionalidade_futura' 'fazer-simulado' %}">Fazer simulado</a>
-    <a class="{% if active == 'meus-simulados' %}active{% endif %}" href="{% url 'usuarios:funcionalidade_futura' 'meus-simulados' %}">Meus simulados</a>
-    <a class="{% if active == 'minha-lista' %}active{% endif %}" href="{% url 'estudos:minha_lista' %}">Minha lista</a>
-    <a class="{% if active == 'estudados' %}active{% endif %}" href="{% url 'estudos:conteudos_estudados' %}">Estudados</a>
-    <a class="{% if active == 'desempenho' %}active{% endif %}" href="{% url 'usuarios:funcionalidade_futura' 'desempenho' %}">Meu desempenho</a>
-    <a class="{% if active == 'perfil' %}active{% endif %}" href="{% url 'usuarios:perfil' %}">Meu perfil</a>
+    <span class="sidebar-group">Geral</span>
+    <a class="{% if active == 'inicio' %}active{% endif %}" href="{% url 'usuarios:painel_estudante' %}"><i class="bi bi-house"></i> Início</a>
+    <span class="sidebar-group">Estudos</span>
+    <a class="{% if active == 'materias' %}active{% endif %}" href="{% url 'curriculo:materias_lista' %}"><i class="bi bi-journal-bookmark"></i> Matérias</a>
+    <a class="{% if active == 'conteudos' %}active{% endif %}" href="{% url 'curriculo:conteudos_lista' %}"><i class="bi bi-book"></i> Conteúdos de estudo</a>
+    <a class="{% if active == 'exercicios' %}active{% endif %}" href="{% url 'questoes:exercicios_lista' %}"><i class="bi bi-pencil-square"></i> Exercícios</a>
+    <span class="sidebar-group">Simulados</span>
+    <a class="{% if active == 'fazer-simulado' %}active{% endif %}" href="{% url 'usuarios:funcionalidade_futura' 'fazer-simulado' %}"><i class="bi bi-clipboard-check"></i> Fazer simulado</a>
+    <a class="{% if active == 'meus-simulados' %}active{% endif %}" href="{% url 'usuarios:funcionalidade_futura' 'meus-simulados' %}"><i class="bi bi-list-check"></i> Meus simulados</a>
+    <span class="sidebar-group">Organização</span>
+    <a class="{% if active == 'minha-lista' %}active{% endif %}" href="{% url 'estudos:minha_lista' %}"><i class="bi bi-star"></i> Minha lista</a>
+    <a class="{% if active == 'estudados' %}active{% endif %}" href="{% url 'estudos:conteudos_estudados' %}"><i class="bi bi-check-circle"></i> Estudados</a>
+    <a class="{% if active == 'desempenho' %}active{% endif %}" href="{% url 'usuarios:funcionalidade_futura' 'desempenho' %}"><i class="bi bi-graph-up"></i> Meu desempenho</a>
+    <span class="sidebar-group">Conta</span>
+    <a class="{% if active == 'perfil' %}active{% endif %}" href="{% url 'usuarios:perfil' %}"><i class="bi bi-person"></i> Meu perfil</a>
     <form method="post" action="{% url 'usuarios:logout' %}" class="mt-2">
         {% csrf_token %}
-        <button class="sidebar-button" type="submit">Sair</button>
+        <button class="sidebar-button" type="submit"><i class="bi bi-box-arrow-right"></i> Sair</button>
     </form>
 </nav>

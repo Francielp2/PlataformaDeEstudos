@@ -8,10 +8,11 @@
             <h1>Gerenciar matérias</h1>
             <p>Cadastro e organização das disciplinas da plataforma.</p>
         </div>
-        <a class="btn btn-primary" href="{% url 'curriculo_admin:admin_materia_criar' %}">Criar matéria</a>
+        <a class="btn btn-primary" href="{% url 'curriculo_admin:admin_materia_criar' %}"><i class="bi bi-plus-circle"></i> Criar matéria</a>
     </div>
 
-    <form method="get" class="row g-2 mb-3">
+    <form method="get" class="filters-box">
+        <div class="row g-2">
         <div class="col-md-7">
             <input class="form-control" type="search" name="q" value="{{ busca }}" placeholder="Buscar por matéria ou slug">
         </div>
@@ -24,6 +25,7 @@
         </div>
         <div class="col-md-2 d-grid">
             <button class="btn btn-outline-primary" type="submit">Filtrar</button>
+        </div>
         </div>
     </form>
 
@@ -66,11 +68,11 @@
                         </td>
                         <td>{{ materia.criado_em|date:"d/m/Y H:i" }}</td>
                         <td class="actions">
-                            <a href="{% url 'curriculo_admin:admin_materia_detalhe' materia.slug %}">ver</a>
-                            <a href="{% url 'curriculo_admin:admin_materia_editar' materia.slug %}">editar</a>
+                            <a class="btn btn-sm btn-outline-secondary" href="{% url 'curriculo_admin:admin_materia_detalhe' materia.slug %}"><i class="bi bi-eye"></i> Ver</a>
+                            <a class="btn btn-sm btn-outline-primary" href="{% url 'curriculo_admin:admin_materia_editar' materia.slug %}"><i class="bi bi-pencil"></i> Editar</a>
                             <form method="post" action="{% url 'curriculo_admin:admin_materia_alternar_status' materia.slug %}" class="d-inline">
                                 {% csrf_token %}
-                                <button class="btn btn-link p-0 align-baseline" type="submit">{% if materia.ativa %}desativar{% else %}ativar{% endif %}</button>
+                                <button class="btn btn-sm btn-outline-secondary" type="submit"><i class="bi {% if materia.ativa %}bi-pause-circle{% else %}bi-play-circle{% endif %}"></i> {% if materia.ativa %}Desativar{% else %}Ativar{% endif %}</button>
                             </form>
                         </td>
                     </tr>

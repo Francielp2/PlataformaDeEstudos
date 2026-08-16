@@ -288,6 +288,32 @@ def _salvar_relacoes_conteudo(questao, conteudos, principal):
         relacao.save()
 
 
+def _salvar_alternativas_formset(formset):
+    ordens_informadas = {
+        form.cleaned_data["ordem"]
+        for form in formset.forms
+        if form.cleaned_data and form.cleaned_data.get("ordem") is not None
+    }
+    ordens_usadas = set()
+    proxima_ordem = 1
+
+    for form in formset.forms:
+        if not form.cleaned_data:
+            continue
+        alternativa = form.instance
+        if form.cleaned_data.get("ordem") is None:
+            while proxima_ordem in ordens_usadas or proxima_ordem in ordens_informadas:
+                proxima_ordem += 1
+            alternativa.ordem = proxima_ordem
+            ordens_usadas.add(proxima_ordem)
+            proxima_ordem += 1
+        else:
+            alternativa.ordem = form.cleaned_data["ordem"]
+            ordens_usadas.add(alternativa.ordem)
+
+    formset.save()
+
+
 @staff_required
 def admin_questoes_lista(request):
     busca = request.GET.get("q", "").strip()
@@ -354,7 +380,7 @@ def admin_questao_criar(request):
                 questao.full_clean()
                 questao.save()
                 formset.instance = questao
-                formset.save()
+                _salvar_alternativas_formset(formset)
                 _salvar_relacoes_conteudo(
                     questao,
                     form.cleaned_data["conteudos"],
@@ -408,7 +434,7 @@ def admin_questao_editar(request, pk):
                 questao.criado_por = criado_por_original
                 questao.full_clean()
                 questao.save()
-                formset.save()
+                _salvar_alternativas_formset(formset)
                 _salvar_relacoes_conteudo(
                     questao,
                     form.cleaned_data["conteudos"],

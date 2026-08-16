@@ -418,6 +418,24 @@ class AdminQuestaoViewTests(QuestaoTestMixin, TestCase):
         self.assertEqual(questao.questao_conteudos.count(), 1)
         self.assertEqual(questao.status, Questao.StatusQuestao.PUBLICADA)
 
+    def test_admin_cria_questao_com_ordem_automatica_de_alternativas(self):
+        data = self._post_questao("MAT-036A", status=Questao.StatusQuestao.PUBLICADA)
+        data["alternativas-0-ordem"] = ""
+        data["alternativas-1-ordem"] = ""
+        self.client.force_login(self.staff)
+
+        response = self.client.post(reverse("questoes_admin:admin_questao_criar"), data)
+
+        questao = Questao.objects.get(codigo="MAT-036A")
+        self.assertRedirects(
+            response,
+            reverse("questoes_admin:admin_questao_detalhe", args=[questao.pk]),
+        )
+        self.assertEqual(
+            list(questao.alternativas.order_by("ordem").values_list("chave", "ordem")),
+            [("A", 1), ("B", 2)],
+        )
+
     def test_admin_edita_preserva_criado_por_e_slug_inexistente(self):
         questao = self.criar_questao("MAT-037")
         self.client.force_login(self.superuser)

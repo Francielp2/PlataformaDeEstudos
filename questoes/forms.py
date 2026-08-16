@@ -153,9 +153,10 @@ class AlternativaForm(forms.ModelForm):
         chave = cleaned_data.get("chave")
         texto = cleaned_data.get("texto")
         correta = cleaned_data.get("correta")
-        ordem = cleaned_data.get("ordem")
-        if (chave or texto or correta) and ordem is None:
-            self.add_error("ordem", "Informe a ordem da alternativa.")
+        if (chave or texto or correta) and not chave:
+            self.add_error("chave", "Informe a chave da alternativa.")
+        if (chave or texto or correta) and not texto:
+            self.add_error("texto", "Informe o texto da alternativa.")
         return cleaned_data
 
 
@@ -163,7 +164,7 @@ AlternativaFormSet = inlineformset_factory(
     Questao,
     Alternativa,
     form=AlternativaForm,
-    extra=5,
+    extra=1,
     min_num=2,
     validate_min=False,
     can_delete=False,

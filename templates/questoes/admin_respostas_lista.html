@@ -3,7 +3,13 @@
 {% block title %}Respostas{% endblock %}
 
 {% block content %}
-    <div class="page-heading"><h1>Respostas</h1><p>Histórico de respostas dos estudantes.</p></div>
+    <div class="page-heading d-flex justify-content-between align-items-start">
+        <div>
+            <h1>Respostas</h1>
+            <p>Histórico de respostas dos estudantes.</p>
+        </div>
+        <a class="btn btn-outline-secondary" href="{% url 'questoes_admin:admin_questoes_lista' %}">Voltar para questões</a>
+    </div>
     <form method="get" class="row g-2 mb-3">
         <div class="col-md-8"><input class="form-control" type="search" name="q" value="{{ busca }}" placeholder="Buscar por usuário ou questão"></div>
         <div class="col-md-2"><select class="form-select" name="resultado"><option value="">Todos</option><option value="acertos" {% if resultado == "acertos" %}selected{% endif %}>Acertos</option><option value="erros" {% if resultado == "erros" %}selected{% endif %}>Erros</option></select></div>

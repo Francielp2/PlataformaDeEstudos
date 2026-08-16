@@ -5,25 +5,216 @@
 {% block content %}
     <div class="page-heading">
         <h1>{{ titulo }}</h1>
-        <p>Dados da questão, conteúdos relacionados e alternativas.</p>
+        <p>Cadastre o enunciado, classifique por matéria/conteúdo e informe as alternativas.</p>
     </div>
 
-    <form method="post" class="section-box" novalidate>
+    <form method="post" novalidate>
         {% csrf_token %}
-        {% include "usuarios/partials/form_campos.html" with form=form %}
 
-        <h2 class="h5 mt-4">Alternativas</h2>
-        {{ formset.management_form }}
-        {% if formset.non_form_errors %}
-            <div class="alert alert-danger">{% for error in formset.non_form_errors %}<div>{{ error }}</div>{% endfor %}</div>
-        {% endif %}
-        {% for alternativa_form in formset %}
-            <div class="border rounded p-3 mb-3">
-                {% include "usuarios/partials/form_campos.html" with form=alternativa_form %}
+        {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+                {% for error in form.non_field_errors %}
+                    <div>{{ error }}</div>
+                {% endfor %}
             </div>
-        {% endfor %}
+        {% endif %}
 
-        <button class="btn btn-primary" type="submit">Salvar</button>
-        <a class="btn btn-outline-secondary" href="{% url 'questoes_admin:admin_questoes_lista' %}">Cancelar</a>
+        <section class="section-box mb-4">
+            <h2 class="h5 mb-3">Dados da questão</h2>
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label" for="{{ form.codigo.id_for_label }}">Código</label>
+                    {{ form.codigo }}
+                    {% for error in form.codigo.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label" for="{{ form.materia.id_for_label }}">Matéria</label>
+                    {{ form.materia }}
+                    {% for error in form.materia.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label" for="{{ form.dificuldade.id_for_label }}">Dificuldade</label>
+                    {{ form.dificuldade }}
+                    {% for error in form.dificuldade.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label" for="{{ form.status.id_for_label }}">Status</label>
+                    {{ form.status }}
+                    {% for error in form.status.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                </div>
+                <div class="col-12">
+                    <label class="form-label" for="{{ form.enunciado.id_for_label }}">Enunciado</label>
+                    {{ form.enunciado }}
+                    {% for error in form.enunciado.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                </div>
+                <div class="col-12">
+                    <label class="form-label" for="{{ form.explicacao.id_for_label }}">Explicação</label>
+                    {{ form.explicacao }}
+                    {% for error in form.explicacao.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                </div>
+            </div>
+        </section>
+
+        <section class="section-box mb-4">
+            <h2 class="h5 mb-3">Conteúdos relacionados</h2>
+            <div class="row g-3">
+                <div class="col-lg-8">
+                    <label class="form-label">{{ form.conteudos.label }}</label>
+                    <div class="border rounded p-3 bg-light" style="max-height: 260px; overflow: auto;">
+                        {% for checkbox in form.conteudos %}
+                            <div class="form-check mb-2">
+                                {{ checkbox.tag }}
+                                <label class="form-check-label" for="{{ checkbox.id_for_label }}">{{ checkbox.choice_label }}</label>
+                            </div>
+                        {% empty %}
+                            <p class="text-muted mb-0">Nenhum conteúdo cadastrado.</p>
+                        {% endfor %}
+                    </div>
+                    {% for error in form.conteudos.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                </div>
+                <div class="col-lg-4">
+                    <label class="form-label" for="{{ form.conteudo_principal.id_for_label }}">Conteúdo principal</label>
+                    {{ form.conteudo_principal }}
+                    {% for error in form.conteudo_principal.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                </div>
+            </div>
+        </section>
+
+        <section class="section-box mb-4">
+            <h2 class="h5 mb-3">Fonte</h2>
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label" for="{{ form.tipo_fonte.id_for_label }}">Tipo de fonte</label>
+                    {{ form.tipo_fonte }}
+                    {% for error in form.tipo_fonte.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label" for="{{ form.fonte_nome.id_for_label }}">Nome da fonte</label>
+                    {{ form.fonte_nome }}
+                    {% for error in form.fonte_nome.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label" for="{{ form.fonte_ano.id_for_label }}">Ano</label>
+                    {{ form.fonte_ano }}
+                    {% for error in form.fonte_ano.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label" for="{{ form.fonte_url.id_for_label }}">URL</label>
+                    {{ form.fonte_url }}
+                    {% for error in form.fonte_url.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                </div>
+            </div>
+        </section>
+
+        <section class="section-box mb-4">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+                <div>
+                    <h2 class="h5 mb-1">Alternativas</h2>
+                    <p class="text-muted small mb-0">Preencha uma alternativa por bloco e marque apenas uma como correta. A ordem é preenchida automaticamente se ficar vazia.</p>
+                </div>
+                <button class="btn btn-outline-primary btn-sm" type="button" id="adicionar-alternativa">Adicionar alternativa</button>
+            </div>
+
+            {{ formset.management_form }}
+            {% if formset.non_form_errors %}
+                <div class="alert alert-danger">
+                    {% for error in formset.non_form_errors %}
+                        <div>{{ error }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <div id="alternativas-container">
+                {% for alternativa_form in formset %}
+                    <div class="border rounded p-3 mb-3 alternativa-form">
+                        {% for hidden in alternativa_form.hidden_fields %}{{ hidden }}{% endfor %}
+                        {% if alternativa_form.non_field_errors %}
+                            <div class="alert alert-danger">
+                                {% for error in alternativa_form.non_field_errors %}
+                                    <div>{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        <div class="row g-3 align-items-start">
+                            <div class="col-md-2">
+                                <label class="form-label" for="{{ alternativa_form.chave.id_for_label }}">Chave</label>
+                                {{ alternativa_form.chave }}
+                                {% for error in alternativa_form.chave.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" for="{{ alternativa_form.texto.id_for_label }}">Texto</label>
+                                {{ alternativa_form.texto }}
+                                {% for error in alternativa_form.texto.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label" for="{{ alternativa_form.ordem.id_for_label }}">Ordem</label>
+                                {{ alternativa_form.ordem }}
+                                <div class="form-text">Opcional</div>
+                                {% for error in alternativa_form.ordem.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                            </div>
+                            <div class="col-md-2 pt-md-4">
+                                <div class="form-check mt-md-2">
+                                    {{ alternativa_form.correta }}
+                                    <label class="form-check-label" for="{{ alternativa_form.correta.id_for_label }}">Correta</label>
+                                </div>
+                                {% for error in alternativa_form.correta.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
+
+        <template id="alternativa-empty-template">
+            <div class="border rounded p-3 mb-3 alternativa-form">
+                {% for hidden in formset.empty_form.hidden_fields %}{{ hidden }}{% endfor %}
+                <div class="row g-3 align-items-start">
+                    <div class="col-md-2">
+                        <label class="form-label" for="{{ formset.empty_form.chave.id_for_label }}">Chave</label>
+                        {{ formset.empty_form.chave }}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="{{ formset.empty_form.texto.id_for_label }}">Texto</label>
+                        {{ formset.empty_form.texto }}
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label" for="{{ formset.empty_form.ordem.id_for_label }}">Ordem</label>
+                        {{ formset.empty_form.ordem }}
+                        <div class="form-text">Opcional</div>
+                    </div>
+                    <div class="col-md-2 pt-md-4">
+                        <div class="form-check mt-md-2">
+                            {{ formset.empty_form.correta }}
+                            <label class="form-check-label" for="{{ formset.empty_form.correta.id_for_label }}">Correta</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </template>
+
+        <div class="d-flex gap-2">
+            <button class="btn btn-primary" type="submit">Salvar</button>
+            <a class="btn btn-outline-secondary" href="{% url 'questoes_admin:admin_questoes_lista' %}">Cancelar</a>
+        </div>
     </form>
+
+    <script>
+        (function () {
+            const addButton = document.getElementById("adicionar-alternativa");
+            const container = document.getElementById("alternativas-container");
+            const template = document.getElementById("alternativa-empty-template");
+            const totalForms = document.getElementById("id_alternativas-TOTAL_FORMS");
+
+            if (!addButton || !container || !template || !totalForms) {
+                return;
+            }
+
+            addButton.addEventListener("click", function () {
+                const index = Number(totalForms.value);
+                const html = template.innerHTML.replace(/__prefix__/g, index);
+                container.insertAdjacentHTML("beforeend", html);
+                totalForms.value = index + 1;
+            });
+        })();
+    </script>
 {% endblock %}

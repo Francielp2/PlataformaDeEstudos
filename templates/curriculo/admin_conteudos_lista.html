@@ -1,0 +1,120 @@
+{% extends "usuarios/base_interno.html" %}
+
+{% block title %}Gerenciar conteúdos{% endblock %}
+
+{% block content %}
+    <div class="page-heading d-flex justify-content-between align-items-start">
+        <div>
+            <h1>Gerenciar conteúdos</h1>
+            <p>Cadastro e publicação dos temas de estudo.</p>
+        </div>
+        <a class="btn btn-primary" href="{% url 'curriculo_admin:admin_conteudo_criar' %}">Criar conteúdo</a>
+    </div>
+
+    <form method="get" class="row g-2 mb-3">
+        <div class="col-md-3">
+            <input class="form-control" type="search" name="q" value="{{ busca }}" placeholder="Buscar conteúdo">
+        </div>
+        <div class="col-md-3">
+            <select class="form-select" name="materia" aria-label="Filtrar por matéria">
+                <option value="" {% if not materia_slug %}selected{% endif %}>Todas as matérias</option>
+                {% for materia in materias %}
+                    <option value="{{ materia.slug }}" {% if materia_slug == materia.slug %}selected{% endif %}>{{ materia.nome }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-2">
+            <select class="form-select" name="status" aria-label="Filtrar por status">
+                <option value="" {% if not status %}selected{% endif %}>Todos</option>
+                {% for item in status_choices %}
+                    <option value="{{ item.value }}" {% if status == item.value %}selected{% endif %}>{{ item.label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-2">
+            <select class="form-select" name="dificuldade" aria-label="Filtrar por dificuldade">
+                <option value="" {% if not dificuldade %}selected{% endif %}>Todas</option>
+                {% for item in dificuldades %}
+                    <option value="{{ item.value }}" {% if dificuldade == item.value %}selected{% endif %}>{{ item.label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-2 d-grid">
+            <button class="btn btn-outline-primary" type="submit">Filtrar</button>
+        </div>
+    </form>
+
+    <p class="text-muted small mb-3">
+        {{ total_encontrado }} {% if total_encontrado == 1 %}conteúdo encontrado{% else %}conteúdos encontrados{% endif %}
+    </p>
+
+    <div class="table-responsive section-box">
+        <table class="table table-hover align-middle mb-0">
+            <thead>
+                <tr>
+                    <th>Conteúdo</th>
+                    <th>Matéria</th>
+                    <th>Pai</th>
+                    <th>Dificuldade</th>
+                    <th>Status</th>
+                    <th>Ordem</th>
+                    <th>Atualizado em</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for conteudo in page_obj %}
+                    <tr>
+                        <td>{{ conteudo.titulo }}</td>
+                        <td>{{ conteudo.materia.nome }}</td>
+                        <td>{{ conteudo.pai.titulo|default:"-" }}</td>
+                        <td><span class="badge text-bg-secondary">{{ conteudo.get_dificuldade_display }}</span></td>
+                        <td>
+                            {% if conteudo.status == "published" %}
+                                <span class="badge text-bg-success">{{ conteudo.get_status_display }}</span>
+                            {% elif conteudo.status == "archived" %}
+                                <span class="badge text-bg-secondary">{{ conteudo.get_status_display }}</span>
+                            {% else %}
+                                <span class="badge text-bg-warning">{{ conteudo.get_status_display }}</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ conteudo.ordem_sugerida }}</td>
+                        <td>{{ conteudo.atualizado_em|date:"d/m/Y H:i" }}</td>
+                        <td class="actions">
+                            <a href="{% url 'curriculo_admin:admin_conteudo_detalhe' conteudo.pk %}">ver</a>
+                            <a href="{% url 'curriculo_admin:admin_conteudo_editar' conteudo.pk %}">editar</a>
+                            {% if conteudo.status != "published" %}
+                                <form method="post" action="{% url 'curriculo_admin:admin_conteudo_alterar_status' conteudo.pk 'published' %}" class="d-inline">
+                                    {% csrf_token %}
+                                    <button class="btn btn-link p-0 align-baseline" type="submit">publicar</button>
+                                </form>
+                            {% endif %}
+                            {% if conteudo.status != "archived" %}
+                                <form method="post" action="{% url 'curriculo_admin:admin_conteudo_alterar_status' conteudo.pk 'archived' %}" class="d-inline">
+                                    {% csrf_token %}
+                                    <button class="btn btn-link p-0 align-baseline" type="submit">arquivar</button>
+                                </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="8">Nenhum conteúdo encontrado.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% if page_obj.has_other_pages %}
+        <nav class="mt-3" aria-label="Paginação">
+            <ul class="pagination">
+                {% if page_obj.has_previous %}
+                    <li class="page-item"><a class="page-link" href="?{% if querystring %}{{ querystring }}&amp;{% endif %}page={{ page_obj.previous_page_number }}">Anterior</a></li>
+                {% endif %}
+                <li class="page-item active"><span class="page-link">{{ page_obj.number }}</span></li>
+                {% if page_obj.has_next %}
+                    <li class="page-item"><a class="page-link" href="?{% if querystring %}{{ querystring }}&amp;{% endif %}page={{ page_obj.next_page_number }}">Próxima</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    {% endif %}
+{% endblock %}

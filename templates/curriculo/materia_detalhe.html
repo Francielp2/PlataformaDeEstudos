@@ -16,6 +16,53 @@
         {% endif %}
     </section>
 
+    <section class="mt-4">
+        <h2 class="h5 mb-3">Conteúdos</h2>
+        <div class="row g-3">
+            {% for conteudo in conteudos_raiz %}
+                <div class="col-md-4">
+                    <div class="section-box h-100">
+                        <h3 class="h6">{{ conteudo.titulo }}</h3>
+                        <span class="badge text-bg-secondary mb-2">{{ conteudo.get_dificuldade_display }}</span>
+                        <p class="text-muted">{{ conteudo.resumo|truncatewords:24 }}</p>
+                        <a class="btn btn-sm btn-outline-primary" href="{% url 'curriculo:conteudo_detalhe' materia.slug conteudo.slug %}">Estudar</a>
+
+                        {% with filhos=conteudo.subconteudos.all %}
+                            {% if filhos %}
+                                <div class="mt-3">
+                                    <strong class="small">Subconteúdos</strong>
+                                    <ul class="mb-0 ps-3">
+                                        {% for filho in filhos %}
+                                            <li><a href="{% url 'curriculo:conteudo_detalhe' materia.slug filho.slug %}">{{ filho.titulo }}</a></li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            {% endif %}
+                        {% endwith %}
+                    </div>
+                </div>
+            {% empty %}
+                <div class="col-12">
+                    <div class="section-box">
+                        <p class="mb-0">Nenhum conteúdo publicado para esta matéria.</p>
+                    </div>
+                </div>
+            {% endfor %}
+
+            {% for conteudo in conteudos_sem_pai_publicado %}
+                <div class="col-md-4">
+                    <div class="section-box h-100">
+                        <h3 class="h6">{{ conteudo.titulo }}</h3>
+                        <p class="small text-muted mb-1">Pertence a: {{ conteudo.pai.titulo }}</p>
+                        <span class="badge text-bg-secondary mb-2">{{ conteudo.get_dificuldade_display }}</span>
+                        <p class="text-muted">{{ conteudo.resumo|truncatewords:24 }}</p>
+                        <a class="btn btn-sm btn-outline-primary" href="{% url 'curriculo:conteudo_detalhe' materia.slug conteudo.slug %}">Estudar</a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </section>
+
     <div class="mt-3">
         <a class="btn btn-outline-secondary" href="{% url 'curriculo:materias_lista' %}">Voltar</a>
     </div>

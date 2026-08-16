@@ -1,0 +1,17 @@
+{% extends "usuarios/base_interno.html" %}
+
+{% block title %}{{ titulo }}{% endblock %}
+
+{% block content %}
+    <div class="page-heading">
+        <h1>{{ titulo }}</h1>
+        <p>Dados do tema de estudo.</p>
+    </div>
+
+    <form method="post" class="section-box" novalidate>
+        {% csrf_token %}
+        {% include "usuarios/partials/form_campos.html" with form=form %}
+        <button class="btn btn-primary" type="submit">Salvar</button>
+        <a class="btn btn-outline-secondary" href="{% url 'curriculo_admin:admin_conteudos_lista' %}">Cancelar</a>
+    </form>
+{% endblock %}

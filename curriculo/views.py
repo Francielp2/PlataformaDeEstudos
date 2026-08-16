@@ -1,17 +1,19 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
-from django.db.models import Q
+from django.db.models import Prefetch, Q
 from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.decorators.http import require_POST
 
-from .forms import MateriaForm
-from .models import Materia
+from .forms import ConteudoForm, MateriaForm
+from .models import Conteudo, Materia
 
 
 STATUS_MATERIA = {"", "ativas", "inativas"}
+STATUS_CONTEUDO = {choice.value for choice in Conteudo.StatusConteudo} | {""}
+DIFICULDADES_CONTEUDO = {choice.value for choice in Conteudo.DificuldadeConteudo} | {""}
 
 
 def staff_required(view_func):
@@ -39,10 +41,106 @@ def materias_lista(request):
 @login_required(login_url="usuarios:login")
 def materia_detalhe(request, slug):
     materia = get_object_or_404(Materia, slug=slug, ativa=True)
+    conteudos_raiz = (
+        Conteudo.objects.filter(
+            materia=materia,
+            pai__isnull=True,
+            status=Conteudo.StatusConteudo.PUBLICADO,
+        )
+        .prefetch_related(
+            Prefetch(
+                "subconteudos",
+                queryset=Conteudo.objects.filter(
+                    status=Conteudo.StatusConteudo.PUBLICADO,
+                ).order_by("ordem_sugerida", "titulo"),
+            )
+        )
+        .order_by("ordem_sugerida", "titulo")
+    )
+    subconteudos_publicados = Conteudo.objects.filter(
+        materia=materia,
+        pai__isnull=False,
+        status=Conteudo.StatusConteudo.PUBLICADO,
+    ).select_related("pai")
+    conteudos_sem_pai_publicado = subconteudos_publicados.exclude(
+        pai__status=Conteudo.StatusConteudo.PUBLICADO
+    )
     return render(
         request,
         "curriculo/materia_detalhe.html",
-        {"materia": materia, "active": "materias"},
+        {
+            "materia": materia,
+            "conteudos_raiz": conteudos_raiz,
+            "conteudos_sem_pai_publicado": conteudos_sem_pai_publicado,
+            "active": "materias",
+        },
+    )
+
+
+@login_required(login_url="usuarios:login")
+def conteudos_lista(request):
+    busca = request.GET.get("q", "").strip()
+    materia_slug = request.GET.get("materia", "").strip()
+    dificuldade = request.GET.get("dificuldade", "").strip()
+    if dificuldade not in DIFICULDADES_CONTEUDO:
+        dificuldade = ""
+
+    materias = Materia.objects.filter(ativa=True)
+    conteudos = Conteudo.objects.filter(
+        materia__ativa=True,
+        status=Conteudo.StatusConteudo.PUBLICADO,
+    ).select_related("materia", "pai")
+
+    if busca:
+        conteudos = conteudos.filter(titulo__icontains=busca)
+    if materia_slug:
+        conteudos = conteudos.filter(materia__slug=materia_slug)
+    if dificuldade:
+        conteudos = conteudos.filter(dificuldade=dificuldade)
+
+    return render(
+        request,
+        "curriculo/conteudos_lista.html",
+        {
+            "conteudos": conteudos.order_by(
+                "materia__ordem_exibicao",
+                "materia__nome",
+                "ordem_sugerida",
+                "titulo",
+            ),
+            "materias": materias,
+            "busca": busca,
+            "materia_slug": materia_slug,
+            "dificuldade": dificuldade,
+            "dificuldades": Conteudo.DificuldadeConteudo,
+            "active": "conteudos",
+        },
+    )
+
+
+@login_required(login_url="usuarios:login")
+def conteudo_detalhe(request, materia_slug, conteudo_slug):
+    materia = get_object_or_404(Materia, slug=materia_slug, ativa=True)
+    conteudo = get_object_or_404(
+        Conteudo.objects.select_related("materia", "pai"),
+        materia=materia,
+        slug=conteudo_slug,
+        status=Conteudo.StatusConteudo.PUBLICADO,
+    )
+    subconteudos = Conteudo.objects.filter(
+        materia=materia,
+        pai=conteudo,
+        status=Conteudo.StatusConteudo.PUBLICADO,
+    ).order_by("ordem_sugerida", "titulo")
+    return render(
+        request,
+        "curriculo/conteudo_detalhe.html",
+        {
+            "materia": materia,
+            "conteudo": conteudo,
+            "subconteudos": subconteudos,
+            "active": "conteudos",
+        },
     )
 
 
@@ -140,3 +238,132 @@ def admin_materia_alternar_status(request, slug):
     else:
         messages.success(request, "Matéria desativada com sucesso.")
     return redirect("curriculo_admin:admin_materias_lista")
+
+
+@staff_required
+def admin_conteudos_lista(request):
+    busca = request.GET.get("q", "").strip()
+    materia_slug = request.GET.get("materia", "").strip()
+    status = request.GET.get("status", "").strip()
+    dificuldade = request.GET.get("dificuldade", "").strip()
+    if status not in STATUS_CONTEUDO:
+        status = ""
+    if dificuldade not in DIFICULDADES_CONTEUDO:
+        dificuldade = ""
+
+    materias = Materia.objects.order_by("ordem_exibicao", "nome")
+    conteudos = Conteudo.objects.select_related("materia", "pai", "criado_por").order_by(
+        "materia__ordem_exibicao",
+        "materia__nome",
+        "ordem_sugerida",
+        "titulo",
+    )
+    if busca:
+        conteudos = conteudos.filter(
+            Q(titulo__icontains=busca)
+            | Q(slug__icontains=busca)
+            | Q(materia__nome__icontains=busca)
+        )
+    if materia_slug:
+        conteudos = conteudos.filter(materia__slug=materia_slug)
+    if status:
+        conteudos = conteudos.filter(status=status)
+    if dificuldade:
+        conteudos = conteudos.filter(dificuldade=dificuldade)
+
+    paginator = Paginator(conteudos, 10)
+    page_obj = paginator.get_page(request.GET.get("page"))
+    query_params = request.GET.copy()
+    query_params.pop("page", None)
+
+    return render(
+        request,
+        "curriculo/admin_conteudos_lista.html",
+        {
+            "page_obj": page_obj,
+            "materias": materias,
+            "busca": busca,
+            "materia_slug": materia_slug,
+            "status": status,
+            "dificuldade": dificuldade,
+            "status_choices": Conteudo.StatusConteudo,
+            "dificuldades": Conteudo.DificuldadeConteudo,
+            "querystring": query_params.urlencode(),
+            "total_encontrado": paginator.count,
+            "active": "admin_conteudos",
+        },
+    )
+
+
+@staff_required
+def admin_conteudo_criar(request):
+    form = ConteudoForm(request.POST or None)
+    if request.method == "POST" and form.is_valid():
+        conteudo = form.save(commit=False)
+        conteudo.criado_por = request.user
+        conteudo.save()
+        messages.success(request, "Conteúdo cadastrado com sucesso.")
+        return redirect(
+            "curriculo_admin:admin_conteudo_detalhe",
+            pk=conteudo.pk,
+        )
+
+    return render(
+        request,
+        "curriculo/admin_conteudo_form.html",
+        {"form": form, "titulo": "Criar conteúdo", "active": "admin_conteudos"},
+    )
+
+
+@staff_required
+def admin_conteudo_detalhe(request, pk):
+    conteudo = get_object_or_404(
+        Conteudo.objects.select_related("materia", "pai", "criado_por"),
+        pk=pk,
+    )
+    return render(
+        request,
+        "curriculo/admin_conteudo_detalhe.html",
+        {"conteudo": conteudo, "active": "admin_conteudos"},
+    )
+
+
+@staff_required
+def admin_conteudo_editar(request, pk):
+    conteudo = get_object_or_404(Conteudo, pk=pk)
+    criado_por_original = conteudo.criado_por
+    form = ConteudoForm(request.POST or None, instance=conteudo)
+    if request.method == "POST" and form.is_valid():
+        conteudo = form.save(commit=False)
+        conteudo.criado_por = criado_por_original
+        conteudo.save()
+        messages.success(request, "Conteúdo atualizado com sucesso.")
+        return redirect(
+            "curriculo_admin:admin_conteudo_detalhe",
+            pk=conteudo.pk,
+        )
+
+    return render(
+        request,
+        "curriculo/admin_conteudo_form.html",
+        {"form": form, "titulo": "Editar conteúdo", "active": "admin_conteudos"},
+    )
+
+
+@require_POST
+@staff_required
+def admin_conteudo_alterar_status(request, pk, status):
+    if status not in {choice.value for choice in Conteudo.StatusConteudo}:
+        messages.error(request, "Status de conteúdo inválido.")
+        return redirect("curriculo_admin:admin_conteudos_lista")
+
+    conteudo = get_object_or_404(Conteudo, pk=pk)
+    conteudo.status = status
+    conteudo.save(update_fields=["status", "atualizado_em"])
+    mensagens = {
+        Conteudo.StatusConteudo.RASCUNHO: "Conteúdo retornado para rascunho.",
+        Conteudo.StatusConteudo.PUBLICADO: "Conteúdo publicado com sucesso.",
+        Conteudo.StatusConteudo.ARQUIVADO: "Conteúdo arquivado com sucesso.",
+    }
+    messages.success(request, mensagens[status])
+    return redirect("curriculo_admin:admin_conteudos_lista")

@@ -1,0 +1,53 @@
+{% extends "usuarios/base_interno.html" %}
+
+{% block title %}{{ conteudo.titulo }}{% endblock %}
+
+{% block content %}
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'curriculo:materias_lista' %}">Matérias</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'curriculo:materia_detalhe' materia.slug %}">{{ materia.nome }}</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ conteudo.titulo }}</li>
+        </ol>
+    </nav>
+
+    <div class="page-heading">
+        <h1>{{ conteudo.titulo }}</h1>
+        <p>{{ materia.nome }}</p>
+    </div>
+
+    <section class="section-box mb-4">
+        {% if conteudo.pai %}
+            <p class="small text-muted">Pertence a: {{ conteudo.pai.titulo }}</p>
+        {% endif %}
+        <span class="badge text-bg-secondary mb-3">{{ conteudo.get_dificuldade_display }}</span>
+        <h2 class="h5">Resumo</h2>
+        <p>{{ conteudo.resumo }}</p>
+
+        <h2 class="h5 mt-4">Materiais de estudo</h2>
+        <div class="alert alert-light border mb-0">
+            <p class="mb-1">Materiais de estudo serão disponibilizados futuramente neste espaço.</p>
+            <p class="mb-0 small text-muted">
+                Aqui poderão ser disponibilizados apostilas, materiais complementares e videoaulas relacionadas a este conteúdo.
+            </p>
+        </div>
+    </section>
+
+    {% if subconteudos %}
+        <section>
+            <h2 class="h5 mb-3">Subconteúdos</h2>
+            <div class="row g-3">
+                {% for subconteudo in subconteudos %}
+                    <div class="col-md-4">
+                        <div class="section-box h-100">
+                            <h3 class="h6">{{ subconteudo.titulo }}</h3>
+                            <span class="badge text-bg-secondary mb-2">{{ subconteudo.get_dificuldade_display }}</span>
+                            <p class="text-muted">{{ subconteudo.resumo|truncatewords:24 }}</p>
+                            <a class="btn btn-sm btn-outline-primary" href="{% url 'curriculo:conteudo_detalhe' materia.slug subconteudo.slug %}">Estudar</a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
+    {% endif %}
+{% endblock %}

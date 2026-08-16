@@ -1,7 +1,7 @@
 <nav class="sidebar-nav" aria-label="Menu do estudante">
     <a class="{% if active == 'inicio' %}active{% endif %}" href="{% url 'usuarios:painel_estudante' %}">Início</a>
     <a class="{% if active == 'materias' %}active{% endif %}" href="{% url 'curriculo:materias_lista' %}">Matérias</a>
-    <a class="{% if active == 'conteudos' %}active{% endif %}" href="{% url 'usuarios:funcionalidade_futura' 'conteudos' %}">Conteúdos de estudo</a>
+    <a class="{% if active == 'conteudos' %}active{% endif %}" href="{% url 'curriculo:conteudos_lista' %}">Conteúdos de estudo</a>
     <a class="{% if active == 'exercicios' %}active{% endif %}" href="{% url 'usuarios:funcionalidade_futura' 'exercicios' %}">Exercícios</a>
     <a class="{% if active == 'fazer-simulado' %}active{% endif %}" href="{% url 'usuarios:funcionalidade_futura' 'fazer-simulado' %}">Fazer simulado</a>
     <a class="{% if active == 'meus-simulados' %}active{% endif %}" href="{% url 'usuarios:funcionalidade_futura' 'meus-simulados' %}">Meus simulados</a>

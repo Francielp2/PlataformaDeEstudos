@@ -1,0 +1,58 @@
+{% extends "usuarios/base_interno.html" %}
+
+{% block title %}Conteúdos de estudo{% endblock %}
+
+{% block content %}
+    <div class="page-heading">
+        <h1>Conteúdos de estudo</h1>
+        <p>Temas publicados para estudar por matéria e dificuldade.</p>
+    </div>
+
+    <form method="get" class="row g-2 mb-4">
+        <div class="col-md-4">
+            <input class="form-control" type="search" name="q" value="{{ busca }}" placeholder="Buscar por título">
+        </div>
+        <div class="col-md-4">
+            <select class="form-select" name="materia" aria-label="Filtrar por matéria">
+                <option value="" {% if not materia_slug %}selected{% endif %}>Todas as matérias</option>
+                {% for materia in materias %}
+                    <option value="{{ materia.slug }}" {% if materia_slug == materia.slug %}selected{% endif %}>{{ materia.nome }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-3">
+            <select class="form-select" name="dificuldade" aria-label="Filtrar por dificuldade">
+                <option value="" {% if not dificuldade %}selected{% endif %}>Todas as dificuldades</option>
+                {% for item in dificuldades %}
+                    <option value="{{ item.value }}" {% if dificuldade == item.value %}selected{% endif %}>{{ item.label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-1 d-grid">
+            <button class="btn btn-outline-primary" type="submit">Filtrar</button>
+        </div>
+    </form>
+
+    <div class="row g-3">
+        {% for conteudo in conteudos %}
+            <div class="col-md-4">
+                <div class="section-box h-100">
+                    <p class="small text-muted mb-1">{{ conteudo.materia.nome }}</p>
+                    <h2 class="h5">{{ conteudo.titulo }}</h2>
+                    {% if conteudo.pai %}
+                        <p class="small text-muted mb-1">Pertence a: {{ conteudo.pai.titulo }}</p>
+                    {% endif %}
+                    <span class="badge text-bg-secondary mb-2">{{ conteudo.get_dificuldade_display }}</span>
+                    <p class="text-muted">{{ conteudo.resumo|truncatewords:24 }}</p>
+                    <a class="btn btn-sm btn-outline-primary" href="{% url 'curriculo:conteudo_detalhe' conteudo.materia.slug conteudo.slug %}">Estudar</a>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col-12">
+                <div class="section-box">
+                    <p class="mb-0">Nenhum conteúdo publicado encontrado.</p>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

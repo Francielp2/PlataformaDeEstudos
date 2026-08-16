@@ -20,7 +20,6 @@ from .models import PerfilEstudante
 
 
 FUNCIONALIDADES_ESTUDANTE = {
-    "conteudos": "Conteúdos de estudo",
     "exercicios": "Exercícios",
     "fazer-simulado": "Fazer simulado",
     "meus-simulados": "Meus simulados",
@@ -29,7 +28,6 @@ FUNCIONALIDADES_ESTUDANTE = {
 }
 
 FUNCIONALIDADES_ADMIN = {
-    "conteudos": "Gerenciamento de conteúdos",
     "questoes": "Gerenciamento de questões",
     "simulados": "Gerenciamento de simulados",
 }

@@ -2,7 +2,7 @@
 
 {% block body %}
     <div class="app-shell">
-        <aside class="sidebar">
+        <aside class="sidebar sidebar-desktop">
             <div class="sidebar-title">
                 <div class="brand-mark"><i class="bi bi-journal-bookmark"></i></div>
                 <div>
@@ -18,15 +18,41 @@
             {% endif %}
         </aside>
 
+        <div class="offcanvas offcanvas-start mobile-sidebar" tabindex="-1" id="mobileSidebar" aria-labelledby="mobileSidebarLabel">
+            <div class="offcanvas-header">
+                <div class="sidebar-title border-0 mb-0 pb-0" id="mobileSidebarLabel">
+                    <div class="brand-mark"><i class="bi bi-journal-bookmark"></i></div>
+                    <div>
+                        <span>Plataforma de Estudos</span>
+                        <small>ENEM</small>
+                    </div>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Fechar menu"></button>
+            </div>
+            <div class="offcanvas-body">
+                {% if request.user.is_staff %}
+                    {% include "usuarios/sidebar_admin.html" %}
+                {% else %}
+                    {% include "usuarios/sidebar_estudante.html" %}
+                {% endif %}
+            </div>
+        </div>
+
         <div class="app-main">
             <header class="topbar">
-                <div class="user-summary">
-                    <div class="user-avatar">{{ request.user.first_name|default:request.user.email|slice:":1" }}{% if request.user.last_name %}{{ request.user.last_name|slice:":1" }}{% endif %}</div>
-                    <div>
-                        <strong>{{ request.user.get_full_name|default:request.user.email }}</strong>
-                        <span class="text-muted d-block small">
-                            {% if request.user.is_superuser %}Superusuário{% elif request.user.is_staff %}Administrador{% else %}Estudante{% endif %}
-                        </span>
+                <div class="topbar-left">
+                    <button class="btn btn-outline-secondary btn-sm menu-toggle" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar" aria-controls="mobileSidebar" aria-expanded="false" aria-label="Abrir menu">
+                        <i class="bi bi-list"></i>
+                    </button>
+                    <span class="mobile-app-label">ENEM</span>
+                    <div class="user-summary">
+                        <div class="user-avatar">{{ request.user.first_name|default:request.user.email|slice:":1" }}{% if request.user.last_name %}{{ request.user.last_name|slice:":1" }}{% endif %}</div>
+                        <div class="user-summary-text">
+                            <strong>{{ request.user.get_full_name|default:request.user.email }}</strong>
+                            <span class="text-muted d-block small">
+                                {% if request.user.is_superuser %}Superusuário{% elif request.user.is_staff %}Administrador{% else %}Estudante{% endif %}
+                            </span>
+                        </div>
                     </div>
                 </div>
                 <form method="post" action="{% url 'usuarios:logout' %}">
@@ -43,4 +69,20 @@
             </main>
         </div>
     </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const mobileSidebar = document.getElementById("mobileSidebar");
+            if (!mobileSidebar || !window.bootstrap) {
+                return;
+            }
+            mobileSidebar.querySelectorAll(".sidebar-nav a").forEach(function (link) {
+                link.addEventListener("click", function () {
+                    const instance = bootstrap.Offcanvas.getInstance(mobileSidebar);
+                    if (instance) {
+                        instance.hide();
+                    }
+                });
+            });
+        });
+    </script>
 {% endblock %}

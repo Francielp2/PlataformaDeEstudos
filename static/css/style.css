@@ -81,6 +81,21 @@ a { text-decoration: none; }
     padding: 20px 16px;
 }
 
+.mobile-sidebar {
+    --bs-offcanvas-width: 300px;
+    background: var(--app-sidebar);
+    color: #fff;
+}
+
+.mobile-sidebar .offcanvas-header {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.16);
+    padding: 18px 16px;
+}
+
+.mobile-sidebar .offcanvas-body {
+    padding: 14px 16px 20px;
+}
+
 .sidebar-title {
     align-items: center;
     border-bottom: 1px solid rgba(255, 255, 255, 0.18);
@@ -172,10 +187,34 @@ a { text-decoration: none; }
     padding: 14px 28px;
 }
 
+.topbar-left {
+    align-items: center;
+    display: flex;
+    gap: 12px;
+    min-width: 0;
+}
+
+.menu-toggle,
+.mobile-app-label {
+    display: none;
+}
+
 .user-summary {
     align-items: center;
     display: flex;
     gap: 10px;
+    min-width: 0;
+}
+
+.user-summary-text {
+    min-width: 0;
+}
+
+.user-summary-text strong,
+.user-summary-text span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .user-avatar {
@@ -405,19 +444,24 @@ a { text-decoration: none; }
     margin-top: auto;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 991.98px) {
     .app-shell {
         display: block;
     }
 
-    .sidebar {
-        min-height: auto;
-        width: 100%;
+    .sidebar-desktop {
+        display: none;
     }
 
-    .sidebar-nav {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    .menu-toggle {
+        display: inline-flex;
+    }
+
+    .mobile-app-label {
+        color: var(--app-primary);
+        display: inline-block;
+        font-weight: 700;
+        letter-spacing: 0.02em;
     }
 
     .content-area,
@@ -427,6 +471,13 @@ a { text-decoration: none; }
 
     .topbar {
         gap: 12px;
+        position: sticky;
+        top: 0;
+        z-index: 1020;
+    }
+
+    .topbar form .btn {
+        white-space: nowrap;
     }
 
     .page-heading.d-flex {
@@ -436,5 +487,111 @@ a { text-decoration: none; }
     .page-heading .btn,
     .page-heading form {
         margin-top: 12px;
+    }
+
+    .content-inner {
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .content-area {
+        padding: 14px;
+    }
+
+    .topbar {
+        padding: 12px;
+    }
+
+    .user-avatar {
+        height: 34px;
+        width: 34px;
+    }
+
+    .user-summary-text strong {
+        display: block;
+        max-width: 150px;
+    }
+
+    .user-summary-text span {
+        display: none !important;
+    }
+
+    .page-heading {
+        margin-bottom: 18px;
+    }
+
+    .page-heading h1 {
+        font-size: 1.45rem;
+    }
+
+    .section-box,
+    .app-card,
+    .form-section,
+    .filters-box {
+        padding: 16px;
+    }
+
+    .metric {
+        min-height: auto;
+    }
+
+    .card-actions,
+    .d-flex.flex-wrap.gap-2 {
+        gap: 6px !important;
+    }
+
+    .card-actions .btn,
+    .d-flex.flex-wrap.gap-2 .btn {
+        flex: 1 1 auto;
+    }
+
+    .actions {
+        white-space: normal;
+    }
+
+    .actions .btn,
+    .actions form {
+        margin-bottom: 6px;
+    }
+
+    .table {
+        font-size: 0.9rem;
+    }
+
+    .pagination {
+        flex-wrap: wrap;
+    }
+}
+
+@media (max-width: 430px) {
+    .mobile-sidebar {
+        --bs-offcanvas-width: min(300px, 88vw);
+    }
+
+    .mobile-app-label {
+        display: none;
+    }
+
+    .user-summary-text strong {
+        max-width: 120px;
+    }
+
+    .topbar {
+        gap: 8px;
+    }
+
+    .topbar-left {
+        gap: 8px;
+    }
+
+    .topbar form .btn {
+        font-size: 0;
+        padding-left: 9px;
+        padding-right: 9px;
+    }
+
+    .topbar form .btn i {
+        font-size: 1rem;
     }
 }

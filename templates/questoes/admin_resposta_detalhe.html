@@ -1,0 +1,43 @@
+{% extends "usuarios/base_interno.html" %}
+
+{% block title %}Resposta de exercício{% endblock %}
+
+{% block content %}
+    <div class="page-heading">
+        <h1>Resposta de exercício</h1>
+        <p>{{ resposta.questao.codigo }} | {{ resposta.respondida_em|date:"d/m/Y H:i" }}</p>
+    </div>
+
+    <section class="section-box mb-4">
+        <h2 class="h5">Estudante</h2>
+        <p class="mb-1">{{ resposta.usuario.get_full_name|default:resposta.usuario.email }}</p>
+        <p class="text-muted mb-0">{{ resposta.usuario.email }}</p>
+    </section>
+
+    <section class="section-box mb-4">
+        <h2 class="h5">Questão</h2>
+        <p>{{ resposta.questao.enunciado|linebreaksbr }}</p>
+        <p>{% if resposta.correta %}<span class="badge text-bg-success">Acertou</span>{% else %}<span class="badge text-bg-secondary">Errou</span>{% endif %}</p>
+        <p class="small text-muted">Conteúdos: {% for relacao in resposta.questao.questao_conteudos.all %}{{ relacao.conteudo.titulo }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
+    </section>
+
+    <section class="section-box mb-4">
+        <h2 class="h5">Alternativas</h2>
+        {% for alternativa in resposta.questao.alternativas.all %}
+            <div class="mb-2">
+                <strong>{{ alternativa.chave }}.</strong> {{ alternativa.texto }}
+                {% if alternativa == resposta.alternativa_escolhida %}<span class="badge text-bg-info">Escolhida</span>{% endif %}
+                {% if alternativa.correta %}<span class="badge text-bg-success">Correta</span>{% endif %}
+            </div>
+        {% endfor %}
+    </section>
+
+    <section class="section-box">
+        <h2 class="h5">Explicação</h2>
+        {% if resposta.questao.explicacao %}
+            <p class="mb-0">{{ resposta.questao.explicacao|linebreaksbr }}</p>
+        {% else %}
+            <p class="mb-0 text-muted">Nenhuma explicação cadastrada.</p>
+        {% endif %}
+    </section>
+{% endblock %}

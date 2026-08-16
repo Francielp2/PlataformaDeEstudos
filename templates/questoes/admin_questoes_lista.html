@@ -1,0 +1,86 @@
+{% extends "usuarios/base_interno.html" %}
+
+{% block title %}Gerenciar questões{% endblock %}
+
+{% block content %}
+    <div class="page-heading d-flex justify-content-between align-items-start">
+        <div>
+            <h1>Gerenciar questões</h1>
+            <p>Banco de questões individuais.</p>
+        </div>
+        <div>
+            <a class="btn btn-outline-secondary" href="{% url 'questoes_admin:admin_respostas_lista' %}">Respostas</a>
+            <a class="btn btn-primary" href="{% url 'questoes_admin:admin_questao_criar' %}">Criar questão</a>
+        </div>
+    </div>
+
+    <form method="get" class="row g-2 mb-3">
+        <div class="col-md-2"><input class="form-control" type="search" name="q" value="{{ busca }}" placeholder="Buscar"></div>
+        <div class="col-md-2">
+            <select class="form-select" name="materia">
+                <option value="" {% if not materia_slug %}selected{% endif %}>Todas as matérias</option>
+                {% for materia in materias %}<option value="{{ materia.slug }}" {% if materia_slug == materia.slug %}selected{% endif %}>{{ materia.nome }}</option>{% endfor %}
+            </select>
+        </div>
+        <div class="col-md-3">
+            <select class="form-select" name="conteudo">
+                <option value="" {% if not conteudo_id %}selected{% endif %}>Todos os conteúdos</option>
+                {% for conteudo in conteudos %}<option value="{{ conteudo.pk }}" {% if conteudo_id == conteudo.pk|stringformat:"s" %}selected{% endif %}>{{ conteudo.materia.nome }} - {{ conteudo.titulo }}</option>{% endfor %}
+            </select>
+        </div>
+        <div class="col-md-2">
+            <select class="form-select" name="dificuldade">
+                <option value="" {% if not dificuldade %}selected{% endif %}>Todas</option>
+                {% for item in dificuldades %}<option value="{{ item.value }}" {% if dificuldade == item.value %}selected{% endif %}>{{ item.label }}</option>{% endfor %}
+            </select>
+        </div>
+        <div class="col-md-2">
+            <select class="form-select" name="status">
+                <option value="" {% if not status %}selected{% endif %}>Todos</option>
+                {% for item in status_choices %}<option value="{{ item.value }}" {% if status == item.value %}selected{% endif %}>{{ item.label }}</option>{% endfor %}
+            </select>
+        </div>
+        <div class="col-md-1 d-grid"><button class="btn btn-outline-primary" type="submit">Filtrar</button></div>
+    </form>
+
+    <p class="text-muted small">{{ total_encontrado }} {% if total_encontrado == 1 %}questão encontrada{% else %}questões encontradas{% endif %}</p>
+
+    <div class="table-responsive section-box">
+        <table class="table table-hover align-middle mb-0">
+            <thead><tr><th>Código</th><th>Questão</th><th>Matéria</th><th>Dificuldade</th><th>Conteúdos</th><th>Status</th><th>Atualizado em</th><th>Ações</th></tr></thead>
+            <tbody>
+                {% for questao in page_obj %}
+                    <tr>
+                        <td>{{ questao.codigo }}</td>
+                        <td>{{ questao.enunciado|truncatewords:14 }}</td>
+                        <td>{{ questao.materia.nome }}</td>
+                        <td><span class="badge text-bg-secondary">{{ questao.get_dificuldade_display }}</span></td>
+                        <td>{% for relacao in questao.questao_conteudos.all %}{{ relacao.conteudo.titulo }}{% if not forloop.last %}, {% endif %}{% endfor %}</td>
+                        <td>{{ questao.get_status_display }}</td>
+                        <td>{{ questao.atualizado_em|date:"d/m/Y H:i" }}</td>
+                        <td class="actions">
+                            <a href="{% url 'questoes_admin:admin_questao_detalhe' questao.pk %}">ver</a>
+                            <a href="{% url 'questoes_admin:admin_questao_editar' questao.pk %}">editar</a>
+                            {% if questao.status != "published" %}
+                                <form method="post" action="{% url 'questoes_admin:admin_questao_alterar_status' questao.pk 'published' %}" class="d-inline">{% csrf_token %}<button class="btn btn-link p-0 align-baseline" type="submit">publicar</button></form>
+                            {% endif %}
+                            {% if questao.status != "archived" %}
+                                <form method="post" action="{% url 'questoes_admin:admin_questao_alterar_status' questao.pk 'archived' %}" class="d-inline">{% csrf_token %}<button class="btn btn-link p-0 align-baseline" type="submit">arquivar</button></form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="8">Nenhuma questão encontrada.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% if page_obj.has_other_pages %}
+        <nav class="mt-3"><ul class="pagination">
+            {% if page_obj.has_previous %}<li class="page-item"><a class="page-link" href="?{% if querystring %}{{ querystring }}&amp;{% endif %}page={{ page_obj.previous_page_number }}">Anterior</a></li>{% endif %}
+            <li class="page-item active"><span class="page-link">{{ page_obj.number }}</span></li>
+            {% if page_obj.has_next %}<li class="page-item"><a class="page-link" href="?{% if querystring %}{{ querystring }}&amp;{% endif %}page={{ page_obj.next_page_number }}">Próxima</a></li>{% endif %}
+        </ul></nav>
+    {% endif %}
+{% endblock %}

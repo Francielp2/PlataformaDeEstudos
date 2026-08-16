@@ -1,0 +1,29 @@
+{% extends "usuarios/base_interno.html" %}
+
+{% block title %}{{ titulo }}{% endblock %}
+
+{% block content %}
+    <div class="page-heading">
+        <h1>{{ titulo }}</h1>
+        <p>Dados da questão, conteúdos relacionados e alternativas.</p>
+    </div>
+
+    <form method="post" class="section-box" novalidate>
+        {% csrf_token %}
+        {% include "usuarios/partials/form_campos.html" with form=form %}
+
+        <h2 class="h5 mt-4">Alternativas</h2>
+        {{ formset.management_form }}
+        {% if formset.non_form_errors %}
+            <div class="alert alert-danger">{% for error in formset.non_form_errors %}<div>{{ error }}</div>{% endfor %}</div>
+        {% endif %}
+        {% for alternativa_form in formset %}
+            <div class="border rounded p-3 mb-3">
+                {% include "usuarios/partials/form_campos.html" with form=alternativa_form %}
+            </div>
+        {% endfor %}
+
+        <button class="btn btn-primary" type="submit">Salvar</button>
+        <a class="btn btn-outline-secondary" href="{% url 'questoes_admin:admin_questoes_lista' %}">Cancelar</a>
+    </form>
+{% endblock %}

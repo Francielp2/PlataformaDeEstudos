@@ -1,0 +1,11 @@
+{% extends "usuarios/base_interno.html" %}
+
+{% block title %}Resultado da sequência{% endblock %}
+
+{% block content %}
+    <div class="section-box">
+        <h1 class="h4">{% if resposta.correta %}Você acertou.{% else %}Você errou.{% endif %}</h1>
+        <p class="text-muted">A correção detalhada ficará disponível no histórico.</p>
+        <a class="btn btn-primary" href="{% url 'questoes:sequencia' %}">Próxima</a>
+    </div>
+{% endblock %}

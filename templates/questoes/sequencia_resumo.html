@@ -1,0 +1,14 @@
+{% extends "usuarios/base_interno.html" %}
+
+{% block title %}Resumo{% endblock %}
+
+{% block content %}
+    <div class="section-box">
+        <h1 class="h4">Resumo da sequência</h1>
+        <p>Questões respondidas: {{ respondidas }}</p>
+        <p>Acertos: {{ acertos }}</p>
+        <p>Erros: {{ erros }}</p>
+        <p>Percentual: {{ percentual }}%</p>
+        <a class="btn btn-primary" href="{% url 'questoes:historico' %}">Ver histórico</a>
+    </div>
+{% endblock %}

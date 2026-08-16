@@ -1,0 +1,18 @@
+{% extends "usuarios/base_interno.html" %}
+
+{% block title %}Respostas{% endblock %}
+
+{% block content %}
+    <div class="page-heading"><h1>Respostas</h1><p>Histórico de respostas dos estudantes.</p></div>
+    <form method="get" class="row g-2 mb-3">
+        <div class="col-md-8"><input class="form-control" type="search" name="q" value="{{ busca }}" placeholder="Buscar por usuário ou questão"></div>
+        <div class="col-md-2"><select class="form-select" name="resultado"><option value="">Todos</option><option value="acertos" {% if resultado == "acertos" %}selected{% endif %}>Acertos</option><option value="erros" {% if resultado == "erros" %}selected{% endif %}>Erros</option></select></div>
+        <div class="col-md-2 d-grid"><button class="btn btn-outline-primary" type="submit">Filtrar</button></div>
+    </form>
+    <div class="table-responsive section-box">
+        <table class="table table-hover align-middle mb-0">
+            <thead><tr><th>Usuário</th><th>Questão</th><th>Matéria</th><th>Resultado</th><th>Data</th><th>Ações</th></tr></thead>
+            <tbody>{% for resposta in page_obj %}<tr><td>{{ resposta.usuario.email }}</td><td>{{ resposta.questao.codigo }}</td><td>{{ resposta.questao.materia.nome }}</td><td>{% if resposta.correta %}Acertou{% else %}Errou{% endif %}</td><td>{{ resposta.respondida_em|date:"d/m/Y H:i" }}</td><td><a href="{% url 'questoes_admin:admin_resposta_detalhe' resposta.pk %}">ver</a></td></tr>{% empty %}<tr><td colspan="6">Nenhuma resposta encontrada.</td></tr>{% endfor %}</tbody>
+        </table>
+    </div>
+{% endblock %}

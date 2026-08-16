@@ -1,0 +1,30 @@
+{% extends "usuarios/base_interno.html" %}
+
+{% block title %}Histórico de exercícios{% endblock %}
+
+{% block content %}
+    <div class="page-heading">
+        <h1>Histórico de exercícios</h1>
+        <p>Tentativas registradas nas questões individuais.</p>
+    </div>
+
+    <div class="table-responsive section-box">
+        <table class="table table-hover align-middle mb-0">
+            <thead><tr><th>Questão</th><th>Matéria</th><th>Conteúdos</th><th>Resultado</th><th>Data</th><th>Ações</th></tr></thead>
+            <tbody>
+                {% for resposta in page_obj %}
+                    <tr>
+                        <td>{{ resposta.questao.codigo }}</td>
+                        <td>{{ resposta.questao.materia.nome }}</td>
+                        <td>{% for relacao in resposta.questao.questao_conteudos.all %}{{ relacao.conteudo.titulo }}{% if not forloop.last %}, {% endif %}{% endfor %}</td>
+                        <td>{% if resposta.correta %}<span class="badge text-bg-success">Acertou</span>{% else %}<span class="badge text-bg-secondary">Errou</span>{% endif %}</td>
+                        <td>{{ resposta.respondida_em|date:"d/m/Y H:i" }}</td>
+                        <td><a href="{% url 'questoes:resposta_detalhe' resposta.pk %}">ver</a></td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="6">Nenhuma resposta registrada.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

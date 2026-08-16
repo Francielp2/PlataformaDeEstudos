@@ -33,6 +33,10 @@
         </div>
     </section>
 
+    <div class="mb-4">
+        <a class="btn btn-outline-primary" href="{% url 'questoes:exercicios_lista' %}?conteudo={{ conteudo.pk }}">Praticar este conteúdo</a>
+    </div>
+
     {% if subconteudos %}
         <section>
             <h2 class="h5 mb-3">Subconteúdos</h2>

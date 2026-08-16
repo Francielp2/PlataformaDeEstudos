@@ -1,0 +1,12 @@
+{% extends "usuarios/base_interno.html" %}
+
+{% block title %}Resultado{% endblock %}
+
+{% block content %}
+    <div class="section-box">
+        <h1 class="h4">{% if resposta.correta %}Você acertou.{% else %}Você errou.{% endif %}</h1>
+        <p class="mb-3">{{ questao.codigo }}</p>
+        <a class="btn btn-primary" href="{% url 'questoes:resposta_detalhe' resposta.pk %}">Ver correção detalhada</a>
+        <a class="btn btn-outline-secondary" href="{% url 'questoes:exercicios_lista' %}">Voltar aos exercícios</a>
+    </div>
+{% endblock %}

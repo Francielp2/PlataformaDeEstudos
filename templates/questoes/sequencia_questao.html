@@ -1,0 +1,22 @@
+{% extends "questoes/questao_detalhe.html" %}
+
+{% block title %}Sequência{% endblock %}
+
+{% block content %}
+    <div class="page-heading">
+        <h1>Questão {{ posicao }} de {{ total }}</h1>
+        <p>{{ questao.codigo }} | {{ questao.materia.nome }} | {{ questao.get_dificuldade_display }}</p>
+    </div>
+
+    <section class="section-box mb-4">
+        <p>{{ questao.enunciado|linebreaksbr }}</p>
+    </section>
+
+    <form method="post" class="section-box">
+        {% csrf_token %}
+        {% for radio in form.alternativa %}
+            <div class="form-check mb-2">{{ radio.tag }} <label class="form-check-label" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label></div>
+        {% endfor %}
+        <button class="btn btn-primary mt-3" type="submit">Responder</button>
+    </form>
+{% endblock %}

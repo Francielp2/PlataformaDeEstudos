@@ -3,7 +3,7 @@
     <a class="{% if active == 'admin_usuarios' %}active{% endif %}" href="{% url 'usuarios:admin_usuarios_lista' %}">Usuários</a>
     <a class="{% if active == 'admin_materias' %}active{% endif %}" href="{% url 'curriculo_admin:admin_materias_lista' %}">Matérias</a>
     <a class="{% if active == 'admin_conteudos' %}active{% endif %}" href="{% url 'curriculo_admin:admin_conteudos_lista' %}">Conteúdos</a>
-    <a class="{% if active == 'questoes' %}active{% endif %}" href="{% url 'usuarios:admin_funcionalidade_futura' 'questoes' %}">Questões</a>
+    <a class="{% if active == 'admin_questoes' %}active{% endif %}" href="{% url 'questoes_admin:admin_questoes_lista' %}">Questões</a>
     <a class="{% if active == 'simulados' %}active{% endif %}" href="{% url 'usuarios:admin_funcionalidade_futura' 'simulados' %}">Simulados</a>
     <a class="{% if active == 'perfil' %}active{% endif %}" href="{% url 'usuarios:perfil' %}">Perfil</a>
     <form method="post" action="{% url 'usuarios:logout' %}" class="mt-2">

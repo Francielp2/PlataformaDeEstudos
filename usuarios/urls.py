@@ -12,8 +12,6 @@ urlpatterns = [
     path("painel/", views.painel, name="painel"),
     path("estudante/", views.painel_estudante, name="painel_estudante"),
     path("perfil/", views.perfil, name="perfil"),
-    path("materias/", views.materias, name="materias"),
-    path("materias/<slug:slug>/", views.materia_detalhe, name="materia_detalhe"),
     path(
         "funcionalidades/<slug:slug>/",
         views.funcionalidade_futura,

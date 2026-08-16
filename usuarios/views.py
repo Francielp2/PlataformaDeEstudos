@@ -19,12 +19,6 @@ from .forms import (
 from .models import PerfilEstudante
 
 
-MATERIAS = {
-    "matematica": "Matemática",
-    "fisica": "Física",
-    "quimica": "Química",
-}
-
 FUNCIONALIDADES_ESTUDANTE = {
     "conteudos": "Conteúdos de estudo",
     "exercicios": "Exercícios",
@@ -35,7 +29,6 @@ FUNCIONALIDADES_ESTUDANTE = {
 }
 
 FUNCIONALIDADES_ADMIN = {
-    "cadastrar-materia": "Cadastro de matérias",
     "conteudos": "Gerenciamento de conteúdos",
     "questoes": "Gerenciamento de questões",
     "simulados": "Gerenciamento de simulados",
@@ -209,27 +202,6 @@ def perfil(request):
         request,
         "usuarios/perfil.html",
         {"form": form, "perfil": perfil_obj, "active": "perfil"},
-    )
-
-
-@login_required(login_url="usuarios:login")
-def materias(request):
-    return render(
-        request,
-        "paginas/materias.html",
-        {"materias": MATERIAS, "active": "materias"},
-    )
-
-
-@login_required(login_url="usuarios:login")
-def materia_detalhe(request, slug):
-    titulo = MATERIAS.get(slug)
-    if not titulo:
-        raise Http404("Matéria não encontrada.")
-    return render(
-        request,
-        "paginas/materia_detalhe.html",
-        {"titulo": titulo, "active": "materias"},
     )
 
 

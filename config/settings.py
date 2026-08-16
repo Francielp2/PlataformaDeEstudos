@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     # Meus apps
     'core',
     'usuarios.apps.UsuariosConfig',
+    'curriculo',
 ]
 
 MIDDLEWARE = [

@@ -1,0 +1,22 @@
+{% extends "usuarios/base_interno.html" %}
+
+{% block title %}{{ materia.nome }}{% endblock %}
+
+{% block content %}
+    <div class="page-heading">
+        <h1>{{ materia.nome }}</h1>
+        <p>Detalhes da matéria.</p>
+    </div>
+
+    <section class="section-box">
+        {% if materia.descricao %}
+            <p class="mb-0">{{ materia.descricao }}</p>
+        {% else %}
+            <p class="mb-0 text-muted">Nenhuma descrição cadastrada.</p>
+        {% endif %}
+    </section>
+
+    <div class="mt-3">
+        <a class="btn btn-outline-secondary" href="{% url 'curriculo:materias_lista' %}">Voltar</a>
+    </div>
+{% endblock %}

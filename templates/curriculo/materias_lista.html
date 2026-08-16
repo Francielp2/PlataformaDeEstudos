@@ -1,0 +1,30 @@
+{% extends "usuarios/base_interno.html" %}
+
+{% block title %}Matérias{% endblock %}
+
+{% block content %}
+    <div class="page-heading">
+        <h1>Matérias</h1>
+        <p>Disciplinas disponíveis para estudo.</p>
+    </div>
+
+    <div class="row g-3">
+        {% for materia in materias %}
+            <div class="col-md-4">
+                <div class="section-box h-100">
+                    <h2 class="h5">{{ materia.nome }}</h2>
+                    {% if materia.descricao %}
+                        <p class="text-muted">{{ materia.descricao|truncatewords:24 }}</p>
+                    {% endif %}
+                    <a class="btn btn-sm btn-outline-primary" href="{% url 'curriculo:materia_detalhe' materia.slug %}">Visualizar</a>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col-12">
+                <div class="section-box">
+                    <p class="mb-0">Nenhuma matéria ativa no momento.</p>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

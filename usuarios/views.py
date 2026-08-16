@@ -23,32 +23,22 @@ MATERIAS = {
     "matematica": "Matemática",
     "fisica": "Física",
     "quimica": "Química",
-    "biologia": "Biologia",
 }
 
 FUNCIONALIDADES_ESTUDANTE = {
     "conteudos": "Conteúdos de estudo",
-    "videoaulas": "Videoaulas",
-    "favoritos": "Favoritos",
+    "exercicios": "Exercícios",
     "fazer-simulado": "Fazer simulado",
     "meus-simulados": "Meus simulados",
-    "lista-estudos": "Minha lista de estudos",
+    "minha-lista": "Minha lista",
     "desempenho": "Meu desempenho",
 }
 
 FUNCIONALIDADES_ADMIN = {
     "cadastrar-materia": "Cadastro de matérias",
     "conteudos": "Gerenciamento de conteúdos",
-    "videoaulas": "Gerenciamento de videoaulas",
-    "favoritos": "Favoritos",
     "questoes": "Gerenciamento de questões",
-    "criar-simulado": "Criação de simulado",
     "simulados": "Gerenciamento de simulados",
-    "revisoes": "Revisões pedagógicas",
-    "importacao": "Importação de dados",
-    "relatorios": "Relatórios",
-    "auditoria": "Auditoria",
-    "configuracoes": "Configurações",
 }
 
 

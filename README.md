@@ -1,17 +1,16 @@
-# Plataforma Inteligente de Estudos para ENEM e Vestibulares
+# Plataforma de Estudos e Organização para ENEM
 
 ## Sobre o projeto
 
-A Plataforma Inteligente de Estudos é um sistema web desenvolvido como Projeto Integrador, com o objetivo de auxiliar estudantes do Ensino Médio na preparação para o ENEM e vestibulares.
+A Plataforma de Estudos e Organização para ENEM é um sistema web desenvolvido como Projeto Integrador, com o objetivo de auxiliar estudantes do Ensino Médio na preparação para o ENEM.
 
-A plataforma permite que o estudante realize simulados, acompanhe seu desempenho, identifique suas principais dificuldades e receba recomendações de conteúdos para estudo.
+Nesta etapa, o projeto mantém o módulo de usuários e prepara a interface para futuros recursos de matérias, conteúdos, questões, simulados e organização manual dos estudos.
 
 Inicialmente o sistema será desenvolvido utilizando Django e terá foco nas disciplinas:
 
 - Matemática
 - Física
 - Química
-- Biologia
 
 ---
 
@@ -268,7 +267,7 @@ git checkout -b feature/simulados
 
 git checkout -b feature/conteudos
 
-git checkout -b feature/ranking
+git checkout -b feature/questoes
 ```
 
 ---
@@ -496,12 +495,12 @@ A primeira versão da plataforma deverá conter:
 - Página inicial
 - Listagem de matérias
 - Listagem de conteúdos
-- Associação de videoaulas
+- Questões individuais para estudo
 - Simulados
 - Correção automática
 - Relatório de desempenho
 - Histórico
-- Recomendações de estudo
+- Organização manual com Minha lista e Estudado
 
 ---
 
@@ -523,6 +522,6 @@ Adicionar posteriormente os integrantes e suas funções.
 
 ```
 
-### Uma recomendação adicional
+### Observação adicional
 
 Como esse é um projeto desenvolvido em equipe para um período de aproximadamente seis meses, eu também criaria um arquivo chamado **`CONTRIBUTING.md`**. Nele vocês podem documentar padrões de código (PEP 8, convenções para nomes de apps, organização de pastas, uso de branches, regras para Pull Requests e revisão de código). Isso mantém o `README.md` focado na instalação e uso do projeto, enquanto as regras de colaboração ficam centralizadas em um documento específico.

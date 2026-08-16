@@ -3,7 +3,6 @@
     <a class="{% if active == 'admin_usuarios' %}active{% endif %}" href="{% url 'usuarios:admin_usuarios_lista' %}">Usuários</a>
     <a class="{% if active == 'cadastrar-materia' %}active{% endif %}" href="{% url 'usuarios:admin_funcionalidade_futura' 'cadastrar-materia' %}">Matérias</a>
     <a class="{% if active == 'conteudos' %}active{% endif %}" href="{% url 'usuarios:admin_funcionalidade_futura' 'conteudos' %}">Conteúdos</a>
-    <a class="{% if active == 'favoritos' %}active{% endif %}" href="{% url 'usuarios:admin_funcionalidade_futura' 'favoritos' %}">Favoritos</a>
     <a class="{% if active == 'questoes' %}active{% endif %}" href="{% url 'usuarios:admin_funcionalidade_futura' 'questoes' %}">Questões</a>
     <a class="{% if active == 'simulados' %}active{% endif %}" href="{% url 'usuarios:admin_funcionalidade_futura' 'simulados' %}">Simulados</a>
     <a class="{% if active == 'perfil' %}active{% endif %}" href="{% url 'usuarios:perfil' %}">Perfil</a>

@@ -27,6 +27,8 @@ htmlcov/
 # Editores
 .vscode/
 .idea/
+.codex/
+.agents/
 
 # Sistema operacional
 .DS_Store

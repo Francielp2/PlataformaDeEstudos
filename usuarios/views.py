@@ -1,5 +1,5 @@
 from django.contrib import messages
-from django.contrib.auth import get_user_model, login, logout
+from django.contrib.auth import get_user_model, login, logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.db import transaction
@@ -41,6 +41,9 @@ FUNCIONALIDADES_ADMIN = {
     "simulados": "Gerenciamento de simulados",
 }
 
+TIPOS_USUARIO = {"", "estudante", "administrador", "superusuario"}
+STATUS_USUARIO = {"", "ativo", "inativo"}
+
 
 def _redirect_seguro(request, fallback):
     next_url = request.POST.get("next") or request.GET.get("next")
@@ -79,6 +82,28 @@ def _dados_iniciais_admin(usuario):
         "is_active": usuario.is_active,
         "is_staff": usuario.is_staff,
     }
+
+
+def _tipo_usuario(usuario):
+    if usuario.is_superuser:
+        return "Superusuário"
+    if usuario.is_staff:
+        return "Administrador"
+    return "Estudante"
+
+
+def _classe_badge_tipo(usuario):
+    if usuario.is_superuser:
+        return "text-bg-dark"
+    if usuario.is_staff:
+        return "text-bg-primary"
+    return "text-bg-secondary"
+
+
+def _classe_badge_status(usuario):
+    if usuario.is_active:
+        return "text-bg-success"
+    return "text-bg-secondary"
 
 
 def cadastro(request):
@@ -168,9 +193,15 @@ def perfil(request):
         with transaction.atomic():
             request.user.first_name = dados["first_name"]
             request.user.last_name = dados["last_name"]
-            request.user.save(update_fields=["first_name", "last_name"])
+            campos_usuario = ["first_name", "last_name"]
+            if dados.get("nova_senha1"):
+                request.user.set_password(dados["nova_senha1"])
+                campos_usuario.append("password")
+            request.user.save(update_fields=campos_usuario)
             perfil_obj.etapa_escolar = dados["etapa_escolar"]
             perfil_obj.save(update_fields=["etapa_escolar", "atualizado_em"])
+        if dados.get("nova_senha1"):
+            update_session_auth_hash(request, request.user)
         messages.success(request, "Perfil atualizado.")
         return redirect("usuarios:perfil")
 
@@ -258,22 +289,52 @@ def admin_usuarios_lista(request):
 
     User = get_user_model()
     busca = request.GET.get("q", "").strip()
+    tipo = request.GET.get("tipo", "").strip()
+    status = request.GET.get("status", "").strip()
+    if tipo not in TIPOS_USUARIO:
+        tipo = ""
+    if status not in STATUS_USUARIO:
+        status = ""
+
     usuarios = User.objects.select_related(
         "perfil_estudante"
     ).order_by("-date_joined")
     if busca:
-        usuarios = usuarios.filter(
-            Q(first_name__icontains=busca)
-            | Q(last_name__icontains=busca)
-            | Q(email__icontains=busca)
-        )
+        for termo in busca.split():
+            usuarios = usuarios.filter(
+                Q(first_name__icontains=termo)
+                | Q(last_name__icontains=termo)
+                | Q(email__icontains=termo)
+            )
+
+    if tipo == "estudante":
+        usuarios = usuarios.filter(is_staff=False)
+    elif tipo == "administrador":
+        usuarios = usuarios.filter(is_staff=True, is_superuser=False)
+    elif tipo == "superusuario":
+        usuarios = usuarios.filter(is_superuser=True)
+
+    if status == "ativo":
+        usuarios = usuarios.filter(is_active=True)
+    elif status == "inativo":
+        usuarios = usuarios.filter(is_active=False)
 
     paginator = Paginator(usuarios, 10)
     page_obj = paginator.get_page(request.GET.get("page"))
+    query_params = request.GET.copy()
+    query_params.pop("page", None)
     return render(
         request,
         "administracao/usuarios_lista.html",
-        {"page_obj": page_obj, "busca": busca, "active": "admin_usuarios"},
+        {
+            "page_obj": page_obj,
+            "busca": busca,
+            "tipo": tipo,
+            "status": status,
+            "querystring": query_params.urlencode(),
+            "total_encontrado": paginator.count,
+            "active": "admin_usuarios",
+        },
     )
 
 
@@ -290,6 +351,9 @@ def admin_usuario_detalhe(request, pk):
         {
             "usuario_obj": usuario,
             "perfil": perfil_obj,
+            "tipo_usuario": _tipo_usuario(usuario),
+            "tipo_badge": _classe_badge_tipo(usuario),
+            "status_badge": _classe_badge_status(usuario),
             "active": "admin_usuarios",
         },
     )
@@ -303,7 +367,12 @@ def admin_usuario_criar(request):
     initial = {
         "is_active": True,
     }
-    form = UsuarioAdminForm(request.POST or None, initial=initial, criando=True)
+    form = UsuarioAdminForm(
+        request.POST or None,
+        initial=initial,
+        usuario_logado=request.user,
+        criando=True,
+    )
     if request.method == "POST" and form.is_valid():
         dados = form.cleaned_data
         User = get_user_model()
@@ -338,16 +407,30 @@ def admin_usuario_editar(request, pk):
         request.POST or None,
         initial=_dados_iniciais_admin(usuario),
         usuario=usuario,
+        usuario_logado=request.user,
     )
     if request.method == "POST" and form.is_valid():
         dados = form.cleaned_data
+        email_original = usuario.email
+        ativo_original = usuario.is_active
         with transaction.atomic():
             usuario.first_name = dados["first_name"]
             usuario.last_name = dados["last_name"]
             usuario.email = dados["email"]
             usuario.is_active = dados["is_active"]
+            if usuario == request.user:
+                usuario.is_active = True
+                usuario.is_staff = True
+            if usuario.is_superuser and not request.user.is_superuser:
+                usuario.email = email_original
+                usuario.is_active = ativo_original
+                usuario.is_staff = True
             if not usuario.is_superuser or request.user.is_superuser:
                 usuario.is_staff = dados["is_staff"]
+            if usuario == request.user:
+                usuario.is_staff = True
+            if dados.get("password1"):
+                usuario.set_password(dados["password1"])
             usuario.save()
 
             perfil_obj, _ = PerfilEstudante.objects.get_or_create(usuario=usuario)
@@ -372,6 +455,11 @@ def admin_usuario_ativar(request, pk):
     if request.method == "POST":
         if usuario == request.user:
             messages.error(request, "Você não pode alterar o status da própria conta.")
+        elif usuario.is_superuser and not request.user.is_superuser:
+            messages.error(
+                request,
+                "Apenas superusuários podem alterar o status de superusuários.",
+            )
         else:
             usuario.is_active = not usuario.is_active
             usuario.save(update_fields=["is_active"])

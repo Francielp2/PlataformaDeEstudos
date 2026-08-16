@@ -5,7 +5,12 @@
 {% block content %}
     <div class="page-heading d-flex justify-content-between align-items-start">
         <div>
-            <h1>{{ usuario_obj.get_full_name|default:usuario_obj.email }}</h1>
+            <h1>
+                {{ usuario_obj.get_full_name|default:usuario_obj.email }}
+                {% if usuario_obj == request.user %}
+                    <span class="badge text-bg-info">Você</span>
+                {% endif %}
+            </h1>
             <p>Detalhes da conta.</p>
         </div>
         <a class="btn btn-outline-primary" href="{% url 'usuarios:admin_usuario_editar' usuario_obj.pk %}">Editar</a>
@@ -13,14 +18,22 @@
 
     <section class="section-box">
         <dl class="row mb-0">
-            <dt class="col-sm-3">Nome</dt><dd class="col-sm-9">{{ usuario_obj.first_name|default:"Não informado" }}</dd>
-            <dt class="col-sm-3">Sobrenome</dt><dd class="col-sm-9">{{ usuario_obj.last_name|default:"Não informado" }}</dd>
+            <dt class="col-sm-3">Nome completo</dt><dd class="col-sm-9">{{ usuario_obj.get_full_name|default:"Não informado" }}</dd>
             <dt class="col-sm-3">E-mail</dt><dd class="col-sm-9">{{ usuario_obj.email }}</dd>
             <dt class="col-sm-3">Etapa escolar</dt><dd class="col-sm-9">{{ perfil.get_etapa_escolar_display|default:"Não informada" }}</dd>
-            <dt class="col-sm-3">Ativo</dt><dd class="col-sm-9">{% if usuario_obj.is_active %}Sim{% else %}Não{% endif %}</dd>
-            <dt class="col-sm-3">Staff</dt><dd class="col-sm-9">{% if usuario_obj.is_staff %}Sim{% else %}Não{% endif %}</dd>
+            <dt class="col-sm-3">Tipo de usuário</dt><dd class="col-sm-9"><span class="badge {{ tipo_badge }}">{{ tipo_usuario }}</span></dd>
+            <dt class="col-sm-3">Status</dt><dd class="col-sm-9">{% if usuario_obj.is_active %}<span class="badge {{ status_badge }}">Ativo</span>{% else %}<span class="badge {{ status_badge }}">Inativo</span>{% endif %}</dd>
             <dt class="col-sm-3">Cadastro</dt><dd class="col-sm-9">{{ usuario_obj.date_joined|date:"d/m/Y H:i" }}</dd>
             <dt class="col-sm-3">Último login</dt><dd class="col-sm-9">{{ usuario_obj.last_login|date:"d/m/Y H:i"|default:"Nunca acessou" }}</dd>
         </dl>
     </section>
+
+    <div class="mt-3 actions">
+        <a class="btn btn-sm btn-outline-secondary" href="{% url 'usuarios:admin_usuarios_lista' %}">Voltar</a>
+        <a class="btn btn-sm btn-outline-primary" href="{% url 'usuarios:admin_usuario_editar' usuario_obj.pk %}">Editar</a>
+        {% if usuario_obj != request.user and not usuario_obj.is_superuser or request.user.is_superuser and usuario_obj != request.user %}
+            <a class="btn btn-sm btn-outline-warning" href="{% url 'usuarios:admin_usuario_ativar' usuario_obj.pk %}">{% if usuario_obj.is_active %}Desativar{% else %}Ativar{% endif %}</a>
+            <a class="btn btn-sm btn-outline-danger" href="{% url 'usuarios:admin_usuario_excluir' usuario_obj.pk %}">Excluir</a>
+        {% endif %}
+    </div>
 {% endblock %}

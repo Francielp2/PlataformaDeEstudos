@@ -12,13 +12,32 @@
     </div>
 
     <form method="get" class="row g-2 mb-3">
-        <div class="col-md-10">
+        <div class="col-md-5">
             <input class="form-control" type="search" name="q" value="{{ busca }}" placeholder="Buscar por nome ou e-mail">
         </div>
+        <div class="col-md-3">
+            <select class="form-select" name="tipo" aria-label="Filtrar por tipo">
+                <option value="" {% if not tipo %}selected{% endif %}>Todos os tipos</option>
+                <option value="estudante" {% if tipo == "estudante" %}selected{% endif %}>Estudantes</option>
+                <option value="administrador" {% if tipo == "administrador" %}selected{% endif %}>Administradores</option>
+                <option value="superusuario" {% if tipo == "superusuario" %}selected{% endif %}>Superusuários</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <select class="form-select" name="status" aria-label="Filtrar por status">
+                <option value="" {% if not status %}selected{% endif %}>Todos</option>
+                <option value="ativo" {% if status == "ativo" %}selected{% endif %}>Ativos</option>
+                <option value="inativo" {% if status == "inativo" %}selected{% endif %}>Inativos</option>
+            </select>
+        </div>
         <div class="col-md-2 d-grid">
-            <button class="btn btn-outline-primary" type="submit">Buscar</button>
+            <button class="btn btn-outline-primary" type="submit">Filtrar</button>
         </div>
     </form>
+
+    <p class="text-muted small mb-3">
+        {{ total_encontrado }} {% if total_encontrado == 1 %}usuário encontrado{% else %}usuários encontrados{% endif %}
+    </p>
 
     <div class="table-responsive section-box">
         <table class="table table-hover align-middle mb-0">
@@ -34,17 +53,40 @@
             </thead>
             <tbody>
                 {% for usuario in page_obj %}
-                    <tr>
-                        <td>{{ usuario.get_full_name|default:"Não informado" }}</td>
+                    <tr class="{% if usuario == request.user %}table-light{% endif %}">
+                        <td>
+                            {{ usuario.get_full_name|default:"Não informado" }}
+                            {% if usuario == request.user %}
+                                <span class="badge text-bg-info ms-1">Você</span>
+                            {% endif %}
+                        </td>
                         <td>{{ usuario.email }}</td>
-                        <td>{% if usuario.is_staff %}Administrador{% else %}Estudante{% endif %}</td>
-                        <td>{% if usuario.is_active %}Ativo{% else %}Inativo{% endif %}</td>
+                        <td>
+                            {% if usuario.is_superuser %}
+                                <span class="badge text-bg-dark">Superusuário</span>
+                            {% elif usuario.is_staff %}
+                                <span class="badge text-bg-primary">Administrador</span>
+                            {% else %}
+                                <span class="badge text-bg-secondary">Estudante</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if usuario.is_active %}
+                                <span class="badge text-bg-success">Ativo</span>
+                            {% else %}
+                                <span class="badge text-bg-secondary">Inativo</span>
+                            {% endif %}
+                        </td>
                         <td>{{ usuario.date_joined|date:"d/m/Y H:i" }}</td>
                         <td class="actions">
                             <a href="{% url 'usuarios:admin_usuario_detalhe' usuario.pk %}">ver</a>
                             <a href="{% url 'usuarios:admin_usuario_editar' usuario.pk %}">editar</a>
-                            <a href="{% url 'usuarios:admin_usuario_ativar' usuario.pk %}">{% if usuario.is_active %}desativar{% else %}ativar{% endif %}</a>
-                            <a href="{% url 'usuarios:admin_usuario_excluir' usuario.pk %}">excluir</a>
+                            {% if usuario != request.user and not usuario.is_superuser or request.user.is_superuser and usuario != request.user %}
+                                <a href="{% url 'usuarios:admin_usuario_ativar' usuario.pk %}">{% if usuario.is_active %}desativar{% else %}ativar{% endif %}</a>
+                            {% endif %}
+                            {% if usuario != request.user and not usuario.is_superuser or request.user.is_superuser and usuario != request.user %}
+                                <a href="{% url 'usuarios:admin_usuario_excluir' usuario.pk %}">excluir</a>
+                            {% endif %}
                         </td>
                     </tr>
                 {% empty %}
@@ -58,11 +100,11 @@
         <nav class="mt-3" aria-label="Paginação">
             <ul class="pagination">
                 {% if page_obj.has_previous %}
-                    <li class="page-item"><a class="page-link" href="?q={{ busca }}&page={{ page_obj.previous_page_number }}">Anterior</a></li>
+                    <li class="page-item"><a class="page-link" href="?{% if querystring %}{{ querystring }}&amp;{% endif %}page={{ page_obj.previous_page_number }}">Anterior</a></li>
                 {% endif %}
                 <li class="page-item active"><span class="page-link">{{ page_obj.number }}</span></li>
                 {% if page_obj.has_next %}
-                    <li class="page-item"><a class="page-link" href="?q={{ busca }}&page={{ page_obj.next_page_number }}">Próxima</a></li>
+                    <li class="page-item"><a class="page-link" href="?{% if querystring %}{{ querystring }}&amp;{% endif %}page={{ page_obj.next_page_number }}">Próxima</a></li>
                 {% endif %}
             </ul>
         </nav>

@@ -8,6 +8,11 @@ app_name = "curriculo_admin"
 urlpatterns = [
     path("", views.admin_materias_lista, name="admin_materias_lista"),
     path("conteudos/", views.admin_conteudos_lista, name="admin_conteudos_lista"),
+    path(
+        "conteudos/publicar-rascunhos/",
+        views.admin_conteudos_publicar_rascunhos,
+        name="admin_conteudos_publicar_rascunhos",
+    ),
     path("conteudos/criar/", views.admin_conteudo_criar, name="admin_conteudo_criar"),
     path("conteudos/<uuid:pk>/", views.admin_conteudo_detalhe, name="admin_conteudo_detalhe"),
     path("conteudos/<uuid:pk>/editar/", views.admin_conteudo_editar, name="admin_conteudo_editar"),

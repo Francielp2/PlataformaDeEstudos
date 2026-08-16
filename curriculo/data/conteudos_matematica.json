@@ -1,0 +1,265 @@
+{
+  "materia": "matematica",
+  "conteudos": [
+    {
+      "titulo": "Matemática Básica",
+      "slug": "matematica-basica",
+      "resumo": "Revisão dos fundamentos numéricos e algébricos essenciais para a resolução de problemas, incluindo operações, propriedades, frações, potências, razões e manipulações básicas.",
+      "texto_estudo": "",
+      "dificuldade": "basic",
+      "status": "draft",
+      "ordem_sugerida": 1,
+      "pai": null
+    },
+    {
+      "titulo": "Conjuntos",
+      "slug": "conjuntos",
+      "resumo": "Estudo da representação e das operações com conjuntos, relações de pertinência e inclusão, união, interseção, diferença e resolução de problemas com diagramas.",
+      "texto_estudo": "",
+      "dificuldade": "basic",
+      "status": "draft",
+      "ordem_sugerida": 2,
+      "pai": null
+    },
+    {
+      "titulo": "Progressões",
+      "slug": "progressoes",
+      "resumo": "Estudo de sequências numéricas, com foco em progressões aritméticas e geométricas, seus termos gerais, somas e aplicações em problemas.",
+      "texto_estudo": "",
+      "dificuldade": "intermediate",
+      "status": "draft",
+      "ordem_sugerida": 3,
+      "pai": null
+    },
+    {
+      "titulo": "Geometria Plana",
+      "slug": "geometria-plana",
+      "resumo": "Estudo das principais figuras planas, suas propriedades, perímetros, áreas, ângulos, semelhança e relações métricas utilizadas na resolução de problemas geométricos.",
+      "texto_estudo": "",
+      "dificuldade": "basic",
+      "status": "draft",
+      "ordem_sugerida": 4,
+      "pai": null
+    },
+    {
+      "titulo": "Geometria de Posição",
+      "slug": "geometria-de-posicao",
+      "resumo": "Estudo das relações de posição entre pontos, retas e planos no espaço, incluindo paralelismo, perpendicularidade e posições relativas.",
+      "texto_estudo": "",
+      "dificuldade": "intermediate",
+      "status": "draft",
+      "ordem_sugerida": 5,
+      "pai": null
+    },
+    {
+      "titulo": "Geometria Espacial",
+      "slug": "geometria-espacial",
+      "resumo": "Estudo de sólidos geométricos e de suas propriedades, áreas e volumes, incluindo prismas, pirâmides, cilindros, cones e esferas.",
+      "texto_estudo": "",
+      "dificuldade": "intermediate",
+      "status": "draft",
+      "ordem_sugerida": 6,
+      "pai": null
+    },
+    {
+      "titulo": "Estatística",
+      "slug": "estatistica",
+      "resumo": "Estudo da coleta, organização, representação e interpretação de dados, incluindo tabelas, gráficos e medidas como média, mediana e moda.",
+      "texto_estudo": "",
+      "dificuldade": "basic",
+      "status": "draft",
+      "ordem_sugerida": 7,
+      "pai": null
+    },
+    {
+      "titulo": "Análise Combinatória",
+      "slug": "analise-combinatoria",
+      "resumo": "Estudo de técnicas de contagem e organização de possibilidades, incluindo princípio fundamental da contagem, permutações, arranjos e combinações.",
+      "texto_estudo": "",
+      "dificuldade": "intermediate",
+      "status": "draft",
+      "ordem_sugerida": 8,
+      "pai": null
+    },
+    {
+      "titulo": "Probabilidade",
+      "slug": "probabilidade",
+      "resumo": "Estudo da chance de ocorrência de eventos, espaço amostral, eventos simples e compostos e cálculo de probabilidades em diferentes situações.",
+      "texto_estudo": "",
+      "dificuldade": "intermediate",
+      "status": "draft",
+      "ordem_sugerida": 9,
+      "pai": null
+    },
+    {
+      "titulo": "Introdução às Funções",
+      "slug": "introducao-as-funcoes",
+      "resumo": "Introdução ao conceito de função, domínio, contradomínio, imagem, relações entre grandezas e interpretação de representações algébricas e gráficas.",
+      "texto_estudo": "",
+      "dificuldade": "basic",
+      "status": "draft",
+      "ordem_sugerida": 10,
+      "pai": null
+    },
+    {
+      "titulo": "Função Afim",
+      "slug": "funcao-afim",
+      "resumo": "Estudo das funções do primeiro grau, seus coeficientes, gráficos, raízes, crescimento e decrescimento e aplicações em situações-problema.",
+      "texto_estudo": "",
+      "dificuldade": "basic",
+      "status": "draft",
+      "ordem_sugerida": 11,
+      "pai": null
+    },
+    {
+      "titulo": "Função Quadrática",
+      "slug": "funcao-quadratica",
+      "resumo": "Estudo das funções do segundo grau, parábolas, raízes, vértice, concavidade, sinais e aplicações em problemas matemáticos.",
+      "texto_estudo": "",
+      "dificuldade": "intermediate",
+      "status": "draft",
+      "ordem_sugerida": 12,
+      "pai": null
+    },
+    {
+      "titulo": "Exponencial",
+      "slug": "exponencial",
+      "resumo": "Estudo de funções e equações exponenciais, propriedades das potências, crescimento e decrescimento exponencial e aplicações em diferentes contextos.",
+      "texto_estudo": "",
+      "dificuldade": "intermediate",
+      "status": "draft",
+      "ordem_sugerida": 13,
+      "pai": null
+    },
+    {
+      "titulo": "Logaritmos",
+      "slug": "logaritmos",
+      "resumo": "Estudo do conceito de logaritmo, propriedades, equações e funções logarítmicas e sua relação com funções exponenciais.",
+      "texto_estudo": "",
+      "dificuldade": "intermediate",
+      "status": "draft",
+      "ordem_sugerida": 14,
+      "pai": null
+    },
+    {
+      "titulo": "Trigonometria",
+      "slug": "trigonometria",
+      "resumo": "Estudo das razões trigonométricas, relações no triângulo retângulo, ciclo trigonométrico, funções trigonométricas e aplicações geométricas.",
+      "texto_estudo": "",
+      "dificuldade": "intermediate",
+      "status": "draft",
+      "ordem_sugerida": 15,
+      "pai": null
+    },
+    {
+      "titulo": "Matemática Comercial e Financeira",
+      "slug": "matematica-comercial-e-financeira",
+      "resumo": "Estudo de porcentagens, acréscimos, descontos, juros simples e compostos e aplicações em situações comerciais e financeiras.",
+      "texto_estudo": "",
+      "dificuldade": "basic",
+      "status": "draft",
+      "ordem_sugerida": 16,
+      "pai": null
+    },
+    {
+      "titulo": "Binômio de Newton",
+      "slug": "binomio-de-newton",
+      "resumo": "Estudo da expansão de potências de binômios, coeficientes binomiais e relações com combinações e o triângulo de Pascal.",
+      "texto_estudo": "",
+      "dificuldade": "advanced",
+      "status": "draft",
+      "ordem_sugerida": 17,
+      "pai": null
+    },
+    {
+      "titulo": "Matrizes",
+      "slug": "matrizes",
+      "resumo": "Estudo da representação matricial de dados, tipos de matrizes e operações como adição, multiplicação e transposição.",
+      "texto_estudo": "",
+      "dificuldade": "intermediate",
+      "status": "draft",
+      "ordem_sugerida": 18,
+      "pai": null
+    },
+    {
+      "titulo": "Determinantes",
+      "slug": "determinantes",
+      "resumo": "Estudo do cálculo e das propriedades dos determinantes e de sua utilização em matrizes e sistemas lineares.",
+      "texto_estudo": "",
+      "dificuldade": "intermediate",
+      "status": "draft",
+      "ordem_sugerida": 19,
+      "pai": null
+    },
+    {
+      "titulo": "Sistemas Lineares",
+      "slug": "sistemas-lineares",
+      "resumo": "Estudo de sistemas de equações lineares, métodos de resolução e interpretação algébrica e geométrica das soluções.",
+      "texto_estudo": "",
+      "dificuldade": "intermediate",
+      "status": "draft",
+      "ordem_sugerida": 20,
+      "pai": null
+    },
+    {
+      "titulo": "Geometria Analítica",
+      "slug": "geometria-analitica",
+      "resumo": "Estudo de elementos geométricos por meio de coordenadas, incluindo pontos, distâncias, retas, circunferências e relações no plano cartesiano.",
+      "texto_estudo": "",
+      "dificuldade": "intermediate",
+      "status": "draft",
+      "ordem_sugerida": 21,
+      "pai": null
+    },
+    {
+      "titulo": "Cônicas",
+      "slug": "conicas",
+      "resumo": "Estudo das principais seções cônicas, como parábola, elipse e hipérbole, suas equações e propriedades geométricas.",
+      "texto_estudo": "",
+      "dificuldade": "advanced",
+      "status": "draft",
+      "ordem_sugerida": 22,
+      "pai": null
+    },
+    {
+      "titulo": "Módulo",
+      "slug": "modulo",
+      "resumo": "Estudo do valor absoluto de números e expressões, propriedades, equações, inequações e interpretação gráfica de funções modulares.",
+      "texto_estudo": "",
+      "dificuldade": "intermediate",
+      "status": "draft",
+      "ordem_sugerida": 23,
+      "pai": null
+    },
+    {
+      "titulo": "Números Complexos",
+      "slug": "numeros-complexos",
+      "resumo": "Estudo dos números complexos, suas formas de representação, operações algébricas, módulo, argumento e interpretação no plano complexo.",
+      "texto_estudo": "",
+      "dificuldade": "advanced",
+      "status": "draft",
+      "ordem_sugerida": 24,
+      "pai": null
+    },
+    {
+      "titulo": "Polinômios",
+      "slug": "polinomios",
+      "resumo": "Estudo de expressões polinomiais, operações, grau, raízes, fatoração, divisão e propriedades relacionadas.",
+      "texto_estudo": "",
+      "dificuldade": "intermediate",
+      "status": "draft",
+      "ordem_sugerida": 25,
+      "pai": null
+    },
+    {
+      "titulo": "Equações Algébricas",
+      "slug": "equacoes-algebricas",
+      "resumo": "Estudo de equações polinomiais e técnicas para análise e determinação de raízes, incluindo relações entre coeficientes e soluções.",
+      "texto_estudo": "",
+      "dificuldade": "advanced",
+      "status": "draft",
+      "ordem_sugerida": 26,
+      "pai": null
+    }
+  ]
+}

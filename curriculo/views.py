@@ -4,6 +4,7 @@ from django.core.paginator import Paginator
 from django.db.models import Prefetch, Q
 from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404, redirect, render
+from django.utils import timezone
 from django.urls import reverse
 from django.views.decorators.http import require_POST
 
@@ -298,9 +299,32 @@ def admin_conteudos_lista(request):
             "dificuldades": Conteudo.DificuldadeConteudo,
             "querystring": query_params.urlencode(),
             "total_encontrado": paginator.count,
+            "total_rascunhos": Conteudo.objects.filter(
+                status=Conteudo.StatusConteudo.RASCUNHO
+            ).count(),
             "active": "admin_conteudos",
         },
     )
+
+
+@require_POST
+@staff_required
+def admin_conteudos_publicar_rascunhos(request):
+    total_publicado = Conteudo.objects.filter(
+        status=Conteudo.StatusConteudo.RASCUNHO
+    ).update(
+        status=Conteudo.StatusConteudo.PUBLICADO,
+        atualizado_em=timezone.now(),
+    )
+
+    if total_publicado:
+        messages.success(
+            request,
+            f"{total_publicado} conteúdo(s) em rascunho publicado(s) com sucesso.",
+        )
+    else:
+        messages.info(request, "Não há conteúdos em rascunho para publicar.")
+    return redirect("curriculo_admin:admin_conteudos_lista")
 
 
 @staff_required

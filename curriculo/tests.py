@@ -955,6 +955,54 @@ class CurriculoMateriaTests(TestCase):
         conteudo.refresh_from_db()
         self.assertEqual(conteudo.status, Conteudo.StatusConteudo.PUBLICADO)
 
+    def test_admin_publica_todos_os_rascunhos(self):
+        admin = self.criar_usuario("admin@example.com", is_staff=True)
+        rascunho_um = self.criar_conteudo(
+            "Rascunho um", status=Conteudo.StatusConteudo.RASCUNHO
+        )
+        rascunho_dois = self.criar_conteudo(
+            "Rascunho dois", status=Conteudo.StatusConteudo.RASCUNHO
+        )
+        arquivado = self.criar_conteudo(
+            "Arquivado", status=Conteudo.StatusConteudo.ARQUIVADO
+        )
+        total_rascunhos = Conteudo.objects.filter(
+            status=Conteudo.StatusConteudo.RASCUNHO
+        ).count()
+        self.client.force_login(admin)
+
+        response = self.client.post(
+            reverse("curriculo_admin:admin_conteudos_publicar_rascunhos"),
+            follow=True,
+        )
+
+        self.assertEqual(response.status_code, 200)
+        rascunho_um.refresh_from_db()
+        rascunho_dois.refresh_from_db()
+        arquivado.refresh_from_db()
+        self.assertEqual(rascunho_um.status, Conteudo.StatusConteudo.PUBLICADO)
+        self.assertEqual(rascunho_dois.status, Conteudo.StatusConteudo.PUBLICADO)
+        self.assertEqual(arquivado.status, Conteudo.StatusConteudo.ARQUIVADO)
+        self.assertContains(
+            response,
+            f"{total_rascunhos} conteúdo(s) em rascunho publicado(s) com sucesso.",
+        )
+
+    def test_publicacao_em_lote_exige_post_e_usuario_staff(self):
+        rascunho = self.criar_conteudo(
+            "Rascunho", status=Conteudo.StatusConteudo.RASCUNHO
+        )
+        url = reverse("curriculo_admin:admin_conteudos_publicar_rascunhos")
+        admin = self.criar_usuario("admin@example.com", is_staff=True)
+        self.client.force_login(admin)
+        self.assertEqual(self.client.get(url).status_code, 405)
+
+        estudante = self.criar_usuario("estudante-lote@example.com")
+        self.client.force_login(estudante)
+        self.assertEqual(self.client.post(url).status_code, 403)
+        rascunho.refresh_from_db()
+        self.assertEqual(rascunho.status, Conteudo.StatusConteudo.RASCUNHO)
+
     def test_estudante_nao_envia_post_de_status_de_conteudo(self):
         estudante = self.criar_usuario("estudante@example.com")
         conteudo = self.criar_conteudo("Funções", status=Conteudo.StatusConteudo.RASCUNHO)

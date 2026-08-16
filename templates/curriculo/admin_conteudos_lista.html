@@ -8,7 +8,15 @@
             <h1>Gerenciar conteúdos</h1>
             <p>Cadastro e publicação dos temas de estudo.</p>
         </div>
-        <a class="btn btn-primary" href="{% url 'curriculo_admin:admin_conteudo_criar' %}"><i class="bi bi-plus-circle"></i> Criar conteúdo</a>
+        <div class="d-flex gap-2">
+            <form method="post" action="{% url 'curriculo_admin:admin_conteudos_publicar_rascunhos' %}" onsubmit="return confirm('Publicar todos os conteúdos que estão em rascunho?');">
+                {% csrf_token %}
+                <button class="btn btn-success" type="submit" {% if not total_rascunhos %}disabled{% endif %}>
+                    <i class="bi bi-upload"></i> Publicar rascunhos ({{ total_rascunhos }})
+                </button>
+            </form>
+            <a class="btn btn-primary" href="{% url 'curriculo_admin:admin_conteudo_criar' %}"><i class="bi bi-plus-circle"></i> Criar conteúdo</a>
+        </div>
     </div>
 
     <form method="get" class="filters-box">

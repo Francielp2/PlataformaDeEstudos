@@ -44,7 +44,11 @@
                     {% endif %}
                     <span class="badge text-bg-secondary mb-2">{{ conteudo.get_dificuldade_display }}</span>
                     <p class="text-muted">{{ conteudo.resumo|truncatewords:24 }}</p>
-                    <a class="btn btn-sm btn-outline-primary" href="{% url 'curriculo:conteudo_detalhe' conteudo.materia.slug conteudo.slug %}">Estudar</a>
+                    <div class="d-flex flex-wrap gap-2">
+                        <a class="btn btn-sm btn-outline-primary" href="{% url 'curriculo:conteudo_detalhe' conteudo.materia.slug conteudo.slug %}">Estudar</a>
+                        {% include "estudos/partials/botao_minha_lista_conteudo.html" %}
+                        {% include "estudos/partials/botao_estudado_conteudo.html" %}
+                    </div>
                 </div>
             </div>
         {% empty %}

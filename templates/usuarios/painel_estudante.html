@@ -22,10 +22,11 @@
         <h2 class="h5">Situação atual</h2>
         <ul class="status-list">
             <li>Nenhum simulado realizado.</li>
-            <li>Nenhum conteúdo adicionado à Minha lista.</li>
+            <li>{{ total_minha_lista }} {% if total_minha_lista == 1 %}item na Minha lista{% else %}itens na Minha lista{% endif %}.</li>
+            <li>{{ total_estudados }} {% if total_estudados == 1 %}conteúdo estudado{% else %}conteúdos estudados{% endif %}.</li>
         </ul>
         <p class="mb-0 text-muted">
-            As funcionalidades acadêmicas serão adicionadas nas próximas etapas do projeto.
+            As marcações são manuais e independentes entre si.
         </p>
     </section>
 
@@ -39,7 +40,10 @@
                 <a class="shortcut" href="{% url 'usuarios:funcionalidade_futura' 'fazer-simulado' %}">Simulados</a>
             </div>
             <div class="col-md-3">
-                <a class="shortcut" href="{% url 'usuarios:funcionalidade_futura' 'minha-lista' %}">Minha lista</a>
+                <a class="shortcut" href="{% url 'estudos:minha_lista' %}">Minha lista</a>
+            </div>
+            <div class="col-md-3">
+                <a class="shortcut" href="{% url 'estudos:conteudos_estudados' %}">Estudados</a>
             </div>
         </div>
     </section>

@@ -21,6 +21,10 @@
             <p class="small text-muted">Pertence a: {{ conteudo.pai.titulo }}</p>
         {% endif %}
         <span class="badge text-bg-secondary mb-3">{{ conteudo.get_dificuldade_display }}</span>
+        <div class="d-flex flex-wrap gap-2 mb-4">
+            {% include "estudos/partials/botao_minha_lista_conteudo.html" %}
+            {% include "estudos/partials/botao_estudado_conteudo.html" %}
+        </div>
         <h2 class="h5">Resumo</h2>
         <p>{{ conteudo.resumo }}</p>
 
@@ -47,7 +51,11 @@
                             <h3 class="h6">{{ subconteudo.titulo }}</h3>
                             <span class="badge text-bg-secondary mb-2">{{ subconteudo.get_dificuldade_display }}</span>
                             <p class="text-muted">{{ subconteudo.resumo|truncatewords:24 }}</p>
-                            <a class="btn btn-sm btn-outline-primary" href="{% url 'curriculo:conteudo_detalhe' materia.slug subconteudo.slug %}">Estudar</a>
+                            <div class="d-flex flex-wrap gap-2">
+                                <a class="btn btn-sm btn-outline-primary" href="{% url 'curriculo:conteudo_detalhe' materia.slug subconteudo.slug %}">Estudar</a>
+                                {% include "estudos/partials/botao_minha_lista_conteudo.html" with conteudo=subconteudo %}
+                                {% include "estudos/partials/botao_estudado_conteudo.html" with conteudo=subconteudo %}
+                            </div>
                         </div>
                     </div>
                 {% endfor %}

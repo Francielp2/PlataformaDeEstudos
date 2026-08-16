@@ -1,0 +1,9 @@
+<form method="post" action="{% url 'estudos:alternar_conteudo_estudado' conteudo.pk %}" class="d-inline">
+    {% csrf_token %}
+    <input type="hidden" name="next" value="{{ request.get_full_path }}">
+    {% if conteudo.pk in ids_conteudos_estudados %}
+        <button class="btn btn-sm btn-success" type="submit">Estudado</button>
+    {% else %}
+        <button class="btn btn-sm btn-outline-success" type="submit">Marcar como estudado</button>
+    {% endif %}
+</form>

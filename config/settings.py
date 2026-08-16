@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'usuarios.apps.UsuariosConfig',
     'curriculo',
     'questoes',
+    'estudos',
 ]
 
 MIDDLEWARE = [

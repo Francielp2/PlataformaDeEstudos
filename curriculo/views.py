@@ -9,6 +9,7 @@ from django.views.decorators.http import require_POST
 
 from .forms import ConteudoForm, MateriaForm
 from .models import Conteudo, Materia
+from estudos.views import ids_organizacao_usuario
 
 
 STATUS_MATERIA = {"", "ativas", "inativas"}
@@ -34,7 +35,11 @@ def materias_lista(request):
     return render(
         request,
         "curriculo/materias_lista.html",
-        {"materias": materias, "active": "materias"},
+        {
+            "materias": materias,
+            "active": "materias",
+            **ids_organizacao_usuario(request.user),
+        },
     )
 
 
@@ -73,6 +78,7 @@ def materia_detalhe(request, slug):
             "conteudos_raiz": conteudos_raiz,
             "conteudos_sem_pai_publicado": conteudos_sem_pai_publicado,
             "active": "materias",
+            **ids_organizacao_usuario(request.user),
         },
     )
 
@@ -114,6 +120,7 @@ def conteudos_lista(request):
             "dificuldade": dificuldade,
             "dificuldades": Conteudo.DificuldadeConteudo,
             "active": "conteudos",
+            **ids_organizacao_usuario(request.user),
         },
     )
 
@@ -140,6 +147,7 @@ def conteudo_detalhe(request, materia_slug, conteudo_slug):
             "conteudo": conteudo,
             "subconteudos": subconteudos,
             "active": "conteudos",
+            **ids_organizacao_usuario(request.user),
         },
     )
 

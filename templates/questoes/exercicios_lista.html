@@ -57,7 +57,10 @@
                             {{ relacao.conteudo.titulo }}{% if not forloop.last %}, {% endif %}
                         {% endfor %}
                     </p>
-                    <a class="btn btn-sm btn-outline-primary" href="{% url 'questoes:questao_detalhe' questao.pk %}">Resolver questão</a>
+                    <div class="d-flex flex-wrap gap-2">
+                        <a class="btn btn-sm btn-outline-primary" href="{% url 'questoes:questao_detalhe' questao.pk %}">Resolver questão</a>
+                        {% include "estudos/partials/botao_minha_lista_questao.html" %}
+                    </div>
                 </div>
             </div>
         {% empty %}

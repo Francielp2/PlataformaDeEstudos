@@ -1,0 +1,86 @@
+{% extends "usuarios/base_interno.html" %}
+
+{% block title %}Minha Lista{% endblock %}
+
+{% block content %}
+    <div class="page-heading">
+        <h1>Minha Lista</h1>
+        <p>Itens salvos manualmente para organizar seus estudos.</p>
+    </div>
+
+    <form method="get" class="row g-2 mb-4">
+        <div class="col-md-10">
+            <select class="form-select" name="tipo" aria-label="Filtrar por tipo">
+                <option value="" {% if not tipo %}selected{% endif %}>Todos</option>
+                <option value="materias" {% if tipo == "materias" %}selected{% endif %}>Matérias</option>
+                <option value="conteudos" {% if tipo == "conteudos" %}selected{% endif %}>Conteúdos</option>
+                <option value="questoes" {% if tipo == "questoes" %}selected{% endif %}>Questões</option>
+            </select>
+        </div>
+        <div class="col-md-2 d-grid">
+            <button class="btn btn-outline-primary" type="submit">Filtrar</button>
+        </div>
+    </form>
+
+    <div class="row g-3">
+        {% for item in itens %}
+            <div class="col-md-4">
+                <div class="section-box h-100">
+                    <span class="badge text-bg-secondary mb-2">{{ item.tipo_display }}</span>
+
+                    {% if item.materia %}
+                        <h2 class="h5">{{ item.materia.nome }}</h2>
+                        {% if item.materia.descricao %}
+                            <p class="text-muted">{{ item.materia.descricao|truncatewords:24 }}</p>
+                        {% endif %}
+                        {% if item.materia.ativa %}
+                            <a class="btn btn-sm btn-outline-primary" href="{% url 'curriculo:materia_detalhe' item.materia.slug %}">Acessar</a>
+                        {% else %}
+                            <span class="badge text-bg-warning">Indisponível</span>
+                        {% endif %}
+                    {% elif item.conteudo %}
+                        <h2 class="h5">{{ item.conteudo.titulo }}</h2>
+                        <p class="small text-muted mb-1">{{ item.conteudo.materia.nome }}</p>
+                        <span class="badge text-bg-secondary mb-2">{{ item.conteudo.get_dificuldade_display }}</span>
+                        {% if item.conteudo.pk in ids_conteudos_estudados %}
+                            <span class="badge text-bg-success mb-2">Estudado</span>
+                        {% endif %}
+                        <p class="text-muted">{{ item.conteudo.resumo|truncatewords:24 }}</p>
+                        {% if item.conteudo.materia.ativa and item.conteudo.status == "published" %}
+                            <a class="btn btn-sm btn-outline-primary" href="{% url 'curriculo:conteudo_detalhe' item.conteudo.materia.slug item.conteudo.slug %}">Acessar</a>
+                        {% else %}
+                            <span class="badge text-bg-warning">Indisponível</span>
+                        {% endif %}
+                    {% elif item.questao %}
+                        <h2 class="h5">{{ item.questao.codigo }}</h2>
+                        <p class="small text-muted mb-1">{{ item.questao.materia.nome }}</p>
+                        <span class="badge text-bg-secondary mb-2">{{ item.questao.get_dificuldade_display }}</span>
+                        <p class="small text-muted">
+                            {% for relacao in item.questao.questao_conteudos.all %}
+                                {{ relacao.conteudo.titulo }}{% if not forloop.last %}, {% endif %}
+                            {% endfor %}
+                        </p>
+                        <p>{{ item.questao.enunciado|truncatewords:24 }}</p>
+                        {% if item.questao.materia.ativa and item.questao.status == "published" %}
+                            <a class="btn btn-sm btn-outline-primary" href="{% url 'questoes:questao_detalhe' item.questao.pk %}">Resolver</a>
+                        {% else %}
+                            <span class="badge text-bg-warning">Indisponível</span>
+                        {% endif %}
+                    {% endif %}
+
+                    <form method="post" action="{% url 'estudos:remover_item_minha_lista' item.pk %}" class="mt-3">
+                        {% csrf_token %}
+                        <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                        <button class="btn btn-sm btn-outline-danger" type="submit">Remover da Minha Lista</button>
+                    </form>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col-12">
+                <div class="section-box">
+                    <p class="mb-0">Nenhum item salvo na Minha Lista.</p>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

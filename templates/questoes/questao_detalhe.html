@@ -16,6 +16,9 @@
                 {{ relacao.conteudo.titulo }}{% if not forloop.last %}, {% endif %}
             {% endfor %}
         </p>
+        <div class="mt-3">
+            {% include "estudos/partials/botao_minha_lista_questao.html" %}
+        </div>
     </section>
 
     <form method="post" class="section-box">

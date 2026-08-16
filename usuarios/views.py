@@ -17,12 +17,12 @@ from .forms import (
     UsuarioAdminForm,
 )
 from .models import PerfilEstudante
+from estudos.models import ConteudoEstudado, ItemMinhaLista
 
 
 FUNCIONALIDADES_ESTUDANTE = {
     "fazer-simulado": "Fazer simulado",
     "meus-simulados": "Meus simulados",
-    "minha-lista": "Minha lista",
     "desempenho": "Meu desempenho",
 }
 
@@ -157,10 +157,17 @@ def painel(request):
 @login_required(login_url="usuarios:login")
 def painel_estudante(request):
     perfil, _ = PerfilEstudante.objects.get_or_create(usuario=request.user)
+    total_minha_lista = ItemMinhaLista.objects.filter(usuario=request.user).count()
+    total_estudados = ConteudoEstudado.objects.filter(usuario=request.user).count()
     return render(
         request,
         "usuarios/painel_estudante.html",
-        {"perfil": perfil, "active": "inicio"},
+        {
+            "perfil": perfil,
+            "total_minha_lista": total_minha_lista,
+            "total_estudados": total_estudados,
+            "active": "inicio",
+        },
     )
 
 

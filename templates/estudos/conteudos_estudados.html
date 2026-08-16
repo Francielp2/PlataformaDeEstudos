@@ -1,0 +1,70 @@
+{% extends "usuarios/base_interno.html" %}
+
+{% block title %}Conteúdos estudados{% endblock %}
+
+{% block content %}
+    <div class="page-heading">
+        <h1>Conteúdos estudados</h1>
+        <p>Conteúdos que você marcou manualmente como estudados.</p>
+    </div>
+
+    <form method="get" class="row g-2 mb-4">
+        <div class="col-md-4">
+            <input class="form-control" type="search" name="q" value="{{ busca }}" placeholder="Buscar por título">
+        </div>
+        <div class="col-md-3">
+            <select class="form-select" name="materia" aria-label="Filtrar por matéria">
+                <option value="" {% if not materia_slug %}selected{% endif %}>Todas as matérias</option>
+                {% for materia in materias %}
+                    <option value="{{ materia.slug }}" {% if materia_slug == materia.slug %}selected{% endif %}>{{ materia.nome }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-3">
+            <select class="form-select" name="dificuldade" aria-label="Filtrar por dificuldade">
+                <option value="" {% if not dificuldade %}selected{% endif %}>Todas as dificuldades</option>
+                {% for item in dificuldades %}
+                    <option value="{{ item.value }}" {% if dificuldade == item.value %}selected{% endif %}>{{ item.label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-2 d-grid">
+            <button class="btn btn-outline-primary" type="submit">Filtrar</button>
+        </div>
+    </form>
+
+    <div class="row g-3">
+        {% for estudado in estudados %}
+            {% with conteudo=estudado.conteudo %}
+                <div class="col-md-4">
+                    <div class="section-box h-100">
+                        <p class="small text-muted mb-1">{{ conteudo.materia.nome }}</p>
+                        <h2 class="h5">{{ conteudo.titulo }}</h2>
+                        <span class="badge text-bg-secondary mb-2">{{ conteudo.get_dificuldade_display }}</span>
+                        {% if conteudo.pk in ids_conteudos_minha_lista %}
+                            <span class="badge text-bg-primary mb-2">Minha Lista</span>
+                        {% endif %}
+                        <p class="small text-muted">Marcado em {{ estudado.marcado_em|date:"d/m/Y H:i" }}</p>
+                        <p class="text-muted">{{ conteudo.resumo|truncatewords:24 }}</p>
+                        {% if conteudo.materia.ativa and conteudo.status == "published" %}
+                            <a class="btn btn-sm btn-outline-primary" href="{% url 'curriculo:conteudo_detalhe' conteudo.materia.slug conteudo.slug %}">Acessar</a>
+                        {% else %}
+                            <span class="badge text-bg-warning">Indisponível</span>
+                        {% endif %}
+                        <form method="post" action="{% url 'estudos:alternar_conteudo_estudado' conteudo.pk %}" class="d-inline">
+                            {% csrf_token %}
+                            <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                            <button class="btn btn-sm btn-outline-danger" type="submit">Desmarcar como estudado</button>
+                        </form>
+                    </div>
+                </div>
+            {% endwith %}
+        {% empty %}
+            <div class="col-12">
+                <div class="section-box">
+                    <p class="mb-0">Nenhum conteúdo marcado como estudado.</p>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

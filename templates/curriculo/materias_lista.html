@@ -16,7 +16,10 @@
                     {% if materia.descricao %}
                         <p class="text-muted">{{ materia.descricao|truncatewords:24 }}</p>
                     {% endif %}
-                    <a class="btn btn-sm btn-outline-primary" href="{% url 'curriculo:materia_detalhe' materia.slug %}">Visualizar</a>
+                    <div class="d-flex flex-wrap gap-2">
+                        <a class="btn btn-sm btn-outline-primary" href="{% url 'curriculo:materia_detalhe' materia.slug %}">Visualizar</a>
+                        {% include "estudos/partials/botao_minha_lista_materia.html" %}
+                    </div>
                 </div>
             </div>
         {% empty %}

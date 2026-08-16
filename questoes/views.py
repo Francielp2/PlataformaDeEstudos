@@ -10,6 +10,7 @@ from django.urls import reverse
 from django.views.decorators.http import require_POST
 
 from curriculo.models import Conteudo, Materia
+from estudos.views import ids_organizacao_usuario
 
 from .forms import AlternativaFormSet, QuestaoForm, ResponderQuestaoForm
 from .models import Alternativa, Questao, QuestaoConteudo, RespostaQuestao
@@ -122,6 +123,7 @@ def exercicios_lista(request):
             "querystring": query_params.urlencode(),
             "total_encontrado": paginator.count,
             "active": "exercicios",
+            **ids_organizacao_usuario(request.user),
             **filtros,
         },
     )
@@ -149,7 +151,12 @@ def questao_detalhe(request, pk):
     return render(
         request,
         "questoes/questao_detalhe.html",
-        {"questao": questao, "form": form, "active": "exercicios"},
+        {
+            "questao": questao,
+            "form": form,
+            "active": "exercicios",
+            **ids_organizacao_usuario(request.user),
+        },
     )
 
 

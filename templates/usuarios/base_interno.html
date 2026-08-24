@@ -44,6 +44,9 @@
                     <button class="btn btn-outline-secondary btn-sm menu-toggle" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar" aria-controls="mobileSidebar" aria-expanded="false" aria-label="Abrir menu">
                         <i class="bi bi-list"></i>
                     </button>
+                    <button class="btn btn-outline-secondary btn-sm" type="button" id="appBackButton" data-fallback="{% if request.user.is_staff %}{% url 'usuarios:admin_painel' %}{% else %}{% url 'usuarios:painel_estudante' %}{% endif %}">
+                        <i class="bi bi-arrow-left"></i> Voltar
+                    </button>
                     <span class="mobile-app-label">ENEM</span>
                     <div class="user-summary">
                         <div class="user-avatar">{{ request.user.first_name|default:request.user.email|slice:":1" }}{% if request.user.last_name %}{{ request.user.last_name|slice:":1" }}{% endif %}</div>
@@ -72,16 +75,28 @@
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             const mobileSidebar = document.getElementById("mobileSidebar");
-            if (!mobileSidebar || !window.bootstrap) {
+            if (mobileSidebar && window.bootstrap) {
+                mobileSidebar.querySelectorAll(".sidebar-nav a").forEach(function (link) {
+                    link.addEventListener("click", function () {
+                        const instance = bootstrap.Offcanvas.getInstance(mobileSidebar);
+                        if (instance) {
+                            instance.hide();
+                        }
+                    });
+                });
+            }
+
+            const backButton = document.getElementById("appBackButton");
+            if (!backButton) {
                 return;
             }
-            mobileSidebar.querySelectorAll(".sidebar-nav a").forEach(function (link) {
-                link.addEventListener("click", function () {
-                    const instance = bootstrap.Offcanvas.getInstance(mobileSidebar);
-                    if (instance) {
-                        instance.hide();
-                    }
-                });
+            backButton.addEventListener("click", function () {
+                const fallback = backButton.dataset.fallback || "/";
+                if (document.referrer && new URL(document.referrer).origin === window.location.origin) {
+                    window.history.back();
+                    return;
+                }
+                window.location.href = fallback;
             });
         });
     </script>

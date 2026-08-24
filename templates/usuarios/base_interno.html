@@ -44,9 +44,11 @@
                     <button class="btn btn-outline-secondary btn-sm menu-toggle" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar" aria-controls="mobileSidebar" aria-expanded="false" aria-label="Abrir menu">
                         <i class="bi bi-list"></i>
                     </button>
-                    <button class="btn btn-outline-secondary btn-sm" type="button" id="appBackButton" data-fallback="{% if request.user.is_staff %}{% url 'usuarios:admin_painel' %}{% else %}{% url 'usuarios:painel_estudante' %}{% endif %}">
-                        <i class="bi bi-arrow-left"></i> Voltar
-                    </button>
+                    {% if request.resolver_match.url_name != "painel_estudante" and request.resolver_match.url_name != "admin_painel" %}
+                        <button class="btn btn-outline-secondary btn-sm" type="button" id="appBackButton" data-login-url="{% url 'usuarios:login' %}" data-fallback="{% if request.user.is_staff %}{% url 'usuarios:admin_painel' %}{% else %}{% url 'usuarios:painel_estudante' %}{% endif %}">
+                            <i class="bi bi-arrow-left"></i> Voltar
+                        </button>
+                    {% endif %}
                     <span class="mobile-app-label">ENEM</span>
                     <div class="user-summary">
                         <div class="user-avatar">{{ request.user.first_name|default:request.user.email|slice:":1" }}{% if request.user.last_name %}{{ request.user.last_name|slice:":1" }}{% endif %}</div>
@@ -92,9 +94,15 @@
             }
             backButton.addEventListener("click", function () {
                 const fallback = backButton.dataset.fallback || "/";
-                if (document.referrer && new URL(document.referrer).origin === window.location.origin) {
-                    window.history.back();
-                    return;
+                const loginUrl = backButton.dataset.loginUrl || "/usuarios/login/";
+                if (document.referrer) {
+                    const referrer = new URL(document.referrer);
+                    const isSameOrigin = referrer.origin === window.location.origin;
+                    const isLogin = referrer.pathname === loginUrl || referrer.pathname.startsWith(loginUrl);
+                    if (isSameOrigin && !isLogin && window.history.length > 1) {
+                        window.history.back();
+                        return;
+                    }
                 }
                 window.location.href = fallback;
             });

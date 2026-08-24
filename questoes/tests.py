@@ -3,6 +3,7 @@ from django.core.exceptions import ValidationError
 from django.db import IntegrityError, transaction
 from django.test import TestCase
 from django.urls import reverse
+import json
 
 from curriculo.models import Conteudo, Materia
 
@@ -529,6 +530,159 @@ class AdminQuestaoViewTests(QuestaoTestMixin, TestCase):
         questao.refresh_from_db()
         self.assertEqual(questao.status, Questao.StatusQuestao.RASCUNHO)
 
+    def test_admin_acessa_importacao_json_e_estudante_nao_acessa(self):
+        url = reverse("questoes_admin:admin_questoes_importar_json")
+        self.client.force_login(self.staff)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Importar questões por JSON")
+
+        self.client.force_login(self.estudante)
+        self.assertEqual(self.client.get(url).status_code, 403)
+        self.assertEqual(self.client.post(url, {"json_questoes": "{}"}).status_code, 403)
+
+    def test_importacao_json_valida_cria_questao_alternativas_e_conteudos(self):
+        self.client.force_login(self.staff)
+        response = self.client.post(
+            reverse("questoes_admin:admin_questoes_importar_json"),
+            {"json_questoes": json.dumps(self._payload_importacao("JSON-001"))},
+            follow=True,
+        )
+
+        self.assertRedirects(response, reverse("questoes_admin:admin_questoes_lista"))
+        questao = Questao.objects.get(codigo="JSON-001")
+        self.assertEqual(questao.status, Questao.StatusQuestao.RASCUNHO)
+        self.assertEqual(questao.materia, self.matematica)
+        self.assertEqual(questao.alternativas.count(), 3)
+        self.assertEqual(questao.alternativas.get(correta=True).chave, "C")
+        self.assertEqual(questao.questao_conteudos.count(), 2)
+        self.assertEqual(
+            questao.questao_conteudos.get(principal=True).conteudo,
+            self.conteudo,
+        )
+
+    def test_importacao_json_com_varias_questoes_cria_todas(self):
+        self.client.force_login(self.staff)
+        payload = self._payload_importacao("JSON-002")
+        payload["questoes"].append(self._item_importacao("JSON-003"))
+
+        response = self.client.post(
+            reverse("questoes_admin:admin_questoes_importar_json"),
+            {"json_questoes": json.dumps(payload)},
+        )
+
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(Questao.objects.filter(codigo="JSON-002").exists())
+        self.assertTrue(Questao.objects.filter(codigo="JSON-003").exists())
+
+    def test_importacao_json_invalido_nao_cria_nada(self):
+        self.client.force_login(self.staff)
+        response = self.client.post(
+            reverse("questoes_admin:admin_questoes_importar_json"),
+            {"json_questoes": "{"},
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(Questao.objects.filter(codigo__startswith="JSON-").exists())
+        self.assertContains(response, "O JSON informado é inválido")
+
+    def test_importacao_json_segunda_questao_invalida_causa_rollback(self):
+        self.client.force_login(self.staff)
+        payload = self._payload_importacao("JSON-004")
+        invalida = self._item_importacao("JSON-005")
+        invalida["alternativas"] = []
+        payload["questoes"].append(invalida)
+
+        response = self.client.post(
+            reverse("questoes_admin:admin_questoes_importar_json"),
+            {"json_questoes": json.dumps(payload)},
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(Questao.objects.filter(codigo="JSON-004").exists())
+        self.assertFalse(Questao.objects.filter(codigo="JSON-005").exists())
+
+    def test_importacao_json_rejeita_materia_e_conteudo_invalidos(self):
+        casos = [
+            ("JSON-006", {"materia": "matematica-avancada"}, "matéria"),
+            ("JSON-007", {"conteudos": ["nao-existe"], "conteudo_principal": "nao-existe"}, "conteúdo"),
+            (
+                "JSON-008",
+                {"conteudos": [self.conteudo_fisica.slug], "conteudo_principal": self.conteudo_fisica.slug},
+                "não pertence",
+            ),
+        ]
+        self.client.force_login(self.staff)
+        for codigo, alteracoes, texto_erro in casos:
+            payload = self._payload_importacao(codigo)
+            payload["questoes"][0].update(alteracoes)
+            response = self.client.post(
+                reverse("questoes_admin:admin_questoes_importar_json"),
+                {"json_questoes": json.dumps(payload)},
+            )
+            self.assertEqual(response.status_code, 200)
+            self.assertContains(response, texto_erro)
+            self.assertFalse(Questao.objects.filter(codigo=codigo).exists())
+
+    def test_importacao_json_rejeita_alternativas_invalidas(self):
+        casos = [
+            ("JSON-009", [(0, False), (1, False), (2, False)], "nenhuma alternativa"),
+            ("JSON-010", [(0, True), (1, True), (2, False)], "duas alternativas"),
+        ]
+        self.client.force_login(self.staff)
+        for codigo, corretas, texto_erro in casos:
+            payload = self._payload_importacao(codigo)
+            for indice, correta in corretas:
+                payload["questoes"][0]["alternativas"][indice]["correta"] = correta
+            response = self.client.post(
+                reverse("questoes_admin:admin_questoes_importar_json"),
+                {"json_questoes": json.dumps(payload)},
+            )
+            self.assertEqual(response.status_code, 200)
+            self.assertContains(response, texto_erro)
+            self.assertFalse(Questao.objects.filter(codigo=codigo).exists())
+
+    def test_importacao_json_rejeita_chaves_duplicadas_gabarito_divergente_e_imagem(self):
+        casos = [
+            ("JSON-011", {"alternativas": [{"chave": "A", "texto": "A", "correta": False, "ordem": 1}, {"chave": "A", "texto": "B", "correta": False, "ordem": 2}, {"chave": "C", "texto": "C", "correta": True, "ordem": 3}]}, "duplicada"),
+            ("JSON-012", {"gabarito": "B"}, "diverge"),
+            ("JSON-013", {"requer_imagem": True}, "requer imagem"),
+        ]
+        self.client.force_login(self.staff)
+        for codigo, alteracoes, texto_erro in casos:
+            payload = self._payload_importacao(codigo)
+            payload["questoes"][0].update(alteracoes)
+            response = self.client.post(
+                reverse("questoes_admin:admin_questoes_importar_json"),
+                {"json_questoes": json.dumps(payload)},
+            )
+            self.assertEqual(response.status_code, 200)
+            self.assertContains(response, texto_erro)
+            self.assertFalse(Questao.objects.filter(codigo=codigo).exists())
+
+    def test_importacao_json_rejeita_codigo_duplicado(self):
+        self.criar_questao("JSON-014")
+        self.client.force_login(self.staff)
+        response = self.client.post(
+            reverse("questoes_admin:admin_questoes_importar_json"),
+            {"json_questoes": json.dumps(self._payload_importacao("JSON-014"))},
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Questão JSON-014 já existe.")
+
+    def test_importacao_json_respeita_status_publicado_quando_valido(self):
+        self.client.force_login(self.staff)
+        payload = self._payload_importacao("JSON-015")
+        payload["questoes"][0]["status"] = Questao.StatusQuestao.PUBLICADA
+        response = self.client.post(
+            reverse("questoes_admin:admin_questoes_importar_json"),
+            {"json_questoes": json.dumps(payload)},
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(
+            Questao.objects.get(codigo="JSON-015").status,
+            Questao.StatusQuestao.PUBLICADA,
+        )
+
     def test_admin_busca_e_filtros(self):
         publicada = self.criar_questao("MAT-039", dificuldade=Questao.DificuldadeQuestao.FACIL)
         arquivada = self.criar_questao(
@@ -608,3 +762,32 @@ class AdminQuestaoViewTests(QuestaoTestMixin, TestCase):
         for indice, alternativa in enumerate(alternativas):
             data[f"alternativas-{indice}-id"] = str(alternativa.pk)
         return data
+
+    def _payload_importacao(self, codigo):
+        return {"materia": self.matematica.slug, "questoes": [self._item_importacao(codigo)]}
+
+    def _item_importacao(self, codigo):
+        return {
+            "codigo": codigo,
+            "ano": 2024,
+            "caderno": "7 - Azul",
+            "numero_questao": 140,
+            "enunciado": f"Enunciado importado {codigo}",
+            "explicacao": "Explicação importada",
+            "dificuldade": Questao.DificuldadeQuestao.MEDIA,
+            "tipo_fonte": Questao.TipoFonte.ENEM,
+            "fonte_nome": "ENEM",
+            "fonte_ano": 2024,
+            "fonte_url": "https://example.com",
+            "status": Questao.StatusQuestao.RASCUNHO,
+            "conteudo_principal": self.conteudo.slug,
+            "conteudos": [self.conteudo.slug, self.outro_conteudo.slug],
+            "gabarito": "C",
+            "requer_imagem": False,
+            "observacao_revisao": "Ignorado pela importação.",
+            "alternativas": [
+                {"chave": "A", "texto": "Alternativa A", "correta": False, "ordem": 1},
+                {"chave": "B", "texto": "Alternativa B", "correta": False, "ordem": 2},
+                {"chave": "C", "texto": "Alternativa C", "correta": True, "ordem": 3},
+            ],
+        }

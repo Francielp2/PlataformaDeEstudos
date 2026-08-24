@@ -12,6 +12,11 @@ urlpatterns = [
         views.admin_questoes_publicar_rascunhos,
         name="admin_questoes_publicar_rascunhos",
     ),
+    path(
+        "importar-json/",
+        views.admin_questoes_importar_json,
+        name="admin_questoes_importar_json",
+    ),
     path("criar/", views.admin_questao_criar, name="admin_questao_criar"),
     path("<uuid:pk>/", views.admin_questao_detalhe, name="admin_questao_detalhe"),
     path("<uuid:pk>/editar/", views.admin_questao_editar, name="admin_questao_editar"),

@@ -1,0 +1,61 @@
+{% extends "usuarios/base_interno.html" %}
+
+{% block title %}Importar questões por JSON{% endblock %}
+
+{% block content %}
+    <div class="page-heading">
+        <h1>Importar questões por JSON</h1>
+        <p>Cole um JSON com várias questões para cadastrá-las no banco de questões individuais.</p>
+    </div>
+
+    <section class="section-box mb-3">
+        <h2 class="h6">Formato esperado</h2>
+        <p class="small text-muted mb-2">
+            Use <code>materia</code> como slug da matéria, <code>conteudos</code> como slugs dos conteúdos,
+            <code>conteudo_principal</code> como slug e marque exatamente uma alternativa com <code>correta: true</code>.
+        </p>
+        <pre class="mb-0"><code>{
+  "materia": "matematica",
+  "questoes": [
+    {
+      "codigo": "ENEM-2024-MAT-CD7-140",
+      "enunciado": "Texto da questão...",
+      "explicacao": "Explicação da resolução...",
+      "dificuldade": "medium",
+      "tipo_fonte": "enem",
+      "fonte_nome": "ENEM",
+      "fonte_ano": 2024,
+      "fonte_url": "https://...",
+      "status": "draft",
+      "conteudo_principal": "funcao-afim",
+      "conteudos": ["funcao-afim", "matematica-basica"],
+      "gabarito": "C",
+      "requer_imagem": false,
+      "alternativas": [
+        {"chave": "A", "texto": "Alternativa A", "correta": false, "ordem": 1},
+        {"chave": "B", "texto": "Alternativa B", "correta": false, "ordem": 2},
+        {"chave": "C", "texto": "Alternativa C", "correta": true, "ordem": 3}
+      ]
+    }
+  ]
+}</code></pre>
+    </section>
+
+    <form method="post" class="form-panel" novalidate>
+        {% csrf_token %}
+        {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+                {% for error in form.non_field_errors %}
+                    <div>{{ error }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        <label class="form-label" for="{{ form.json_questoes.id_for_label }}">JSON</label>
+        {{ form.json_questoes }}
+        {% for error in form.json_questoes.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+        <div class="d-flex gap-2 mt-3">
+            <button class="btn btn-primary" type="submit">Importar questões</button>
+            <a class="btn btn-outline-secondary" href="{% url 'questoes_admin:admin_questoes_lista' %}">Cancelar</a>
+        </div>
+    </form>
+{% endblock %}

@@ -186,3 +186,10 @@ class ResponderQuestaoForm(forms.Form):
             self.fields["alternativa"].label_from_instance = (
                 lambda alternativa: f"{alternativa.chave}. {alternativa.texto}"
             )
+
+
+class ImportarQuestoesJsonForm(forms.Form):
+    json_questoes = forms.CharField(
+        label="JSON de questões",
+        widget=forms.Textarea(attrs={"rows": 16, "class": "form-control font-monospace"}),
+    )

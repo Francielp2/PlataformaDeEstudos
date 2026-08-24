@@ -12,7 +12,8 @@ from django.views.decorators.http import require_POST
 from curriculo.models import Conteudo, Materia
 from estudos.views import ids_organizacao_usuario
 
-from .forms import AlternativaFormSet, QuestaoForm, ResponderQuestaoForm
+from .forms import AlternativaFormSet, ImportarQuestoesJsonForm, QuestaoForm, ResponderQuestaoForm
+from .importacao_json import importar_questoes_json
 from .models import Alternativa, Questao, QuestaoConteudo, RespostaQuestao
 
 
@@ -374,6 +375,29 @@ def admin_questoes_lista(request):
             ).count(),
             "active": "admin_questoes",
         },
+    )
+
+
+@staff_required
+def admin_questoes_importar_json(request):
+    form = ImportarQuestoesJsonForm(request.POST or None)
+    if request.method == "POST" and form.is_valid():
+        try:
+            questoes = importar_questoes_json(
+                form.cleaned_data["json_questoes"],
+                request.user,
+            )
+            messages.success(
+                request,
+                f"Importação concluída. {len(questoes)} questão(ões) cadastrada(s) com sucesso.",
+            )
+            return redirect("questoes_admin:admin_questoes_lista")
+        except ValidationError as exc:
+            form.add_error(None, exc)
+    return render(
+        request,
+        "questoes/admin_importar_json.html",
+        {"form": form, "active": "admin_questoes"},
     )
 
 

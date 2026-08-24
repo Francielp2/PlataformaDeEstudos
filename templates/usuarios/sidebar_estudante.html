@@ -6,8 +6,8 @@
     <a class="{% if active == 'conteudos' %}active{% endif %}" href="{% url 'curriculo:conteudos_lista' %}"><i class="bi bi-book"></i> Conteúdos de estudo</a>
     <a class="{% if active == 'exercicios' %}active{% endif %}" href="{% url 'questoes:exercicios_lista' %}"><i class="bi bi-pencil-square"></i> Exercícios</a>
     <span class="sidebar-group">Simulados</span>
-    <a class="{% if active == 'fazer-simulado' %}active{% endif %}" href="{% url 'usuarios:funcionalidade_futura' 'fazer-simulado' %}"><i class="bi bi-clipboard-check"></i> Fazer simulado</a>
-    <a class="{% if active == 'meus-simulados' %}active{% endif %}" href="{% url 'usuarios:funcionalidade_futura' 'meus-simulados' %}"><i class="bi bi-list-check"></i> Meus simulados</a>
+    <a class="{% if active == 'fazer-simulado' %}active{% endif %}" href="{% url 'simulados:simulados_lista' %}"><i class="bi bi-clipboard-check"></i> Fazer simulado</a>
+    <a class="{% if active == 'meus-simulados' %}active{% endif %}" href="{% url 'simulados:meus_simulados' %}"><i class="bi bi-list-check"></i> Meus simulados</a>
     <span class="sidebar-group">Organização</span>
     <a class="{% if active == 'minha-lista' %}active{% endif %}" href="{% url 'estudos:minha_lista' %}"><i class="bi bi-star"></i> Minha lista</a>
     <a class="{% if active == 'estudados' %}active{% endif %}" href="{% url 'estudos:conteudos_estudados' %}"><i class="bi bi-check-circle"></i> Estudados</a>

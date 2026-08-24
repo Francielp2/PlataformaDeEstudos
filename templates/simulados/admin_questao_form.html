@@ -1,0 +1,77 @@
+{% extends "usuarios/base_interno.html" %}
+
+{% block title %}Nova questão do simulado{% endblock %}
+
+{% block content %}
+    <div class="page-heading">
+        <h1>Nova questão do simulado</h1>
+        <p>{{ simulado.titulo }}</p>
+    </div>
+
+    <form method="post" class="form-panel" novalidate>
+        {% csrf_token %}
+        {% if form.non_field_errors %}<div class="alert alert-danger">{% for error in form.non_field_errors %}<div>{{ error }}</div>{% endfor %}</div>{% endif %}
+
+        <section class="form-section">
+            <h2 class="h5 mb-3">Dados da questão</h2>
+            <div class="row g-3">
+                <div class="col-md-4"><label class="form-label" for="{{ form.codigo.id_for_label }}">Código</label>{{ form.codigo }}{% for error in form.codigo.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}</div>
+                <div class="col-md-4"><label class="form-label" for="{{ form.dificuldade.id_for_label }}">Dificuldade</label>{{ form.dificuldade }}{% for error in form.dificuldade.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}</div>
+                <div class="col-md-4 pt-md-4"><div class="form-check mt-md-2">{{ form.salvar_no_banco }}<label class="form-check-label" for="{{ form.salvar_no_banco.id_for_label }}">Salvar também no banco de questões</label></div></div>
+                <div class="col-12"><label class="form-label" for="{{ form.enunciado.id_for_label }}">Enunciado</label>{{ form.enunciado }}{% for error in form.enunciado.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}</div>
+                <div class="col-12"><label class="form-label" for="{{ form.explicacao.id_for_label }}">Explicação</label>{{ form.explicacao }}{% for error in form.explicacao.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}</div>
+            </div>
+        </section>
+
+        <section class="form-section">
+            <h2 class="h5 mb-3">Conteúdos relacionados</h2>
+            <div class="row g-3">
+                <div class="col-lg-8">
+                    <label class="form-label">{{ form.conteudos.label }}</label>
+                    <div class="scroll-choice-list">
+                        {% for checkbox in form.conteudos %}
+                            <div class="form-check mb-2">{{ checkbox.tag }}<label class="form-check-label" for="{{ checkbox.id_for_label }}">{{ checkbox.choice_label }}</label></div>
+                        {% empty %}
+                            <p class="text-muted mb-0">Nenhum conteúdo cadastrado.</p>
+                        {% endfor %}
+                    </div>
+                    {% for error in form.conteudos.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                </div>
+                <div class="col-lg-4"><label class="form-label" for="{{ form.conteudo_principal.id_for_label }}">Conteúdo principal</label>{{ form.conteudo_principal }}{% for error in form.conteudo_principal.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}</div>
+            </div>
+        </section>
+
+        <section class="form-section">
+            <h2 class="h5 mb-3">Fonte</h2>
+            <div class="row g-3">
+                <div class="col-md-3"><label class="form-label" for="{{ form.tipo_fonte.id_for_label }}">Tipo de fonte</label>{{ form.tipo_fonte }}{% for error in form.tipo_fonte.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}</div>
+                <div class="col-md-4"><label class="form-label" for="{{ form.fonte_nome.id_for_label }}">Nome da fonte</label>{{ form.fonte_nome }}{% for error in form.fonte_nome.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}</div>
+                <div class="col-md-2"><label class="form-label" for="{{ form.fonte_ano.id_for_label }}">Ano</label>{{ form.fonte_ano }}{% for error in form.fonte_ano.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}</div>
+                <div class="col-md-3"><label class="form-label" for="{{ form.fonte_url.id_for_label }}">URL</label>{{ form.fonte_url }}{% for error in form.fonte_url.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}</div>
+            </div>
+        </section>
+
+        <section class="form-section">
+            <h2 class="h5 mb-3">Alternativas</h2>
+            {{ formset.management_form }}
+            {% if formset.non_form_errors %}<div class="alert alert-danger">{% for error in formset.non_form_errors %}<div>{{ error }}</div>{% endfor %}</div>{% endif %}
+            {% for alternativa_form in formset %}
+                <div class="border rounded p-3 mb-3">
+                    {% for hidden in alternativa_form.hidden_fields %}{{ hidden }}{% endfor %}
+                    <div class="row g-3">
+                        <div class="col-md-2"><label class="form-label" for="{{ alternativa_form.chave.id_for_label }}">Chave</label>{{ alternativa_form.chave }}</div>
+                        <div class="col-md-6"><label class="form-label" for="{{ alternativa_form.texto.id_for_label }}">Texto</label>{{ alternativa_form.texto }}</div>
+                        <div class="col-md-2"><label class="form-label" for="{{ alternativa_form.ordem.id_for_label }}">Ordem</label>{{ alternativa_form.ordem }}</div>
+                        <div class="col-md-2 pt-md-4"><div class="form-check mt-md-2">{{ alternativa_form.correta }}<label class="form-check-label" for="{{ alternativa_form.correta.id_for_label }}">Correta</label></div></div>
+                    </div>
+                    {% for field in alternativa_form.visible_fields %}{% for error in field.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}{% endfor %}
+                </div>
+            {% endfor %}
+        </section>
+
+        <div class="d-flex gap-2">
+            <button class="btn btn-primary" type="submit">Adicionar</button>
+            <a class="btn btn-outline-secondary" href="{% url 'simulados_admin:admin_simulado_questoes' simulado.pk %}">Cancelar</a>
+        </div>
+    </form>
+{% endblock %}

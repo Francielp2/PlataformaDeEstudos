@@ -14,6 +14,7 @@
         <div class="col-md-2"><div class="metric"><div class="metric-icon"><i class="bi bi-person-gear"></i></div><span>Staff</span><strong>{{ total_staff }}</strong><span>administrativos</span></div></div>
         <div class="col-md-2"><div class="metric"><div class="metric-icon"><i class="bi bi-person-check"></i></div><span>Ativos</span><strong>{{ total_ativos }}</strong><span>contas ativas</span></div></div>
         <div class="col-md-2"><div class="metric"><div class="metric-icon"><i class="bi bi-person-dash"></i></div><span>Inativos</span><strong>{{ total_inativos }}</strong><span>contas inativas</span></div></div>
+        <div class="col-md-2"><div class="metric"><div class="metric-icon"><i class="bi bi-clipboard-check"></i></div><span>Simulados</span><strong>{{ total_simulados }}</strong><span>cadastrados</span></div></div>
     </div>
 
     <section class="section-box mb-4">
@@ -63,7 +64,7 @@
             <div class="col-md-3"><a class="shortcut" href="{% url 'curriculo_admin:admin_materias_lista' %}"><strong><i class="bi bi-journal-bookmark"></i> Matérias</strong><span>Gerenciar disciplinas</span></a></div>
             <div class="col-md-3"><a class="shortcut" href="{% url 'curriculo_admin:admin_conteudos_lista' %}"><strong><i class="bi bi-book"></i> Conteúdos</strong><span>Temas de estudo</span></a></div>
             <div class="col-md-3"><a class="shortcut" href="{% url 'questoes_admin:admin_questoes_lista' %}"><strong><i class="bi bi-question-circle"></i> Questões</strong><span>Banco de exercícios</span></a></div>
-            <div class="col-md-3"><a class="shortcut" href="{% url 'usuarios:admin_funcionalidade_futura' 'simulados' %}"><strong><i class="bi bi-clipboard-check"></i> Simulados</strong><span>Em breve</span></a></div>
+            <div class="col-md-3"><a class="shortcut" href="{% url 'simulados_admin:admin_simulados_lista' %}"><strong><i class="bi bi-clipboard-check"></i> Simulados</strong><span>Gerenciar avaliações</span></a></div>
         </div>
     </section>
 {% endblock %}

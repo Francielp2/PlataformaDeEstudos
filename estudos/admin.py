@@ -12,6 +12,7 @@ class ItemMinhaListaAdmin(admin.ModelAdmin):
         "materia__nome",
         "conteudo__titulo",
         "questao__codigo",
+        "simulado__titulo",
     )
     readonly_fields = ("adicionado_em",)
 

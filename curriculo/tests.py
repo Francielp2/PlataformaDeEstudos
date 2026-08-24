@@ -6,6 +6,7 @@ from django.test import TestCase
 from django.urls import reverse
 
 from usuarios.models import PerfilEstudante
+from questoes.models import Questao
 
 from .forms import ConteudoForm, MateriaForm
 from .models import Conteudo, Materia
@@ -106,6 +107,8 @@ class CurriculoMateriaTests(TestCase):
         self.assertEqual(str(materia), "Redação")
 
     def test_model_ordenacao_padrao(self):
+        Questao.objects.all().delete()
+        Conteudo.objects.all().delete()
         Materia.objects.all().delete()
         self.criar_materia("Química", ordem_exibicao=2)
         self.criar_materia("Física", ordem_exibicao=1)

@@ -6,7 +6,7 @@
     <a class="{% if active == 'admin_materias' %}active{% endif %}" href="{% url 'curriculo_admin:admin_materias_lista' %}"><i class="bi bi-journal-bookmark"></i> Matérias</a>
     <a class="{% if active == 'admin_conteudos' %}active{% endif %}" href="{% url 'curriculo_admin:admin_conteudos_lista' %}"><i class="bi bi-book"></i> Conteúdos</a>
     <a class="{% if active == 'admin_questoes' %}active{% endif %}" href="{% url 'questoes_admin:admin_questoes_lista' %}"><i class="bi bi-question-circle"></i> Questões</a>
-    <a class="{% if active == 'simulados' %}active{% endif %}" href="{% url 'usuarios:admin_funcionalidade_futura' 'simulados' %}"><i class="bi bi-clipboard-check"></i> Simulados</a>
+    <a class="{% if active == 'admin_simulados' %}active{% endif %}" href="{% url 'simulados_admin:admin_simulados_lista' %}"><i class="bi bi-clipboard-check"></i> Simulados</a>
     <span class="sidebar-group">Conta</span>
     <a class="{% if active == 'perfil' %}active{% endif %}" href="{% url 'usuarios:perfil' %}"><i class="bi bi-person"></i> Perfil</a>
     <form method="post" action="{% url 'usuarios:logout' %}" class="mt-2">

@@ -1,0 +1,45 @@
+{% extends "usuarios/base_interno.html" %}
+
+{% block title %}{{ simulado.titulo }}{% endblock %}
+
+{% block content %}
+    <div class="page-heading d-flex justify-content-between align-items-start">
+        <div>
+            <h1>{{ simulado.titulo }}</h1>
+            <p>{{ simulado.get_tipo_display }}{% if simulado.materia %} - {{ simulado.materia.nome }}{% endif %}</p>
+        </div>
+        <div class="d-flex flex-wrap gap-2">
+            <a class="btn btn-outline-primary" href="{% url 'simulados_admin:admin_simulado_editar' simulado.pk %}">Editar dados</a>
+            <a class="btn btn-outline-secondary" href="{% url 'simulados_admin:admin_simulado_questoes' simulado.pk %}">Gerenciar questões</a>
+            <form method="post" action="{% url 'simulados_admin:admin_simulado_publicar' simulado.pk %}">{% csrf_token %}<button class="btn btn-success" type="submit">Publicar</button></form>
+            <form method="post" action="{% url 'simulados_admin:admin_simulado_duplicar' simulado.pk %}">{% csrf_token %}<button class="btn btn-outline-secondary" type="submit">Duplicar</button></form>
+            <form method="post" action="{% url 'simulados_admin:admin_simulado_arquivar' simulado.pk %}">{% csrf_token %}<button class="btn btn-outline-secondary" type="submit">Arquivar</button></form>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-md-3"><div class="metric"><div class="metric-icon"><i class="bi bi-question-circle"></i></div><span>Questões</span><strong>{{ simulado.questoes.count }}</strong><span>no simulado</span></div></div>
+        <div class="col-md-3"><div class="metric"><div class="metric-icon"><i class="bi bi-clock-history"></i></div><span>Realizações</span><strong>{{ total_tentativas }}</strong><span>tentativas</span></div></div>
+        <div class="col-md-3"><div class="metric"><div class="metric-icon"><i class="bi bi-flag"></i></div><span>Status</span><strong>{{ simulado.get_status_display }}</strong><span>atual</span></div></div>
+        <div class="col-md-3"><div class="metric"><div class="metric-icon"><i class="bi bi-person"></i></div><span>Criador</span><strong>{{ simulado.criado_por|default:"-" }}</strong><span>responsável</span></div></div>
+    </div>
+
+    {% if not pode_editar_estrutura %}
+        <div class="alert alert-warning">Este simulado já possui tentativas. Alterações estruturais estão bloqueadas; duplique para criar uma nova versão.</div>
+    {% endif %}
+
+    <section class="section-box">
+        <h2 class="h5">Questões</h2>
+        <ol class="mb-0">
+            {% for questao in simulado.questoes.all %}
+                <li class="mb-2">
+                    <strong>{{ questao.codigo_origem|default:"Sem código" }}</strong>
+                    <span class="badge text-bg-secondary">{{ questao.get_origem_display }}</span>
+                    {{ questao.enunciado|truncatewords:18 }}
+                </li>
+            {% empty %}
+                <li>Nenhuma questão adicionada.</li>
+            {% endfor %}
+        </ol>
+    </section>
+{% endblock %}

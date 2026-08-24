@@ -1,0 +1,65 @@
+{% extends "usuarios/base_interno.html" %}
+
+{% block title %}Simulados{% endblock %}
+
+{% block content %}
+    <div class="page-heading">
+        <h1>Simulados</h1>
+        <p>Avaliações publicadas para praticar em formato de prova.</p>
+    </div>
+
+    <form method="get" class="filters-box">
+        <div class="row g-2">
+            <div class="col-md-4"><input class="form-control" type="search" name="q" value="{{ busca }}" placeholder="Buscar simulado"></div>
+            <div class="col-md-3">
+                <select class="form-select" name="tipo">
+                    <option value="" {% if not tipo %}selected{% endif %}>Todos os tipos</option>
+                    {% for item in tipo_choices %}<option value="{{ item.value }}" {% if tipo == item.value %}selected{% endif %}>{{ item.label }}</option>{% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <select class="form-select" name="materia">
+                    <option value="" {% if not materia_slug %}selected{% endif %}>Todas as matérias</option>
+                    {% for materia in materias %}<option value="{{ materia.slug }}" {% if materia_slug == materia.slug %}selected{% endif %}>{{ materia.nome }}</option>{% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2 d-grid"><button class="btn btn-outline-primary" type="submit">Filtrar</button></div>
+        </div>
+    </form>
+
+    <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-3">
+        {% for simulado in page_obj %}
+            <div class="col">
+                <div class="app-card h-100 d-flex flex-column">
+                    <div class="d-flex justify-content-between gap-2 mb-2">
+                        <strong>{{ simulado.titulo }}</strong>
+                        <span class="badge text-bg-secondary">{{ simulado.get_tipo_display }}</span>
+                    </div>
+                    <p class="small text-muted mb-2">{% if simulado.materia %}{{ simulado.materia.nome }}{% else %}Geral{% endif %}</p>
+                    <p>{{ simulado.descricao|default:"Simulado disponível para realização."|truncatewords:28 }}</p>
+                    <p class="small text-muted mb-3">
+                        {{ simulado.total_questoes }} {% if simulado.total_questoes == 1 %}questão{% else %}questões{% endif %}
+                        <br>
+                        {% if simulado.tempo_limite %}{{ simulado.tempo_limite }} minutos{% else %}Sem limite de tempo{% endif %}
+                    </p>
+                    <div class="card-actions mt-auto">
+                        <form method="post" action="{% url 'simulados:iniciar_simulado' simulado.slug %}" class="d-inline">
+                            {% csrf_token %}
+                            <button class="btn btn-sm btn-primary" type="submit">
+                                {% if simulado.pk in ids_em_andamento %}Continuar simulado{% elif simulado.pk in ids_realizados %}Refazer{% else %}Iniciar simulado{% endif %}
+                            </button>
+                        </form>
+                        {% if simulado.pk in ids_realizados %}
+                            <a class="btn btn-sm btn-outline-secondary" href="{% url 'simulados:meus_simulados' %}">Ver histórico</a>
+                        {% endif %}
+                        {% include "estudos/partials/botao_minha_lista_simulado.html" %}
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col-12"><div class="empty-state"><i class="bi bi-clipboard-check"></i><strong>Nenhum simulado publicado.</strong><p class="mb-0">Volte mais tarde ou ajuste os filtros.</p></div></div>
+        {% endfor %}
+    </div>
+
+    {% include "partials/paginacao.html" %}
+{% endblock %}

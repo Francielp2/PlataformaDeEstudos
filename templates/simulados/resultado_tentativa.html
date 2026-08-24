@@ -1,0 +1,44 @@
+{% extends "usuarios/base_interno.html" %}
+
+{% block title %}Resultado{% endblock %}
+
+{% block content %}
+    <div class="page-heading d-flex justify-content-between align-items-start">
+        <div>
+            <h1>Resultado</h1>
+            <p>{{ tentativa.simulado.titulo }}</p>
+        </div>
+        <a class="btn btn-outline-secondary" href="{% url 'simulados:revisao_tentativa' tentativa.pk %}">Revisar tentativa</a>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-md-4"><div class="metric"><div class="metric-icon"><i class="bi bi-check2-circle"></i></div><span>Acertos</span><strong>{{ tentativa.total_acertos }} / {{ tentativa.total_questoes }}</strong><span>questões corretas</span></div></div>
+        <div class="col-md-4"><div class="metric"><div class="metric-icon"><i class="bi bi-percent"></i></div><span>Percentual</span><strong>{{ tentativa.percentual }}%</strong><span>desempenho geral</span></div></div>
+        <div class="col-md-4"><div class="metric"><div class="metric-icon"><i class="bi bi-clock"></i></div><span>Data</span><strong>{{ tentativa.finalizada_em|date:"d/m" }}</strong><span>{{ tentativa.finalizada_em|date:"H:i" }}</span></div></div>
+    </div>
+
+    <section class="section-box mb-4">
+        <h2 class="h5">Conteúdos que merecem atenção</h2>
+        {% for item in atencao %}
+            <p class="mb-2">{{ item.relacao.conteudo_titulo }} - {{ item.percentual }}% <a class="btn btn-sm btn-outline-primary ms-2" href="{% url 'curriculo:conteudo_detalhe' item.relacao.conteudo.materia.slug item.relacao.conteudo.slug %}">Revisar conteúdo</a></p>
+        {% empty %}
+            <p class="text-muted mb-0">Nenhum diagnóstico disponível.</p>
+        {% endfor %}
+    </section>
+
+    <section class="section-box">
+        <h2 class="h5">Desempenho por conteúdo</h2>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead><tr><th>Conteúdo</th><th>Questões</th><th>Acertos</th><th>Percentual</th></tr></thead>
+                <tbody>
+                    {% for item in diagnostico %}
+                        <tr><td>{{ item.relacao.conteudo_titulo }}</td><td>{{ item.questoes }}</td><td>{{ item.acertos }}</td><td>{{ item.percentual }}%</td></tr>
+                    {% empty %}
+                        <tr><td colspan="4">Nenhum conteúdo relacionado.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+{% endblock %}

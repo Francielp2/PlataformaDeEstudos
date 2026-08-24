@@ -1,0 +1,41 @@
+{% extends "usuarios/base_interno.html" %}
+
+{% block title %}Questões do simulado{% endblock %}
+
+{% block content %}
+    <div class="page-heading d-flex justify-content-between align-items-start">
+        <div>
+            <h1>Questões do simulado</h1>
+            <p>{{ simulado.titulo }}</p>
+        </div>
+        <div class="d-flex flex-wrap gap-2">
+            <a class="btn btn-outline-secondary" href="{% url 'simulados_admin:admin_adicionar_questoes_banco' simulado.pk %}">Adicionar do banco</a>
+            <a class="btn btn-outline-secondary" href="{% url 'simulados_admin:admin_nova_questao_simulado' simulado.pk %}">Nova questão</a>
+            <a class="btn btn-outline-secondary" href="{% url 'simulados_admin:admin_importar_json' simulado.pk %}">Importar JSON</a>
+        </div>
+    </div>
+    {% if not pode_editar_estrutura %}<div class="alert alert-warning">Alterações estruturais bloqueadas porque já existem tentativas.</div>{% endif %}
+    <div class="table-responsive section-box">
+        <table class="table table-hover align-middle mb-0">
+            <thead><tr><th>Ordem</th><th>Código</th><th>Origem</th><th>Enunciado</th><th>Conteúdos</th><th>Ações</th></tr></thead>
+            <tbody>
+                {% for questao in simulado.questoes.all %}
+                    <tr>
+                        <td>{{ questao.ordem }}</td>
+                        <td>{{ questao.codigo_origem|default:"-" }}</td>
+                        <td>{{ questao.get_origem_display }}</td>
+                        <td>{{ questao.enunciado|truncatewords:16 }}</td>
+                        <td>{% for relacao in questao.conteudos.all %}{{ relacao.conteudo_titulo }}{% if relacao.principal %} *{% endif %}{% if not forloop.last %}, {% endif %}{% endfor %}</td>
+                        <td class="actions">
+                            <form method="post" action="{% url 'simulados_admin:admin_mover_questao_simulado' simulado.pk questao.pk 'subir' %}" class="d-inline">{% csrf_token %}<button class="btn btn-sm btn-outline-secondary" type="submit" {% if not pode_editar_estrutura %}disabled{% endif %}>Subir</button></form>
+                            <form method="post" action="{% url 'simulados_admin:admin_mover_questao_simulado' simulado.pk questao.pk 'descer' %}" class="d-inline">{% csrf_token %}<button class="btn btn-sm btn-outline-secondary" type="submit" {% if not pode_editar_estrutura %}disabled{% endif %}>Descer</button></form>
+                            <form method="post" action="{% url 'simulados_admin:admin_remover_questao_simulado' simulado.pk questao.pk %}" class="d-inline">{% csrf_token %}<button class="btn btn-sm btn-outline-danger" type="submit" {% if not pode_editar_estrutura %}disabled{% endif %}>Remover</button></form>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="6">Nenhuma questão adicionada.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

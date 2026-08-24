@@ -1,0 +1,33 @@
+{% extends "usuarios/base_interno.html" %}
+
+{% block title %}Revisão da tentativa{% endblock %}
+
+{% block content %}
+    <div class="page-heading">
+        <h1>Revisão da tentativa</h1>
+        <p>{{ tentativa.simulado.titulo }}</p>
+    </div>
+
+    {% for questao in questoes %}
+        <div class="app-card mb-3">
+            <div class="d-flex justify-content-between gap-2 mb-2">
+                <strong>Questão {{ questao.ordem }}</strong>
+                {% if questao.respondida %}
+                    {% if questao.correta %}<span class="badge text-bg-success">Você acertou</span>{% else %}<span class="badge text-bg-warning">Você errou</span>{% endif %}
+                {% else %}
+                    <span class="badge text-bg-secondary">Não respondida</span>
+                {% endif %}
+            </div>
+            <p>{{ questao.enunciado }}</p>
+            <div class="list-group">
+                {% for alternativa in questao.alternativas %}
+                    <div class="list-group-item {% if alternativa.id == questao.resposta_id %}active{% endif %}">
+                        {{ alternativa.chave }}. {{ alternativa.texto }}
+                        {% if alternativa.id == questao.resposta_id %}<span class="ms-2">(sua resposta)</span>{% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+            <p class="small text-muted mt-3 mb-0">A explicação completa não é exibida na revisão para preservar a reutilização do simulado.</p>
+        </div>
+    {% endfor %}
+{% endblock %}

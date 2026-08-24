@@ -10,11 +10,12 @@ from django.views.decorators.http import require_POST
 
 from curriculo.models import Conteudo, Materia
 from questoes.models import Questao
+from simulados.models import Simulado
 
 from .models import ConteudoEstudado, ItemMinhaLista
 
 
-TIPOS_MINHA_LISTA = {"", "materias", "conteudos", "questoes"}
+TIPOS_MINHA_LISTA = {"", "materias", "conteudos", "questoes", "simulados"}
 DIFICULDADES_CONTEUDO = {choice.value for choice in Conteudo.DificuldadeConteudo} | {""}
 
 
@@ -41,6 +42,9 @@ def _ids_minha_lista(usuario):
         "ids_questoes_minha_lista": set(
             itens.filter(questao__isnull=False).values_list("questao_id", flat=True)
         ),
+        "ids_simulados_minha_lista": set(
+            itens.filter(simulado__isnull=False).values_list("simulado_id", flat=True)
+        ),
     }
 
 
@@ -65,6 +69,8 @@ def _alternar_item(request, **alvo):
         tipo = "Conteúdo"
     elif "questao" in alvo:
         tipo = "Questão"
+    elif "simulado" in alvo:
+        tipo = "Simulado"
 
     if item:
         item.delete()
@@ -103,6 +109,8 @@ def minha_lista(request):
             "conteudo__materia",
             "questao",
             "questao__materia",
+            "simulado",
+            "simulado__materia",
         )
         .prefetch_related("questao__questao_conteudos__conteudo")
     )
@@ -112,6 +120,8 @@ def minha_lista(request):
         itens = itens.filter(conteudo__isnull=False)
     elif tipo == "questoes":
         itens = itens.filter(questao__isnull=False)
+    elif tipo == "simulados":
+        itens = itens.filter(simulado__isnull=False)
 
     return render(
         request,
@@ -189,6 +199,17 @@ def alternar_questao_minha_lista(request, pk):
         status=Questao.StatusQuestao.PUBLICADA,
     )
     return _alternar_item(request, questao=questao)
+
+
+@require_POST
+@login_required(login_url="usuarios:login")
+def alternar_simulado_minha_lista(request, pk):
+    simulado = get_object_or_404(
+        Simulado,
+        pk=pk,
+        status=Simulado.StatusSimulado.PUBLICADO,
+    )
+    return _alternar_item(request, simulado=simulado)
 
 
 @require_POST

@@ -1,0 +1,9 @@
+<form method="post" action="{% url 'estudos:alternar_simulado_minha_lista' simulado.pk %}" class="d-inline">
+    {% csrf_token %}
+    <input type="hidden" name="next" value="{{ request.get_full_path }}">
+    {% if simulado.pk in ids_simulados_minha_lista %}
+        <button class="btn btn-sm btn-outline-secondary" type="submit"><i class="bi bi-star-fill"></i> Na Minha Lista</button>
+    {% else %}
+        <button class="btn btn-sm btn-outline-secondary" type="submit"><i class="bi bi-star"></i> Minha Lista</button>
+    {% endif %}
+</form>

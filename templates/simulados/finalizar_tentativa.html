@@ -1,0 +1,22 @@
+{% extends "usuarios/base_interno.html" %}
+
+{% block title %}Finalizar simulado{% endblock %}
+
+{% block content %}
+    <div class="page-heading">
+        <h1>Finalizar simulado</h1>
+        <p>{{ tentativa.simulado.titulo }}</p>
+    </div>
+    <div class="app-card">
+        {% if pendentes %}
+            <p>Você ainda possui {{ pendentes }} {% if pendentes == 1 %}questão sem resposta{% else %}questões sem resposta{% endif %}. Deseja finalizar mesmo assim?</p>
+        {% else %}
+            <p>Todas as questões foram respondidas. Deseja finalizar o simulado?</p>
+        {% endif %}
+        <form method="post" class="d-flex gap-2">
+            {% csrf_token %}
+            <button class="btn btn-success" type="submit">Finalizar</button>
+            <a class="btn btn-outline-secondary" href="{% url 'simulados:tentativa_questao' tentativa.pk 1 %}">Voltar</a>
+        </form>
+    </div>
+{% endblock %}

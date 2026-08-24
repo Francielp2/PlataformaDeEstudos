@@ -1,0 +1,26 @@
+{% extends "usuarios/base_interno.html" %}
+
+{% block title %}Importar JSON{% endblock %}
+
+{% block content %}
+    <div class="page-heading">
+        <h1>Importar questões por JSON</h1>
+        <p>{{ simulado.titulo }}</p>
+    </div>
+    <section class="section-box mb-3">
+        <h2 class="h6">Formato oficial</h2>
+        <pre class="mb-0"><code>{"questoes":[{"codigo":"ENEM-2024-MAT-140","enunciado":"...","explicacao":"...","dificuldade":"medium","tipo_fonte":"enem","fonte_nome":"ENEM","fonte_ano":2024,"fonte_url":"https://...","conteudo_principal":"matematica-basica","conteudos":["matematica-basica"],"alternativas":[{"chave":"A","texto":"...","correta":false,"ordem":1},{"chave":"B","texto":"...","correta":true,"ordem":2}]}]}</code></pre>
+    </section>
+    <form method="post" class="form-panel" novalidate>
+        {% csrf_token %}
+        {% if form.non_field_errors %}<div class="alert alert-danger">{% for error in form.non_field_errors %}<div>{{ error }}</div>{% endfor %}</div>{% endif %}
+        <label class="form-label" for="{{ form.json_questoes.id_for_label }}">JSON</label>
+        {{ form.json_questoes }}
+        {% for error in form.json_questoes.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+        <div class="form-check mt-3">
+            {{ form.salvar_no_banco }}
+            <label class="form-check-label" for="{{ form.salvar_no_banco.id_for_label }}">Salvar questões importadas também no banco de questões</label>
+        </div>
+        <button class="btn btn-primary mt-3" type="submit">Validar e importar</button>
+    </form>
+{% endblock %}

@@ -37,6 +37,13 @@ class ItemMinhaLista(models.Model):
         on_delete=models.PROTECT,
         related_name="itens_minha_lista",
     )
+    simulado = models.ForeignKey(
+        "simulados.Simulado",
+        null=True,
+        blank=True,
+        on_delete=models.PROTECT,
+        related_name="itens_minha_lista",
+    )
     adicionado_em = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -48,16 +55,25 @@ class ItemMinhaLista(models.Model):
                         Q(materia__isnull=False)
                         & Q(conteudo__isnull=True)
                         & Q(questao__isnull=True)
+                        & Q(simulado__isnull=True)
                     )
                     | (
                         Q(materia__isnull=True)
                         & Q(conteudo__isnull=False)
                         & Q(questao__isnull=True)
+                        & Q(simulado__isnull=True)
                     )
                     | (
                         Q(materia__isnull=True)
                         & Q(conteudo__isnull=True)
                         & Q(questao__isnull=False)
+                        & Q(simulado__isnull=True)
+                    )
+                    | (
+                        Q(materia__isnull=True)
+                        & Q(conteudo__isnull=True)
+                        & Q(questao__isnull=True)
+                        & Q(simulado__isnull=False)
                     )
                 ),
                 name="item_minha_lista_exatamente_um_alvo",
@@ -77,6 +93,11 @@ class ItemMinhaLista(models.Model):
                 condition=Q(questao__isnull=False),
                 name="unique_minha_lista_usuario_questao",
             ),
+            models.UniqueConstraint(
+                fields=["usuario", "simulado"],
+                condition=Q(simulado__isnull=False),
+                name="unique_minha_lista_usuario_simulado",
+            ),
         ]
         indexes = [
             models.Index(fields=["usuario", "-adicionado_em"]),
@@ -95,6 +116,8 @@ class ItemMinhaLista(models.Model):
             return "conteudo"
         if self.questao_id:
             return "questao"
+        if self.simulado_id:
+            return "simulado"
         return ""
 
     @property
@@ -103,6 +126,7 @@ class ItemMinhaLista(models.Model):
             "materia": "Matéria",
             "conteudo": "Conteúdo",
             "questao": "Questão",
+            "simulado": "Simulado",
         }.get(self.tipo, "")
 
     @property
@@ -113,11 +137,13 @@ class ItemMinhaLista(models.Model):
             return self.conteudo.titulo
         if self.questao_id:
             return self.questao.codigo
+        if self.simulado_id:
+            return self.simulado.titulo
         return ""
 
     def clean(self):
         super().clean()
-        alvos = [self.materia_id, self.conteudo_id, self.questao_id]
+        alvos = [self.materia_id, self.conteudo_id, self.questao_id, self.simulado_id]
         if sum(1 for alvo in alvos if alvo) != 1:
             raise ValidationError(
                 "Um item da Minha Lista deve ter exatamente um alvo."

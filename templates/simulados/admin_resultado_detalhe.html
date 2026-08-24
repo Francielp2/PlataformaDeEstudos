@@ -1,0 +1,22 @@
+{% extends "usuarios/base_interno.html" %}
+
+{% block title %}Resultado administrativo{% endblock %}
+
+{% block content %}
+    <div class="page-heading">
+        <h1>Resultado administrativo</h1>
+        <p>{{ tentativa.usuario.email }} - {{ tentativa.simulado.titulo }}</p>
+    </div>
+    <div class="row g-3 mb-4">
+        <div class="col-md-4"><div class="metric"><div class="metric-icon"><i class="bi bi-check2-circle"></i></div><span>Acertos</span><strong>{{ tentativa.total_acertos }} / {{ tentativa.total_questoes }}</strong><span>questões</span></div></div>
+        <div class="col-md-4"><div class="metric"><div class="metric-icon"><i class="bi bi-percent"></i></div><span>Percentual</span><strong>{{ tentativa.percentual }}%</strong><span>resultado</span></div></div>
+        <div class="col-md-4"><div class="metric"><div class="metric-icon"><i class="bi bi-flag"></i></div><span>Status</span><strong>{{ tentativa.get_status_display }}</strong><span>tentativa</span></div></div>
+    </div>
+    <section class="section-box">
+        <h2 class="h5">Desempenho por conteúdo</h2>
+        <table class="table table-hover align-middle mb-0">
+            <thead><tr><th>Conteúdo</th><th>Questões</th><th>Acertos</th><th>Percentual</th></tr></thead>
+            <tbody>{% for item in diagnostico %}<tr><td>{{ item.relacao.conteudo_titulo }}</td><td>{{ item.questoes }}</td><td>{{ item.acertos }}</td><td>{{ item.percentual }}%</td></tr>{% empty %}<tr><td colspan="4">Nenhum dado.</td></tr>{% endfor %}</tbody>
+        </table>
+    </section>
+{% endblock %}

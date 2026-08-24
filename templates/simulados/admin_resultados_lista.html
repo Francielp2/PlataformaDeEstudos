@@ -1,0 +1,30 @@
+{% extends "usuarios/base_interno.html" %}
+
+{% block title %}Resultados do simulado{% endblock %}
+
+{% block content %}
+    <div class="page-heading">
+        <h1>Resultados</h1>
+        <p>{{ simulado.titulo }}</p>
+    </div>
+    <div class="table-responsive section-box">
+        <table class="table table-hover align-middle mb-0">
+            <thead><tr><th>Estudante</th><th>Data</th><th>Status</th><th>Acertos</th><th>Percentual</th><th>Ações</th></tr></thead>
+            <tbody>
+                {% for tentativa in page_obj %}
+                    <tr>
+                        <td>{{ tentativa.usuario.email }}</td>
+                        <td>{{ tentativa.iniciada_em|date:"d/m/Y H:i" }}</td>
+                        <td>{{ tentativa.get_status_display }}</td>
+                        <td>{{ tentativa.total_acertos }} / {{ tentativa.total_questoes }}</td>
+                        <td>{{ tentativa.percentual }}%</td>
+                        <td><a class="btn btn-sm btn-outline-primary" href="{% url 'simulados_admin:admin_resultado_detalhe' tentativa.pk %}">Ver</a></td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="6">Nenhuma tentativa registrada.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% include "partials/paginacao.html" %}
+{% endblock %}

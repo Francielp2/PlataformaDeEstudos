@@ -1,0 +1,64 @@
+{% extends "usuarios/base_interno.html" %}
+
+{% block title %}{{ tentativa.simulado.titulo }}{% endblock %}
+
+{% block content %}
+    <div class="page-heading d-flex justify-content-between align-items-start">
+        <div>
+            <h1>{{ tentativa.simulado.titulo }}</h1>
+            <p>Questão {{ ordem }} de {{ total }}</p>
+        </div>
+        {% if tempo_restante_segundos != None %}
+            <div class="badge text-bg-secondary fs-6" id="tempo-restante" data-restante="{{ tempo_restante_segundos }}"></div>
+        {% endif %}
+    </div>
+
+    <div class="section-box mb-3">
+        <div class="d-flex flex-wrap gap-2">
+            {% for item in questoes %}
+                <a class="btn btn-sm {% if item.ordem == questao.ordem %}btn-primary{% elif item.pk in respondidas %}btn-outline-success{% else %}btn-outline-secondary{% endif %}" href="{% url 'simulados:tentativa_questao' tentativa.pk item.ordem %}">
+                    {{ item.ordem }}
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+
+    <form method="post" class="app-card">
+        {% csrf_token %}
+        {% if form.non_field_errors %}
+            <div class="alert alert-danger">{% for error in form.non_field_errors %}<div>{{ error }}</div>{% endfor %}</div>
+        {% endif %}
+        <p class="lead">{{ questao.enunciado }}</p>
+        <div class="list-group mb-4">
+            {% for radio in form.alternativa %}
+                <label class="list-group-item">
+                    {{ radio.tag }}
+                    <span class="ms-2">{{ radio.choice_label }}</span>
+                </label>
+            {% endfor %}
+        </div>
+        <div class="d-flex flex-wrap gap-2">
+            <button class="btn btn-outline-secondary" name="acao" value="anterior" type="submit" {% if ordem == 1 %}disabled{% endif %}>Anterior</button>
+            <button class="btn btn-primary" name="acao" value="proxima" type="submit" {% if ordem == total %}disabled{% endif %}>Próxima</button>
+            <button class="btn btn-success ms-auto" name="acao" value="finalizar" type="submit">Finalizar</button>
+        </div>
+    </form>
+
+    {% if tempo_restante_segundos != None %}
+        <script>
+            (function () {
+                const el = document.getElementById("tempo-restante");
+                if (!el) return;
+                let restante = Number(el.dataset.restante || 0);
+                function render() {
+                    const min = Math.floor(restante / 60);
+                    const seg = String(restante % 60).padStart(2, "0");
+                    el.textContent = min + ":" + seg;
+                    if (restante > 0) restante -= 1;
+                }
+                render();
+                setInterval(render, 1000);
+            })();
+        </script>
+    {% endif %}
+{% endblock %}

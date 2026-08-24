@@ -161,6 +161,12 @@ def painel_estudante(request):
     total_minha_lista = ItemMinhaLista.objects.filter(usuario=request.user).count()
     total_estudados = ConteudoEstudado.objects.filter(usuario=request.user).count()
     total_respostas = RespostaQuestao.objects.filter(usuario=request.user).count()
+    from simulados.models import TentativaSimulado
+
+    total_simulados = TentativaSimulado.objects.filter(
+        usuario=request.user,
+        status=TentativaSimulado.StatusTentativa.FINALIZADA,
+    ).count()
     return render(
         request,
         "usuarios/painel_estudante.html",
@@ -169,6 +175,7 @@ def painel_estudante(request):
             "total_minha_lista": total_minha_lista,
             "total_estudados": total_estudados,
             "total_respostas": total_respostas,
+            "total_simulados": total_simulados,
             "active": "inicio",
         },
     )
@@ -237,12 +244,15 @@ def admin_painel(request):
         return bloqueio
 
     User = get_user_model()
+    from simulados.models import Simulado
+
     contexto = {
         "total_usuarios": User.objects.count(),
         "total_estudantes": User.objects.filter(is_staff=False).count(),
         "total_staff": User.objects.filter(is_staff=True).count(),
         "total_ativos": User.objects.filter(is_active=True).count(),
         "total_inativos": User.objects.filter(is_active=False).count(),
+        "total_simulados": Simulado.objects.count(),
         "cadastros_recentes": User.objects.order_by("-date_joined")[:5],
         "active": "admin_painel",
     }

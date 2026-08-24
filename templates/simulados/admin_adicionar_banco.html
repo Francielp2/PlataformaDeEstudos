@@ -1,0 +1,32 @@
+{% extends "usuarios/base_interno.html" %}
+
+{% block title %}Adicionar questões do banco{% endblock %}
+
+{% block content %}
+    <div class="page-heading">
+        <h1>Adicionar questões do banco</h1>
+        <p>{{ simulado.titulo }}</p>
+    </div>
+    <form method="get" class="filters-box">
+        <div class="row g-2">
+            <div class="col-md-3"><input class="form-control" type="search" name="q" value="{{ busca }}" placeholder="Buscar"></div>
+            <div class="col-md-3"><select class="form-select" name="materia"><option value="">Todas as matérias</option>{% for materia in materias %}<option value="{{ materia.slug }}" {% if materia_slug == materia.slug %}selected{% endif %}>{{ materia.nome }}</option>{% endfor %}</select></div>
+            <div class="col-md-3"><select class="form-select" name="conteudo"><option value="">Todos os conteúdos</option>{% for conteudo in conteudos %}<option value="{{ conteudo.pk }}" {% if conteudo_id == conteudo.pk|stringformat:"s" %}selected{% endif %}>{{ conteudo.materia.nome }} - {{ conteudo.titulo }}</option>{% endfor %}</select></div>
+            <div class="col-md-2"><select class="form-select" name="dificuldade"><option value="">Todas</option>{% for item in dificuldades %}<option value="{{ item.value }}" {% if dificuldade == item.value %}selected{% endif %}>{{ item.label }}</option>{% endfor %}</select></div>
+            <div class="col-md-1 d-grid"><button class="btn btn-outline-primary" type="submit">Filtrar</button></div>
+        </div>
+    </form>
+    <form method="post" class="section-box">
+        {% csrf_token %}
+        {% if form.non_field_errors %}<div class="alert alert-danger">{% for error in form.non_field_errors %}<div>{{ error }}</div>{% endfor %}</div>{% endif %}
+        {% for questao in questoes %}
+            <div class="form-check border-bottom py-2">
+                <input class="form-check-input" type="checkbox" name="questoes" value="{{ questao.pk }}" id="questao-{{ questao.pk }}">
+                <label class="form-check-label" for="questao-{{ questao.pk }}"><strong>{{ questao.codigo }}</strong> - {{ questao.enunciado|truncatewords:20 }}</label>
+            </div>
+        {% empty %}
+            <p class="text-muted">Nenhuma questão encontrada.</p>
+        {% endfor %}
+        <button class="btn btn-primary mt-3" type="submit">Adicionar selecionadas</button>
+    </form>
+{% endblock %}

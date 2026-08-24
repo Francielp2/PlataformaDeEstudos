@@ -16,6 +16,7 @@
                 <option value="materias" {% if tipo == "materias" %}selected{% endif %}>Matérias</option>
                 <option value="conteudos" {% if tipo == "conteudos" %}selected{% endif %}>Conteúdos</option>
                 <option value="questoes" {% if tipo == "questoes" %}selected{% endif %}>Questões</option>
+                <option value="simulados" {% if tipo == "simulados" %}selected{% endif %}>Simulados</option>
             </select>
         </div>
         <div class="col-md-2 d-grid">
@@ -68,6 +69,21 @@
                         {% else %}
                             <span class="badge text-bg-warning">Indisponível</span>
                         {% endif %}
+                    {% elif item.simulado %}
+                        <h2 class="h5">{{ item.simulado.titulo }}</h2>
+                        <p class="small text-muted mb-1">
+                            {{ item.simulado.get_tipo_display }}
+                            {% if item.simulado.materia %} - {{ item.simulado.materia.nome }}{% endif %}
+                        </p>
+                        <p class="text-muted">{{ item.simulado.descricao|default:"Simulado salvo para realizar depois."|truncatewords:24 }}</p>
+                        {% if item.simulado.status == "published" %}
+                            <form method="post" action="{% url 'simulados:iniciar_simulado' item.simulado.slug %}">
+                                {% csrf_token %}
+                                <button class="btn btn-sm btn-primary" type="submit">Iniciar</button>
+                            </form>
+                        {% else %}
+                            <span class="badge text-bg-warning">Indisponível</span>
+                        {% endif %}
                     {% endif %}
 
                     <form method="post" action="{% url 'estudos:remover_item_minha_lista' item.pk %}" class="mt-3">
@@ -82,7 +98,7 @@
                 <div class="empty-state">
                     <i class="bi bi-star"></i>
                     <strong>Sua lista está vazia.</strong>
-                    <p class="mb-0">Use a estrela nas matérias, conteúdos ou questões para salvá-los aqui.</p>
+                    <p class="mb-0">Use a estrela nas matérias, conteúdos, questões ou simulados para salvá-los aqui.</p>
                 </div>
             </div>
         {% endfor %}

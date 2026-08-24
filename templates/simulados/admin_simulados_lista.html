@@ -1,0 +1,58 @@
+{% extends "usuarios/base_interno.html" %}
+
+{% block title %}Gerenciar simulados{% endblock %}
+
+{% block content %}
+    <div class="page-heading d-flex justify-content-between align-items-start">
+        <div>
+            <h1>Gerenciar simulados</h1>
+            <p>Avaliações estáticas disponíveis para estudantes.</p>
+        </div>
+        <div class="d-flex gap-2">
+            <form method="post" action="{% url 'simulados_admin:admin_simulados_publicar_rascunhos' %}" onsubmit="return confirm('Publicar todos os simulados que estão em rascunho?');">
+                {% csrf_token %}
+                <button class="btn btn-success" type="submit" {% if not total_rascunhos %}disabled{% endif %}>
+                    <i class="bi bi-upload"></i> Publicar rascunhos ({{ total_rascunhos }})
+                </button>
+            </form>
+            <a class="btn btn-primary" href="{% url 'simulados_admin:admin_simulado_criar' %}"><i class="bi bi-plus-circle"></i> Criar simulado</a>
+        </div>
+    </div>
+
+    <form method="get" class="filters-box">
+        <div class="row g-2">
+            <div class="col-md-3"><input class="form-control" type="search" name="q" value="{{ busca }}" placeholder="Buscar"></div>
+            <div class="col-md-2"><select class="form-select" name="tipo"><option value="">Todos os tipos</option>{% for item in tipo_choices %}<option value="{{ item.value }}" {% if tipo == item.value %}selected{% endif %}>{{ item.label }}</option>{% endfor %}</select></div>
+            <div class="col-md-3"><select class="form-select" name="materia"><option value="">Todas as matérias</option>{% for materia in materias %}<option value="{{ materia.slug }}" {% if materia_slug == materia.slug %}selected{% endif %}>{{ materia.nome }}</option>{% endfor %}</select></div>
+            <div class="col-md-2"><select class="form-select" name="status"><option value="">Todos</option>{% for item in status_choices %}<option value="{{ item.value }}" {% if status == item.value %}selected{% endif %}>{{ item.label }}</option>{% endfor %}</select></div>
+            <div class="col-md-2 d-grid"><button class="btn btn-outline-primary" type="submit">Filtrar</button></div>
+        </div>
+    </form>
+
+    <p class="text-muted small">{{ total_encontrado }} {% if total_encontrado == 1 %}simulado encontrado{% else %}simulados encontrados{% endif %}</p>
+    <div class="table-responsive section-box">
+        <table class="table table-hover align-middle mb-0">
+            <thead><tr><th>Título</th><th>Tipo</th><th>Matéria</th><th>Questões</th><th>Status</th><th>Realizações</th><th>Ações</th></tr></thead>
+            <tbody>
+                {% for simulado in page_obj %}
+                    <tr>
+                        <td>{{ simulado.titulo }}</td>
+                        <td>{{ simulado.get_tipo_display }}</td>
+                        <td>{{ simulado.materia.nome|default:"-" }}</td>
+                        <td>{{ simulado.total_questoes }}</td>
+                        <td>{{ simulado.get_status_display }}</td>
+                        <td>{{ simulado.total_tentativas }}</td>
+                        <td class="actions">
+                            <a class="btn btn-sm btn-outline-secondary" href="{% url 'simulados_admin:admin_simulado_detalhe' simulado.pk %}"><i class="bi bi-eye"></i> Ver</a>
+                            <a class="btn btn-sm btn-outline-primary" href="{% url 'simulados_admin:admin_simulado_editar' simulado.pk %}"><i class="bi bi-pencil"></i> Editar</a>
+                            <a class="btn btn-sm btn-outline-secondary" href="{% url 'simulados_admin:admin_resultados_simulado' simulado.pk %}"><i class="bi bi-clock-history"></i> Resultados</a>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="7">Nenhum simulado encontrado.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% include "partials/paginacao.html" %}
+{% endblock %}

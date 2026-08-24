@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'curriculo',
     'questoes',
     'estudos',
+    'simulados',
 ]
 
 MIDDLEWARE = [

@@ -12,7 +12,7 @@
         <div class="col-md-3"><div class="metric"><div class="metric-icon"><i class="bi bi-star"></i></div><span>Minha Lista</span><strong>{{ total_minha_lista }}</strong><span>itens salvos</span></div></div>
         <div class="col-md-3"><div class="metric"><div class="metric-icon"><i class="bi bi-check-circle"></i></div><span>Estudados</span><strong>{{ total_estudados }}</strong><span>conteúdos marcados</span></div></div>
         <div class="col-md-3"><div class="metric"><div class="metric-icon"><i class="bi bi-pencil-square"></i></div><span>Exercícios</span><strong>{{ total_respostas }}</strong><span>respostas realizadas</span></div></div>
-        <div class="col-md-3"><div class="metric"><div class="metric-icon"><i class="bi bi-clipboard-check"></i></div><span>Simulados</span><strong>0</strong><span>realizados</span></div></div>
+        <div class="col-md-3"><div class="metric"><div class="metric-icon"><i class="bi bi-clipboard-check"></i></div><span>Simulados</span><strong>{{ total_simulados }}</strong><span>realizados</span></div></div>
     </div>
 
     <section class="section-box mb-4">
@@ -41,6 +41,9 @@
             </div>
             <div class="col-md-3">
                 <a class="shortcut" href="{% url 'estudos:conteudos_estudados' %}"><strong><i class="bi bi-check-circle"></i> Estudados</strong><span>Consulte conteúdos concluídos</span></a>
+            </div>
+            <div class="col-md-3">
+                <a class="shortcut" href="{% url 'simulados:simulados_lista' %}"><strong><i class="bi bi-clipboard-check"></i> Simulados</strong><span>Faça avaliações publicadas</span></a>
             </div>
         </div>
     </section>

@@ -29,6 +29,11 @@ urlpatterns = [
         name="alternar_questao_minha_lista",
     ),
     path(
+        "minha-lista/simulado/<uuid:pk>/alternar/",
+        views.alternar_simulado_minha_lista,
+        name="alternar_simulado_minha_lista",
+    ),
+    path(
         "estudados/conteudo/<uuid:pk>/alternar/",
         views.alternar_conteudo_estudado,
         name="alternar_conteudo_estudado",

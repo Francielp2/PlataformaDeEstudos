@@ -35,8 +35,18 @@ class SimuladoTestMixin:
             first_name="Admin",
             is_staff=True,
         )
-        self.matematica = Materia.objects.get(nome="Matemática")
-        self.fisica = Materia.objects.get(nome="Física")
+        self.matematica = Materia.objects.create(
+            nome="Matemática",
+            slug="matematica",
+            descricao="Disciplina de matemática.",
+            ordem_exibicao=1,
+        )
+        self.fisica = Materia.objects.create(
+            nome="Física",
+            slug="fisica",
+            descricao="Disciplina de física.",
+            ordem_exibicao=2,
+        )
         self.conteudo = Conteudo.objects.create(
             materia=self.matematica,
             titulo="Porcentagem",

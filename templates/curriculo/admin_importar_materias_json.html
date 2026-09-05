@@ -1,0 +1,46 @@
+{% extends "usuarios/base_interno.html" %}
+
+{% block title %}Importar matérias por JSON{% endblock %}
+
+{% block content %}
+    <div class="page-heading">
+        <h1>Importar matérias por JSON</h1>
+        <p>Cole um JSON com matérias para cadastrá-las. Registros existentes não são atualizados.</p>
+    </div>
+
+    <section class="section-box mb-3">
+        <h2 class="h6">Formato esperado</h2>
+        <p class="small text-muted mb-2">
+            Use <code>slug</code> único e valores booleanos reais em <code>ativa</code>.
+        </p>
+        <pre class="mb-0"><code>{
+  "materias": [
+    {
+      "nome": "Matemática",
+      "slug": "matematica",
+      "descricao": "Descrição da matéria",
+      "ordem_exibicao": 1,
+      "ativa": true
+    }
+  ]
+}</code></pre>
+    </section>
+
+    <form method="post" class="form-panel" novalidate>
+        {% csrf_token %}
+        {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+                {% for error in form.non_field_errors %}
+                    <div>{{ error }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        <label class="form-label" for="{{ form.json_materias.id_for_label }}">JSON</label>
+        {{ form.json_materias }}
+        {% for error in form.json_materias.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+        <div class="d-flex gap-2 mt-3">
+            <button class="btn btn-primary" type="submit">Importar</button>
+            <a class="btn btn-outline-secondary" href="{% url 'curriculo_admin:admin_materias_lista' %}">Cancelar</a>
+        </div>
+    </form>
+{% endblock %}

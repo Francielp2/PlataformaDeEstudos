@@ -8,7 +8,10 @@
             <h1>Gerenciar matérias</h1>
             <p>Cadastro e organização das disciplinas da plataforma.</p>
         </div>
-        <a class="btn btn-primary" href="{% url 'curriculo_admin:admin_materia_criar' %}"><i class="bi bi-plus-circle"></i> Criar matéria</a>
+        <div class="d-flex gap-2">
+            <a class="btn btn-outline-secondary" href="{% url 'curriculo_admin:admin_materias_importar_json' %}"><i class="bi bi-download"></i> Importar JSON</a>
+            <a class="btn btn-primary" href="{% url 'curriculo_admin:admin_materia_criar' %}"><i class="bi bi-plus-circle"></i> Criar matéria</a>
+        </div>
     </div>
 
     <form method="get" class="filters-box">

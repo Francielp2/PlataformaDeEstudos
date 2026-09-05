@@ -11,8 +11,8 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('curriculo', '0004_povoar_conteudo_matematica'),
-        ('questoes', '0002_povoar_questao_matematica'),
+        ('curriculo', '0003_conteudo'),
+        ('questoes', '0001_initial'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 

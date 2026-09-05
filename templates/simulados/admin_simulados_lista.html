@@ -9,10 +9,10 @@
             <p>Avaliações estáticas disponíveis para estudantes.</p>
         </div>
         <div class="d-flex gap-2">
-            <form method="post" action="{% url 'simulados_admin:admin_simulados_publicar_rascunhos' %}" onsubmit="return confirm('Publicar todos os simulados que estão em rascunho?');">
+            <form method="post" action="{% url 'simulados_admin:admin_simulados_publicar_rascunhos' %}" onsubmit="return confirm('Publicar todos os simulados válidos que estão em rascunho?');">
                 {% csrf_token %}
                 <button class="btn btn-success" type="submit" {% if not total_rascunhos %}disabled{% endif %}>
-                    <i class="bi bi-upload"></i> Publicar rascunhos ({{ total_rascunhos }})
+                    <i class="bi bi-upload"></i> Publicar rascunhos válidos ({{ total_rascunhos }})
                 </button>
             </form>
             <a class="btn btn-primary" href="{% url 'simulados_admin:admin_simulado_criar' %}"><i class="bi bi-plus-circle"></i> Criar simulado</a>

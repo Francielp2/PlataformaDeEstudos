@@ -200,3 +200,8 @@ class Conteudo(models.Model):
         if not self.slug:
             self.slug = self._gerar_slug_unico()
         super().save(*args, **kwargs)
+
+    def publicar(self):
+        self.full_clean()
+        self.status = self.StatusConteudo.PUBLICADO
+        self.save(update_fields=["status", "atualizado_em"])

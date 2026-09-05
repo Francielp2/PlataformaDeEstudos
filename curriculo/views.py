@@ -1,14 +1,20 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import ValidationError
 from django.core.paginator import Paginator
 from django.db.models import Prefetch, Q
 from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404, redirect, render
-from django.utils import timezone
 from django.urls import reverse
 from django.views.decorators.http import require_POST
 
-from .forms import ConteudoForm, MateriaForm
+from .forms import (
+    ConteudoForm,
+    ImportarConteudosJsonForm,
+    ImportarMateriasJsonForm,
+    MateriaForm,
+)
+from .importacao_json import importar_conteudos_json, importar_materias_json
 from .models import Conteudo, Materia
 from estudos.views import ids_organizacao_usuario
 
@@ -205,6 +211,26 @@ def admin_materia_criar(request):
 
 
 @staff_required
+def admin_materias_importar_json(request):
+    form = ImportarMateriasJsonForm(request.POST or None)
+    if request.method == "POST" and form.is_valid():
+        try:
+            materias = importar_materias_json(form.cleaned_data["json_materias"], request.user)
+            messages.success(
+                request,
+                f"Importação concluída. {len(materias)} matéria(s) cadastrada(s) com sucesso.",
+            )
+            return redirect("curriculo_admin:admin_materias_lista")
+        except ValidationError as exc:
+            form.add_error(None, exc)
+    return render(
+        request,
+        "curriculo/admin_importar_materias_json.html",
+        {"form": form, "active": "admin_materias"},
+    )
+
+
+@staff_required
 def admin_materia_detalhe(request, slug):
     materia = get_object_or_404(
         Materia.objects.select_related("criado_por"),
@@ -310,21 +336,56 @@ def admin_conteudos_lista(request):
 @require_POST
 @staff_required
 def admin_conteudos_publicar_rascunhos(request):
-    total_publicado = Conteudo.objects.filter(
+    conteudos = Conteudo.objects.filter(
         status=Conteudo.StatusConteudo.RASCUNHO
-    ).update(
-        status=Conteudo.StatusConteudo.PUBLICADO,
-        atualizado_em=timezone.now(),
     )
+    publicados = 0
+    invalidos = 0
+    motivos = []
 
-    if total_publicado:
+    for conteudo in conteudos:
+        try:
+            conteudo.publicar()
+            publicados += 1
+        except ValidationError as exc:
+            invalidos += 1
+            motivos.append(f"{conteudo.titulo}: {exc}")
+
+    if publicados:
         messages.success(
             request,
-            f"{total_publicado} conteúdo(s) em rascunho publicado(s) com sucesso.",
+            f"{publicados} conteúdo(s) publicado(s) com sucesso.",
         )
-    else:
+    if invalidos:
+        messages.warning(
+            request,
+            f"{invalidos} conteúdo(s) permaneceram em rascunho por estarem incompletos.",
+        )
+        for motivo in motivos[:5]:
+            messages.warning(request, motivo)
+    if not publicados and not invalidos:
         messages.info(request, "Não há conteúdos em rascunho para publicar.")
     return redirect("curriculo_admin:admin_conteudos_lista")
+
+
+@staff_required
+def admin_conteudos_importar_json(request):
+    form = ImportarConteudosJsonForm(request.POST or None)
+    if request.method == "POST" and form.is_valid():
+        try:
+            conteudos = importar_conteudos_json(form.cleaned_data["json_conteudos"], request.user)
+            messages.success(
+                request,
+                f"Importação concluída. {len(conteudos)} conteúdo(s) cadastrado(s) com sucesso.",
+            )
+            return redirect("curriculo_admin:admin_conteudos_lista")
+        except ValidationError as exc:
+            form.add_error(None, exc)
+    return render(
+        request,
+        "curriculo/admin_importar_conteudos_json.html",
+        {"form": form, "active": "admin_conteudos"},
+    )
 
 
 @staff_required
@@ -390,12 +451,18 @@ def admin_conteudo_alterar_status(request, pk, status):
         return redirect("curriculo_admin:admin_conteudos_lista")
 
     conteudo = get_object_or_404(Conteudo, pk=pk)
-    conteudo.status = status
-    conteudo.save(update_fields=["status", "atualizado_em"])
-    mensagens = {
-        Conteudo.StatusConteudo.RASCUNHO: "Conteúdo retornado para rascunho.",
-        Conteudo.StatusConteudo.PUBLICADO: "Conteúdo publicado com sucesso.",
-        Conteudo.StatusConteudo.ARQUIVADO: "Conteúdo arquivado com sucesso.",
-    }
-    messages.success(request, mensagens[status])
+    try:
+        if status == Conteudo.StatusConteudo.PUBLICADO:
+            conteudo.publicar()
+        else:
+            conteudo.status = status
+            conteudo.save(update_fields=["status", "atualizado_em"])
+        mensagens = {
+            Conteudo.StatusConteudo.RASCUNHO: "Conteúdo retornado para rascunho.",
+            Conteudo.StatusConteudo.PUBLICADO: "Conteúdo publicado com sucesso.",
+            Conteudo.StatusConteudo.ARQUIVADO: "Conteúdo arquivado com sucesso.",
+        }
+        messages.success(request, mensagens[status])
+    except ValidationError as exc:
+        messages.error(request, exc)
     return redirect("curriculo_admin:admin_conteudos_lista")

@@ -409,13 +409,15 @@ def admin_questoes_publicar_rascunhos(request):
     ).prefetch_related("alternativas", "questao_conteudos__conteudo")
     publicadas = 0
     invalidas = 0
+    motivos = []
 
     for questao in questoes:
         try:
             questao.publicar()
             publicadas += 1
-        except ValidationError:
+        except ValidationError as exc:
             invalidas += 1
+            motivos.append(f"{questao.codigo}: {exc}")
 
     if publicadas:
         messages.success(request, f"{publicadas} questão(ões) publicada(s) com sucesso.")
@@ -424,6 +426,8 @@ def admin_questoes_publicar_rascunhos(request):
             request,
             f"{invalidas} questão(ões) permaneceram em rascunho por estarem incompletas.",
         )
+        for motivo in motivos[:5]:
+            messages.warning(request, motivo)
     if not publicadas and not invalidas:
         messages.info(request, "Não há questões em rascunho para publicar.")
     return redirect("questoes_admin:admin_questoes_lista")

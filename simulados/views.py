@@ -377,13 +377,15 @@ def admin_simulados_publicar_rascunhos(request):
     ).prefetch_related("questoes__alternativas", "questoes__conteudos__conteudo")
     publicados = 0
     invalidos = 0
+    motivos = []
 
     for simulado in simulados:
         try:
             simulado.publicar()
             publicados += 1
-        except ValidationError:
+        except ValidationError as exc:
             invalidos += 1
+            motivos.append(f"{simulado.titulo}: {exc}")
 
     if publicados:
         messages.success(request, f"{publicados} simulado(s) publicado(s) com sucesso.")
@@ -392,6 +394,8 @@ def admin_simulados_publicar_rascunhos(request):
             request,
             f"{invalidos} simulado(s) permaneceram em rascunho por estarem incompletos.",
         )
+        for motivo in motivos[:5]:
+            messages.warning(request, motivo)
     if not publicados and not invalidos:
         messages.info(request, "Não há simulados em rascunho para publicar.")
     return redirect("simulados_admin:admin_simulados_lista")

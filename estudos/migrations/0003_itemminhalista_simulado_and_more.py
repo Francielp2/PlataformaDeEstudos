@@ -8,9 +8,9 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('curriculo', '0004_povoar_conteudo_matematica'),
+        ('curriculo', '0003_conteudo'),
         ('estudos', '0002_remove_itemminhalista_item_minha_lista_exatamente_um_alvo'),
-        ('questoes', '0002_povoar_questao_matematica'),
+        ('questoes', '0001_initial'),
         ('simulados', '0001_initial'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]

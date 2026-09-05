@@ -81,3 +81,17 @@ class ConteudoForm(forms.ModelForm):
                 widget.attrs.setdefault("class", "form-select")
             else:
                 widget.attrs.setdefault("class", "form-control")
+
+
+class ImportarMateriasJsonForm(forms.Form):
+    json_materias = forms.CharField(
+        label="JSON de matérias",
+        widget=forms.Textarea(attrs={"rows": 16, "class": "form-control font-monospace"}),
+    )
+
+
+class ImportarConteudosJsonForm(forms.Form):
+    json_conteudos = forms.CharField(
+        label="JSON de conteúdos",
+        widget=forms.Textarea(attrs={"rows": 16, "class": "form-control font-monospace"}),
+    )

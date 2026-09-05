@@ -31,8 +31,18 @@ class QuestaoTestMixin:
             password="SenhaForte123",
             first_name="Super",
         )
-        self.matematica = Materia.objects.get(nome="Matemática")
-        self.fisica = Materia.objects.get(nome="Física")
+        self.matematica = Materia.objects.create(
+            nome="Matemática",
+            slug="matematica",
+            descricao="Disciplina de matemática.",
+            ordem_exibicao=1,
+        )
+        self.fisica = Materia.objects.create(
+            nome="Física",
+            slug="fisica",
+            descricao="Disciplina de física.",
+            ordem_exibicao=2,
+        )
         self.conteudo = self.criar_conteudo("Porcentagem", self.matematica)
         self.outro_conteudo = self.criar_conteudo("Razão e proporção", self.matematica)
         self.conteudo_fisica = self.criar_conteudo("Cinemática", self.fisica)

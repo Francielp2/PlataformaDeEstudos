@@ -1,3 +1,4 @@
+import json
 import uuid
 
 from django.contrib.auth import get_user_model
@@ -9,12 +10,16 @@ from usuarios.models import PerfilEstudante
 from questoes.models import Questao
 
 from .forms import ConteudoForm, MateriaForm
+from .importacao_json import importar_conteudos_json, importar_materias_json
 from .models import Conteudo, Materia
 
 
 class CurriculoMateriaTests(TestCase):
     def setUp(self):
         self.User = get_user_model()
+        self.matematica = self.criar_materia("Matemática", ordem_exibicao=1)
+        self.fisica = self.criar_materia("Física", ordem_exibicao=2)
+        self.quimica = self.criar_materia("Química", ordem_exibicao=3)
 
     def criar_usuario(self, email, password="SenhaForte123", **extra):
         usuario = self.User.objects.create_user(
@@ -151,12 +156,6 @@ class CurriculoMateriaTests(TestCase):
             set(form.fields),
             {"nome", "descricao", "ordem_exibicao", "ativa"},
         )
-
-    def test_data_migration_cria_materias_iniciais(self):
-        self.assertTrue(Materia.objects.filter(slug="matematica").exists())
-        self.assertTrue(Materia.objects.filter(slug="fisica").exists())
-        self.assertTrue(Materia.objects.filter(slug="quimica").exists())
-        self.assertIsNone(Materia.objects.get(slug="matematica").criado_por)
 
     def test_visitante_nao_acessa_listagem_de_materias(self):
         response = self.client.get(reverse("curriculo:materias_lista"))
@@ -988,8 +987,34 @@ class CurriculoMateriaTests(TestCase):
         self.assertEqual(arquivado.status, Conteudo.StatusConteudo.ARQUIVADO)
         self.assertContains(
             response,
-            f"{total_rascunhos} conteúdo(s) em rascunho publicado(s) com sucesso.",
+            f"{total_rascunhos} conteúdo(s) publicado(s) com sucesso.",
         )
+
+    def test_publicacao_em_lote_publica_validos_e_mantem_invalidos_publicados_e_arquivados(self):
+        admin = self.criar_usuario("admin-lote-validos@example.com", is_staff=True)
+        valido = self.criar_conteudo("Válido", status=Conteudo.StatusConteudo.RASCUNHO)
+        invalido = self.criar_conteudo("Inválido", status=Conteudo.StatusConteudo.RASCUNHO)
+        Conteudo.objects.filter(pk=invalido.pk).update(resumo="")
+        publicado = self.criar_conteudo("Publicado", status=Conteudo.StatusConteudo.PUBLICADO)
+        arquivado = self.criar_conteudo("Arquivado lote", status=Conteudo.StatusConteudo.ARQUIVADO)
+        self.client.force_login(admin)
+
+        response = self.client.post(
+            reverse("curriculo_admin:admin_conteudos_publicar_rascunhos"),
+            follow=True,
+        )
+
+        valido.refresh_from_db()
+        invalido.refresh_from_db()
+        publicado.refresh_from_db()
+        arquivado.refresh_from_db()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(valido.status, Conteudo.StatusConteudo.PUBLICADO)
+        self.assertEqual(invalido.status, Conteudo.StatusConteudo.RASCUNHO)
+        self.assertEqual(publicado.status, Conteudo.StatusConteudo.PUBLICADO)
+        self.assertEqual(arquivado.status, Conteudo.StatusConteudo.ARQUIVADO)
+        self.assertContains(response, "conteúdo(s) publicado(s) com sucesso")
+        self.assertContains(response, "permaneceram em rascunho")
 
     def test_publicacao_em_lote_exige_post_e_usuario_staff(self):
         rascunho = self.criar_conteudo(
@@ -1005,6 +1030,176 @@ class CurriculoMateriaTests(TestCase):
         self.assertEqual(self.client.post(url).status_code, 403)
         rascunho.refresh_from_db()
         self.assertEqual(rascunho.status, Conteudo.StatusConteudo.RASCUNHO)
+
+    def test_importacao_materias_json_valido(self):
+        admin = self.criar_usuario("admin-import@example.com", is_staff=True)
+        payload = {
+            "materias": [
+                {
+                    "nome": "Biologia",
+                    "slug": "biologia",
+                    "descricao": "Estudo da vida.",
+                    "ordem_exibicao": 4,
+                    "ativa": True,
+                }
+            ]
+        }
+
+        materias = importar_materias_json(json.dumps(payload), admin)
+
+        self.assertEqual(len(materias), 1)
+        self.assertTrue(Materia.objects.filter(slug="biologia", criado_por=admin).exists())
+
+    def test_importacao_materias_rejeita_duplicidade_json_invalido_e_faz_rollback(self):
+        admin = self.criar_usuario("admin-import2@example.com", is_staff=True)
+        duplicado = {
+            "materias": [
+                {
+                    "nome": "Matemática",
+                    "slug": "matematica-duplicada",
+                    "descricao": "",
+                    "ordem_exibicao": 4,
+                    "ativa": True,
+                }
+            ]
+        }
+        with self.assertRaises(ValidationError):
+            importar_materias_json(json.dumps(duplicado), admin)
+
+        with self.assertRaises(ValidationError):
+            importar_materias_json("{", admin)
+
+        rollback = {
+            "materias": [
+                {
+                    "nome": "História",
+                    "slug": "historia",
+                    "descricao": "",
+                    "ordem_exibicao": 4,
+                    "ativa": True,
+                },
+                {
+                    "nome": "Geografia",
+                    "slug": "slug invalido",
+                    "descricao": "",
+                    "ordem_exibicao": 5,
+                    "ativa": True,
+                },
+            ]
+        }
+        with self.assertRaises(ValidationError):
+            importar_materias_json(json.dumps(rollback), admin)
+        self.assertFalse(Materia.objects.filter(slug="historia").exists())
+
+    def test_importacao_conteudos_json_valido_e_pai_fora_de_ordem(self):
+        admin = self.criar_usuario("admin-import3@example.com", is_staff=True)
+        payload = {
+            "conteudos": [
+                {
+                    "materia": "matematica",
+                    "titulo": "Função Afim",
+                    "slug": "funcao-afim",
+                    "resumo": "Resumo.",
+                    "texto_estudo": "",
+                    "dificuldade": Conteudo.DificuldadeConteudo.BASICO,
+                    "status": Conteudo.StatusConteudo.RASCUNHO,
+                    "ordem_sugerida": 2,
+                    "pai": "funcoes",
+                },
+                {
+                    "materia": "matematica",
+                    "titulo": "Funções",
+                    "slug": "funcoes",
+                    "resumo": "Resumo.",
+                    "texto_estudo": "",
+                    "dificuldade": Conteudo.DificuldadeConteudo.BASICO,
+                    "status": Conteudo.StatusConteudo.RASCUNHO,
+                    "ordem_sugerida": 1,
+                    "pai": None,
+                },
+            ]
+        }
+
+        conteudos = importar_conteudos_json(json.dumps(payload), admin)
+
+        self.assertEqual(len(conteudos), 2)
+        filho = Conteudo.objects.get(slug="funcao-afim")
+        self.assertEqual(filho.pai.slug, "funcoes")
+        self.assertEqual(filho.criado_por, admin)
+
+    def test_importacao_conteudos_valida_referencias_e_ciclo(self):
+        admin = self.criar_usuario("admin-import4@example.com", is_staff=True)
+        base = {
+            "materia": "matematica",
+            "conteudos": [
+                {
+                    "titulo": "Funções",
+                    "slug": "funcoes",
+                    "resumo": "Resumo.",
+                    "texto_estudo": "",
+                    "dificuldade": Conteudo.DificuldadeConteudo.BASICO,
+                    "status": Conteudo.StatusConteudo.RASCUNHO,
+                    "ordem_sugerida": 1,
+                    "pai": None,
+                }
+            ],
+        }
+
+        payload = dict(base, materia="nao-existe")
+        with self.assertRaises(ValidationError):
+            importar_conteudos_json(json.dumps(payload), admin)
+
+        payload = dict(base)
+        payload["conteudos"] = [dict(base["conteudos"][0], pai="nao-existe")]
+        with self.assertRaises(ValidationError):
+            importar_conteudos_json(json.dumps(payload), admin)
+
+        pai_fisica = self.criar_conteudo("Cinemática", materia=self.fisica)
+        payload["conteudos"] = [dict(base["conteudos"][0], pai=pai_fisica.slug)]
+        with self.assertRaises(ValidationError):
+            importar_conteudos_json(json.dumps(payload), admin)
+
+        ciclo = {
+            "materia": "matematica",
+            "conteudos": [
+                dict(base["conteudos"][0], slug="a", titulo="A", pai="b"),
+                dict(base["conteudos"][0], slug="b", titulo="B", pai="a"),
+            ],
+        }
+        with self.assertRaises(ValidationError):
+            importar_conteudos_json(json.dumps(ciclo), admin)
+
+    def test_importacao_conteudos_faz_rollback(self):
+        admin = self.criar_usuario("admin-import5@example.com", is_staff=True)
+        payload = {
+            "materia": "matematica",
+            "conteudos": [
+                {
+                    "titulo": "Novo válido",
+                    "slug": "novo-valido",
+                    "resumo": "Resumo.",
+                    "texto_estudo": "",
+                    "dificuldade": Conteudo.DificuldadeConteudo.BASICO,
+                    "status": Conteudo.StatusConteudo.RASCUNHO,
+                    "ordem_sugerida": 1,
+                    "pai": None,
+                },
+                {
+                    "titulo": "Inválido",
+                    "slug": "invalido",
+                    "resumo": "Resumo.",
+                    "texto_estudo": "",
+                    "dificuldade": "invalida",
+                    "status": Conteudo.StatusConteudo.RASCUNHO,
+                    "ordem_sugerida": 2,
+                    "pai": None,
+                },
+            ],
+        }
+
+        with self.assertRaises(ValidationError):
+            importar_conteudos_json(json.dumps(payload), admin)
+        self.assertFalse(Conteudo.objects.filter(slug="novo-valido").exists())
 
     def test_estudante_nao_envia_post_de_status_de_conteudo(self):
         estudante = self.criar_usuario("estudante@example.com")

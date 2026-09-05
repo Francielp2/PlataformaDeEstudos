@@ -18,6 +18,7 @@ db.sqlite3
 *.log
 media/
 staticfiles/
+/data/
 
 # Testes e cobertura
 .pytest_cache/

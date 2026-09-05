@@ -9,6 +9,11 @@ urlpatterns = [
     path("", views.admin_materias_lista, name="admin_materias_lista"),
     path("conteudos/", views.admin_conteudos_lista, name="admin_conteudos_lista"),
     path(
+        "conteudos/importar-json/",
+        views.admin_conteudos_importar_json,
+        name="admin_conteudos_importar_json",
+    ),
+    path(
         "conteudos/publicar-rascunhos/",
         views.admin_conteudos_publicar_rascunhos,
         name="admin_conteudos_publicar_rascunhos",
@@ -20,6 +25,11 @@ urlpatterns = [
         "conteudos/<uuid:pk>/status/<slug:status>/",
         views.admin_conteudo_alterar_status,
         name="admin_conteudo_alterar_status",
+    ),
+    path(
+        "importar-json/",
+        views.admin_materias_importar_json,
+        name="admin_materias_importar_json",
     ),
     path("criar/", views.admin_materia_criar, name="admin_materia_criar"),
     path("<slug:slug>/", views.admin_materia_detalhe, name="admin_materia_detalhe"),

@@ -8,6 +8,7 @@ from django.utils import timezone
 from django.utils.text import slugify
 
 from curriculo.models import Conteudo, Materia
+from questoes.imagens import gerar_url_imagem
 from questoes.models import Questao
 
 
@@ -182,6 +183,8 @@ class QuestaoSimulado(models.Model):
     fonte_nome = models.CharField(max_length=120, blank=True)
     fonte_ano = models.PositiveSmallIntegerField(null=True, blank=True)
     fonte_url = models.URLField(blank=True)
+    imagem_public_id = models.CharField(max_length=255, blank=True)
+    imagem_alt = models.CharField(max_length=255, blank=True)
     ordem = models.PositiveSmallIntegerField(default=0)
     criado_em = models.DateTimeField(auto_now_add=True)
 
@@ -204,6 +207,14 @@ class QuestaoSimulado(models.Model):
         if not (self.enunciado or "").strip():
             raise ValidationError({"enunciado": "Informe o enunciado da questão."})
 
+    @property
+    def imagem_url(self):
+        return gerar_url_imagem(self.imagem_public_id)
+
+    @property
+    def imagem_alt_texto(self):
+        return self.imagem_alt or "Imagem da questão"
+
 
 class AlternativaSimulado(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -213,7 +224,9 @@ class AlternativaSimulado(models.Model):
         related_name="alternativas",
     )
     chave = models.CharField(max_length=4)
-    texto = models.TextField()
+    texto = models.TextField(blank=True)
+    imagem_public_id = models.CharField(max_length=255, blank=True)
+    imagem_alt = models.CharField(max_length=255, blank=True)
     correta = models.BooleanField(default=False)
     ordem = models.PositiveSmallIntegerField(default=0)
 
@@ -242,12 +255,20 @@ class AlternativaSimulado(models.Model):
         self.chave = " ".join((self.chave or "").split()).upper()
         if not self.chave:
             raise ValidationError({"chave": "Informe a chave da alternativa."})
-        if not (self.texto or "").strip():
-            raise ValidationError({"texto": "Informe o texto da alternativa."})
+        if not (self.texto or "").strip() and not self.imagem_public_id:
+            raise ValidationError({"texto": "Informe o texto ou a imagem da alternativa."})
 
     def save(self, *args, **kwargs):
         self.chave = " ".join((self.chave or "").split()).upper()
         super().save(*args, **kwargs)
+
+    @property
+    def imagem_url(self):
+        return gerar_url_imagem(self.imagem_public_id)
+
+    @property
+    def imagem_alt_texto(self):
+        return self.imagem_alt or f"Imagem da alternativa {self.chave}"
 
 
 class QuestaoSimuladoConteudo(models.Model):

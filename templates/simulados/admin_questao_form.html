@@ -8,7 +8,7 @@
         <p>{{ simulado.titulo }}</p>
     </div>
 
-    <form method="post" class="form-panel" novalidate>
+    <form method="post" class="form-panel" enctype="multipart/form-data" novalidate>
         {% csrf_token %}
         {% if form.non_field_errors %}<div class="alert alert-danger">{% for error in form.non_field_errors %}<div>{{ error }}</div>{% endfor %}</div>{% endif %}
 
@@ -19,6 +19,14 @@
                 <div class="col-md-4"><label class="form-label" for="{{ form.dificuldade.id_for_label }}">Dificuldade</label>{{ form.dificuldade }}{% for error in form.dificuldade.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}</div>
                 <div class="col-md-4 pt-md-4"><div class="form-check mt-md-2">{{ form.salvar_no_banco }}<label class="form-check-label" for="{{ form.salvar_no_banco.id_for_label }}">Salvar também no banco de questões</label></div></div>
                 <div class="col-12"><label class="form-label" for="{{ form.enunciado.id_for_label }}">Enunciado</label>{{ form.enunciado }}{% for error in form.enunciado.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}</div>
+                <div class="col-12">
+                    <label class="form-label">Imagem</label>
+                    <div class="row g-3">
+                        <div class="col-md-4">{{ form.imagem_arquivo }}{% for error in form.imagem_arquivo.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}</div>
+                        <div class="col-md-4">{{ form.imagem_url }}{% for error in form.imagem_url.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}</div>
+                        <div class="col-md-4">{{ form.imagem_alt }}{% for error in form.imagem_alt.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}</div>
+                    </div>
+                </div>
                 <div class="col-12"><label class="form-label" for="{{ form.explicacao.id_for_label }}">Explicação</label>{{ form.explicacao }}{% for error in form.explicacao.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}</div>
             </div>
         </section>
@@ -61,6 +69,9 @@
                     <div class="row g-3">
                         <div class="col-md-2"><label class="form-label" for="{{ alternativa_form.chave.id_for_label }}">Chave</label>{{ alternativa_form.chave }}</div>
                         <div class="col-md-6"><label class="form-label" for="{{ alternativa_form.texto.id_for_label }}">Texto</label>{{ alternativa_form.texto }}</div>
+                        <div class="col-md-4"><label class="form-label" for="{{ alternativa_form.imagem_arquivo.id_for_label }}">Imagem</label>{{ alternativa_form.imagem_arquivo }}</div>
+                        <div class="col-md-4"><label class="form-label" for="{{ alternativa_form.imagem_url.id_for_label }}">URL da imagem</label>{{ alternativa_form.imagem_url }}</div>
+                        <div class="col-md-4"><label class="form-label" for="{{ alternativa_form.imagem_alt.id_for_label }}">Texto alternativo</label>{{ alternativa_form.imagem_alt }}</div>
                         <div class="col-md-2"><label class="form-label" for="{{ alternativa_form.ordem.id_for_label }}">Ordem</label>{{ alternativa_form.ordem }}</div>
                         <div class="col-md-2 pt-md-4"><div class="form-check mt-md-2">{{ alternativa_form.correta }}<label class="form-check-label" for="{{ alternativa_form.correta.id_for_label }}">Correta</label></div></div>
                     </div>

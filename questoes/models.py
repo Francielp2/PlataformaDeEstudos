@@ -6,6 +6,7 @@ from django.db import models
 from django.db.models import Q
 
 from curriculo.models import Conteudo, Materia
+from .imagens import gerar_url_imagem
 
 
 class Questao(models.Model):
@@ -48,6 +49,8 @@ class Questao(models.Model):
     fonte_nome = models.CharField(max_length=120, blank=True)
     fonte_ano = models.PositiveSmallIntegerField(null=True, blank=True)
     fonte_url = models.URLField(blank=True)
+    imagem_public_id = models.CharField(max_length=255, blank=True)
+    imagem_alt = models.CharField(max_length=255, blank=True)
     status = models.CharField(
         max_length=16,
         choices=StatusQuestao.choices,
@@ -121,6 +124,14 @@ class Questao(models.Model):
         self.status = self.StatusQuestao.PUBLICADA
         self.save(update_fields=["status", "atualizado_em"])
 
+    @property
+    def imagem_url(self):
+        return gerar_url_imagem(self.imagem_public_id)
+
+    @property
+    def imagem_alt_texto(self):
+        return self.imagem_alt or "Imagem da questão"
+
     def save(self, *args, **kwargs):
         self.codigo = " ".join((self.codigo or "").split()).upper()
         super().save(*args, **kwargs)
@@ -134,7 +145,9 @@ class Alternativa(models.Model):
         related_name="alternativas",
     )
     chave = models.CharField(max_length=4)
-    texto = models.TextField()
+    texto = models.TextField(blank=True)
+    imagem_public_id = models.CharField(max_length=255, blank=True)
+    imagem_alt = models.CharField(max_length=255, blank=True)
     correta = models.BooleanField(default=False)
     ordem = models.PositiveSmallIntegerField(default=0)
 
@@ -161,12 +174,20 @@ class Alternativa(models.Model):
         self.chave = " ".join((self.chave or "").split()).upper()
         if not self.chave:
             raise ValidationError({"chave": "Informe a chave da alternativa."})
-        if not (self.texto or "").strip():
-            raise ValidationError({"texto": "Informe o texto da alternativa."})
+        if not (self.texto or "").strip() and not self.imagem_public_id:
+            raise ValidationError({"texto": "Informe o texto ou a imagem da alternativa."})
 
     def save(self, *args, **kwargs):
         self.chave = " ".join((self.chave or "").split()).upper()
         super().save(*args, **kwargs)
+
+    @property
+    def imagem_url(self):
+        return gerar_url_imagem(self.imagem_public_id)
+
+    @property
+    def imagem_alt_texto(self):
+        return self.imagem_alt or f"Imagem da alternativa {self.chave}"
 
 
 class QuestaoConteudo(models.Model):

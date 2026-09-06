@@ -5,6 +5,7 @@ from django.db import IntegrityError, transaction
 
 from curriculo.models import Conteudo, Materia
 
+from .imagens import validar_public_id
 from .models import Alternativa, Questao, QuestaoConteudo
 
 
@@ -13,6 +14,27 @@ CHAVES_VALIDAS = {chr(codigo) for codigo in range(ord("A"), ord("Z") + 1)}
 
 def _normalizar_codigo(codigo):
     return " ".join((codigo or "").split()).upper()
+
+
+def _validar_imagem_json(imagem, prefixo, erros):
+    if imagem is None:
+        return {"imagem_public_id": "", "imagem_alt": ""}
+    if not isinstance(imagem, dict):
+        erros.append(f"{prefixo} imagem deve ser nula ou objeto.")
+        return {"imagem_public_id": "", "imagem_alt": ""}
+    public_id = (imagem.get("public_id") or "").strip()
+    alt = imagem.get("alt", "")
+    if not isinstance(alt, str):
+        erros.append(f"{prefixo} texto alternativo da imagem deve ser texto.")
+        alt = ""
+    if not public_id:
+        erros.append(f"{prefixo} imagem.public_id é obrigatório quando imagem for informada.")
+        return {"imagem_public_id": "", "imagem_alt": alt}
+    try:
+        validar_public_id(public_id)
+    except ValidationError as exc:
+        erros.extend(f"{prefixo} {mensagem}" for mensagem in exc.messages)
+    return {"imagem_public_id": public_id, "imagem_alt": alt}
 
 
 def validar_json_importacao_questoes(texto):
@@ -48,15 +70,14 @@ def validar_json_importacao_questoes(texto):
         dificuldade = item.get("dificuldade") or Questao.DificuldadeQuestao.MEDIA
         tipo_fonte = item.get("tipo_fonte") or Questao.TipoFonte.ORIGINAL
         status = item.get("status") or Questao.StatusQuestao.RASCUNHO
+        imagem = _validar_imagem_json(item.get("imagem"), prefixo, erros)
         alternativas = item.get("alternativas")
         conteudo_slugs = item.get("conteudos") or []
         principal_slug = item.get("conteudo_principal")
         gabarito = _normalizar_codigo(item.get("gabarito")) if item.get("gabarito") else ""
 
-        if item.get("requer_imagem") is True:
-            erros.append(
-                f"{prefixo} requer imagem, mas o suporte a imagens ainda não está disponível."
-            )
+        if item.get("requer_imagem") is True and not imagem["imagem_public_id"]:
+            erros.append(f"{prefixo} requer imagem, mas nenhuma imagem foi informada.")
         if not codigo:
             erros.append(f"{prefixo} código é obrigatório.")
         elif codigo in codigos or Questao.objects.filter(codigo=codigo).exists():
@@ -112,14 +133,19 @@ def validar_json_importacao_questoes(texto):
                 continue
             chave = _normalizar_codigo(alternativa.get("chave"))
             texto_alt = (alternativa.get("texto") or "").strip()
+            imagem_alt_dados = _validar_imagem_json(
+                alternativa.get("imagem"),
+                f"{prefixo} alternativa {chave or alt_indice}:",
+                erros,
+            )
             correta = bool(alternativa.get("correta"))
             ordem = alternativa.get("ordem") or alt_indice
             if chave not in CHAVES_VALIDAS:
                 erros.append(f"{prefixo} alternativa {alt_indice} possui chave inválida.")
             if chave in chaves:
                 erros.append(f"{prefixo} alternativa {chave} duplicada.")
-            if not texto_alt:
-                erros.append(f"{prefixo} alternativa {chave or alt_indice} sem texto.")
+            if not texto_alt and not imagem_alt_dados["imagem_public_id"]:
+                erros.append(f"{prefixo} alternativa {chave or alt_indice} sem texto ou imagem.")
             if not isinstance(ordem, int) or ordem < 1:
                 erros.append(f"{prefixo} alternativa {chave or alt_indice} possui ordem inválida.")
             elif ordem in ordens:
@@ -129,7 +155,14 @@ def validar_json_importacao_questoes(texto):
             if correta:
                 corretas.append(chave)
             alternativas_validadas.append(
-                {"chave": chave, "texto": texto_alt, "correta": correta, "ordem": ordem}
+                {
+                    "chave": chave,
+                    "texto": texto_alt,
+                    "imagem_public_id": imagem_alt_dados["imagem_public_id"],
+                    "imagem_alt": imagem_alt_dados["imagem_alt"],
+                    "correta": correta,
+                    "ordem": ordem,
+                }
             )
 
         if len(corretas) == 0:
@@ -152,6 +185,8 @@ def validar_json_importacao_questoes(texto):
                 "fonte_nome": item.get("fonte_nome", ""),
                 "fonte_ano": item.get("fonte_ano"),
                 "fonte_url": item.get("fonte_url", ""),
+                "imagem_public_id": imagem["imagem_public_id"],
+                "imagem_alt": imagem["imagem_alt"],
                 "status": status,
                 "conteudos": conteudos,
                 "principal": principal,
@@ -180,6 +215,8 @@ def importar_questoes_json(texto, usuario):
                     fonte_nome=item["fonte_nome"],
                     fonte_ano=item["fonte_ano"],
                     fonte_url=item["fonte_url"],
+                    imagem_public_id=item["imagem_public_id"],
+                    imagem_alt=item["imagem_alt"],
                     status=item["status"],
                     criado_por=usuario,
                 )

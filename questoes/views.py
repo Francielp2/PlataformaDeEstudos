@@ -319,7 +319,14 @@ def _salvar_alternativas_formset(formset):
             alternativa.ordem = form.cleaned_data["ordem"]
             ordens_usadas.add(alternativa.ordem)
 
-    formset.save()
+    for form in formset.forms:
+        if not form.cleaned_data or not form.has_changed():
+            continue
+        alternativa = form.save(commit=False)
+        alternativa.questao = formset.instance
+        form.aplicar_imagem(alternativa)
+        alternativa.full_clean()
+        alternativa.save()
 
 
 @staff_required
@@ -436,13 +443,19 @@ def admin_questoes_publicar_rascunhos(request):
 @staff_required
 def admin_questao_criar(request):
     questao = Questao(criado_por=request.user)
-    form = QuestaoForm(request.POST or None, instance=questao)
-    formset = AlternativaFormSet(request.POST or None, instance=questao, prefix="alternativas")
+    form = QuestaoForm(request.POST or None, request.FILES or None, instance=questao)
+    formset = AlternativaFormSet(
+        request.POST or None,
+        request.FILES or None,
+        instance=questao,
+        prefix="alternativas",
+    )
     if request.method == "POST" and form.is_valid() and formset.is_valid():
         try:
             with transaction.atomic():
                 questao = form.save(commit=False)
                 questao.criado_por = request.user
+                form.aplicar_imagem(questao)
                 questao.full_clean()
                 questao.save()
                 formset.instance = questao
@@ -491,13 +504,19 @@ def admin_questao_detalhe(request, pk):
 def admin_questao_editar(request, pk):
     questao = get_object_or_404(Questao, pk=pk)
     criado_por_original = questao.criado_por
-    form = QuestaoForm(request.POST or None, instance=questao)
-    formset = AlternativaFormSet(request.POST or None, instance=questao, prefix="alternativas")
+    form = QuestaoForm(request.POST or None, request.FILES or None, instance=questao)
+    formset = AlternativaFormSet(
+        request.POST or None,
+        request.FILES or None,
+        instance=questao,
+        prefix="alternativas",
+    )
     if request.method == "POST" and form.is_valid() and formset.is_valid():
         try:
             with transaction.atomic():
                 questao = form.save(commit=False)
                 questao.criado_por = criado_por_original
+                form.aplicar_imagem(questao)
                 questao.full_clean()
                 questao.save()
                 _salvar_alternativas_formset(formset)

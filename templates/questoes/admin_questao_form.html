@@ -8,7 +8,7 @@
         <p>Cadastre o enunciado, classifique por matéria/conteúdo e informe as alternativas.</p>
     </div>
 
-    <form method="post" class="form-panel" novalidate>
+    <form method="post" class="form-panel" enctype="multipart/form-data" novalidate>
         {% csrf_token %}
 
         {% if form.non_field_errors %}
@@ -46,6 +46,35 @@
                     <label class="form-label" for="{{ form.enunciado.id_for_label }}">Enunciado</label>
                     {{ form.enunciado }}
                     {% for error in form.enunciado.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                </div>
+                <div class="col-12">
+                    <label class="form-label">Imagem</label>
+                    {% if form.instance.imagem_public_id %}
+                        <div class="mb-2">
+                            <img src="{{ form.instance.imagem_url }}" alt="{{ form.instance.imagem_alt_texto }}" class="img-fluid questao-imagem-preview">
+                        </div>
+                    {% endif %}
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            {{ form.imagem_arquivo }}
+                            {% for error in form.imagem_arquivo.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                        </div>
+                        <div class="col-md-4">
+                            {{ form.imagem_url }}
+                            {% for error in form.imagem_url.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                        </div>
+                        <div class="col-md-4">
+                            {{ form.imagem_alt }}
+                            {% for error in form.imagem_alt.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                            {% if form.instance.imagem_public_id %}
+                                <div class="form-check mt-2">
+                                    {{ form.remover_imagem }}
+                                    <label class="form-check-label" for="{{ form.remover_imagem.id_for_label }}">Remover imagem atual</label>
+                                </div>
+                            {% endif %}
+                            {% for error in form.remover_imagem.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                        </div>
+                    </div>
                 </div>
                 <div class="col-12">
                     <label class="form-label" for="{{ form.explicacao.id_for_label }}">Explicação</label>
@@ -146,6 +175,33 @@
                                 {{ alternativa_form.texto }}
                                 {% for error in alternativa_form.texto.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
                             </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Imagem</label>
+                                {% if alternativa_form.instance.imagem_public_id %}
+                                    <div class="mb-2">
+                                        <img src="{{ alternativa_form.instance.imagem_url }}" alt="{{ alternativa_form.instance.imagem_alt_texto }}" class="img-fluid alternativa-imagem-preview">
+                                    </div>
+                                {% endif %}
+                                {{ alternativa_form.imagem_arquivo }}
+                                {% for error in alternativa_form.imagem_arquivo.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" for="{{ alternativa_form.imagem_url.id_for_label }}">URL da imagem</label>
+                                {{ alternativa_form.imagem_url }}
+                                {% for error in alternativa_form.imagem_url.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label" for="{{ alternativa_form.imagem_alt.id_for_label }}">Texto alternativo</label>
+                                {{ alternativa_form.imagem_alt }}
+                                {% for error in alternativa_form.imagem_alt.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                                {% if alternativa_form.instance.imagem_public_id %}
+                                    <div class="form-check mt-2">
+                                        {{ alternativa_form.remover_imagem }}
+                                        <label class="form-check-label" for="{{ alternativa_form.remover_imagem.id_for_label }}">Remover imagem atual</label>
+                                    </div>
+                                {% endif %}
+                                {% for error in alternativa_form.remover_imagem.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                            </div>
                             <div class="col-md-2">
                                 <label class="form-label" for="{{ alternativa_form.ordem.id_for_label }}">Ordem</label>
                                 {{ alternativa_form.ordem }}
@@ -176,6 +232,18 @@
                     <div class="col-md-6">
                         <label class="form-label" for="{{ formset.empty_form.texto.id_for_label }}">Texto</label>
                         {{ formset.empty_form.texto }}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="{{ formset.empty_form.imagem_arquivo.id_for_label }}">Imagem</label>
+                        {{ formset.empty_form.imagem_arquivo }}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="{{ formset.empty_form.imagem_url.id_for_label }}">URL da imagem</label>
+                        {{ formset.empty_form.imagem_url }}
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label" for="{{ formset.empty_form.imagem_alt.id_for_label }}">Texto alternativo</label>
+                        {{ formset.empty_form.imagem_alt }}
                     </div>
                     <div class="col-md-2">
                         <label class="form-label" for="{{ formset.empty_form.ordem.id_for_label }}">Ordem</label>

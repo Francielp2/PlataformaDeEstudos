@@ -320,8 +320,18 @@ def revisao_tentativa(request, pk):
             {
                 "ordem": questao.ordem,
                 "enunciado": questao.enunciado,
+                "imagem_public_id": questao.imagem_public_id,
+                "imagem_url": questao.imagem_url,
+                "imagem_alt_texto": questao.imagem_alt_texto,
                 "alternativas": [
-                    {"id": alternativa.id, "chave": alternativa.chave, "texto": alternativa.texto}
+                    {
+                        "id": alternativa.id,
+                        "chave": alternativa.chave,
+                        "texto": alternativa.texto,
+                        "imagem_public_id": alternativa.imagem_public_id,
+                        "imagem_url": alternativa.imagem_url,
+                        "imagem_alt_texto": alternativa.imagem_alt_texto,
+                    }
                     for alternativa in questao.alternativas.order_by("ordem")
                 ],
                 "resposta_id": resposta.alternativa_escolhida_id if resposta else None,
@@ -512,6 +522,8 @@ def admin_simulado_duplicar(request, pk):
                 fonte_nome=questao.fonte_nome,
                 fonte_ano=questao.fonte_ano,
                 fonte_url=questao.fonte_url,
+                imagem_public_id=questao.imagem_public_id,
+                imagem_alt=questao.imagem_alt,
                 ordem=questao.ordem,
             )
             for alternativa in questao.alternativas.all():
@@ -519,6 +531,8 @@ def admin_simulado_duplicar(request, pk):
                     questao_simulado=copia,
                     chave=alternativa.chave,
                     texto=alternativa.texto,
+                    imagem_public_id=alternativa.imagem_public_id,
+                    imagem_alt=alternativa.imagem_alt,
                     correta=alternativa.correta,
                     ordem=alternativa.ordem,
                 )
@@ -570,18 +584,33 @@ def admin_adicionar_questoes_banco(request, pk):
 def admin_nova_questao_simulado(request, pk):
     simulado = get_object_or_404(Simulado, pk=pk)
     questao = QuestaoSimulado(simulado=simulado)
-    form = QuestaoSimuladoForm(request.POST or None, instance=questao, simulado=simulado)
-    formset = AlternativaSimuladoFormSet(request.POST or None, instance=questao, prefix="alternativas")
+    form = QuestaoSimuladoForm(
+        request.POST or None,
+        request.FILES or None,
+        instance=questao,
+        simulado=simulado,
+    )
+    formset = AlternativaSimuladoFormSet(
+        request.POST or None,
+        request.FILES or None,
+        instance=questao,
+        prefix="alternativas",
+    )
     if request.method == "POST" and form.is_valid() and formset.is_valid():
         try:
             alternativas = []
             for indice, alt_form in enumerate(formset.forms, start=1):
                 if not alt_form.cleaned_data:
                     continue
+                alternativa = alt_form.save(commit=False)
+                alt_form.aplicar_imagem(alternativa)
+                alternativa.full_clean(exclude=["questao_simulado"])
                 alternativas.append(
                     {
                         "chave": alt_form.cleaned_data["chave"],
                         "texto": alt_form.cleaned_data["texto"],
+                        "imagem_public_id": alternativa.imagem_public_id,
+                        "imagem_alt": alternativa.imagem_alt,
                         "correta": alt_form.cleaned_data["correta"],
                         "ordem": alt_form.cleaned_data.get("ordem") or indice,
                     }
@@ -589,7 +618,11 @@ def admin_nova_questao_simulado(request, pk):
             if len(alternativas) < 2 or sum(1 for alt in alternativas if alt["correta"]) != 1:
                 raise ValidationError("A questão deve ter pelo menos 2 alternativas e exatamente 1 correta.")
             dados = form.cleaned_data.copy()
+            questao_preview = QuestaoSimulado(simulado=simulado)
+            form.aplicar_imagem(questao_preview)
             dados["alternativas"] = alternativas
+            dados["imagem_public_id"] = questao_preview.imagem_public_id
+            dados["imagem_alt"] = questao_preview.imagem_alt
             criar_snapshot_manual(
                 simulado,
                 dados,

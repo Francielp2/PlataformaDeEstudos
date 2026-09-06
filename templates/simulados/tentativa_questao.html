@@ -29,11 +29,13 @@
             <div class="alert alert-danger">{% for error in form.non_field_errors %}<div>{{ error }}</div>{% endfor %}</div>
         {% endif %}
         <p class="lead">{{ questao.enunciado }}</p>
+        {% include "questoes/partials/imagem_questao.html" %}
         <div class="list-group mb-4">
-            {% for radio in form.alternativa %}
+            {% for alternativa in questao.alternativas.all %}
                 <label class="list-group-item">
-                    {{ radio.tag }}
-                    <span class="ms-2">{{ radio.choice_label }}</span>
+                    <input type="radio" name="{{ form.alternativa.html_name }}" value="{{ alternativa.pk }}">
+                    <span class="ms-2"><strong>{{ alternativa.chave }}.</strong> {{ alternativa.texto }}</span>
+                    {% include "questoes/partials/imagem_alternativa.html" %}
                 </label>
             {% endfor %}
         </div>

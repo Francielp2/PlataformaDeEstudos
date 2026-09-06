@@ -10,6 +10,7 @@
 
     <section class="section-box mb-4">
         <p>{{ questao.enunciado|linebreaksbr }}</p>
+        {% include "questoes/partials/imagem_questao.html" %}
         <p class="small text-muted">
             Conteúdos:
             {% for relacao in questao.questao_conteudos.all %}
@@ -23,8 +24,14 @@
 
     <form method="post" class="section-box">
         {% csrf_token %}
-        {% for radio in form.alternativa %}
-            <div class="form-check mb-2">{{ radio.tag }} <label class="form-check-label" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label></div>
+        {% for alternativa in questao.alternativas.all %}
+            <div class="form-check mb-3">
+                <input class="form-check-input" type="radio" name="{{ form.alternativa.html_name }}" id="alternativa-{{ alternativa.pk }}" value="{{ alternativa.pk }}">
+                <label class="form-check-label" for="alternativa-{{ alternativa.pk }}">
+                    <strong>{{ alternativa.chave }}.</strong> {{ alternativa.texto }}
+                    {% include "questoes/partials/imagem_alternativa.html" %}
+                </label>
+            </div>
         {% endfor %}
         {% for error in form.alternativa.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
         <button class="btn btn-primary mt-3" type="submit">Responder</button>

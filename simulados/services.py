@@ -5,6 +5,7 @@ from django.core.exceptions import ValidationError
 from django.db import IntegrityError, transaction
 
 from curriculo.models import Conteudo
+from questoes.imagens import validar_public_id
 from questoes.models import Alternativa, Questao, QuestaoConteudo
 
 from .models import (
@@ -39,6 +40,27 @@ def validar_materia_simulado(simulado, conteudos):
             )
 
 
+def _validar_imagem_json(imagem, prefixo, erros):
+    if imagem is None:
+        return {"imagem_public_id": "", "imagem_alt": ""}
+    if not isinstance(imagem, dict):
+        erros.append(f"{prefixo} imagem deve ser nula ou objeto.")
+        return {"imagem_public_id": "", "imagem_alt": ""}
+    public_id = (imagem.get("public_id") or "").strip()
+    alt = imagem.get("alt", "")
+    if not isinstance(alt, str):
+        erros.append(f"{prefixo} texto alternativo da imagem deve ser texto.")
+        alt = ""
+    if not public_id:
+        erros.append(f"{prefixo} imagem.public_id é obrigatório quando imagem for informada.")
+        return {"imagem_public_id": "", "imagem_alt": alt}
+    try:
+        validar_public_id(public_id)
+    except ValidationError as exc:
+        erros.extend(f"{prefixo} {mensagem}" for mensagem in exc.messages)
+    return {"imagem_public_id": public_id, "imagem_alt": alt}
+
+
 def criar_snapshot_de_questao(simulado, questao, origem=QuestaoSimulado.OrigemQuestao.BANCO):
     garantir_edicao_estrutural(simulado)
     relacoes = list(questao.questao_conteudos.select_related("conteudo", "conteudo__materia"))
@@ -57,6 +79,8 @@ def criar_snapshot_de_questao(simulado, questao, origem=QuestaoSimulado.OrigemQu
             fonte_nome=questao.fonte_nome,
             fonte_ano=questao.fonte_ano,
             fonte_url=questao.fonte_url,
+            imagem_public_id=questao.imagem_public_id,
+            imagem_alt=questao.imagem_alt,
             ordem=proxima_ordem(simulado),
         )
         for alternativa in questao.alternativas.order_by("ordem"):
@@ -64,6 +88,8 @@ def criar_snapshot_de_questao(simulado, questao, origem=QuestaoSimulado.OrigemQu
                 questao_simulado=snapshot,
                 chave=alternativa.chave,
                 texto=alternativa.texto,
+                imagem_public_id=alternativa.imagem_public_id,
+                imagem_alt=alternativa.imagem_alt,
                 correta=alternativa.correta,
                 ordem=alternativa.ordem,
             )
@@ -89,6 +115,8 @@ def criar_questao_banco_de_snapshot(dados, materia, conteudos, principal, usuari
         fonte_nome=dados.get("fonte_nome", ""),
         fonte_ano=dados.get("fonte_ano"),
         fonte_url=dados.get("fonte_url", ""),
+        imagem_public_id=dados.get("imagem_public_id", ""),
+        imagem_alt=dados.get("imagem_alt", ""),
         status=Questao.StatusQuestao.RASCUNHO,
         criado_por=usuario,
     )
@@ -97,6 +125,8 @@ def criar_questao_banco_de_snapshot(dados, materia, conteudos, principal, usuari
             questao=questao,
             chave=alternativa["chave"],
             texto=alternativa["texto"],
+            imagem_public_id=alternativa.get("imagem_public_id", ""),
+            imagem_alt=alternativa.get("imagem_alt", ""),
             correta=alternativa["correta"],
             ordem=alternativa["ordem"],
         )
@@ -137,6 +167,8 @@ def criar_snapshot_manual(simulado, dados, conteudos, principal, usuario, salvar
             fonte_nome=dados.get("fonte_nome", ""),
             fonte_ano=dados.get("fonte_ano"),
             fonte_url=dados.get("fonte_url", ""),
+            imagem_public_id=dados.get("imagem_public_id", ""),
+            imagem_alt=dados.get("imagem_alt", ""),
             ordem=proxima_ordem(simulado),
         )
         for alternativa in dados["alternativas"]:
@@ -144,6 +176,8 @@ def criar_snapshot_manual(simulado, dados, conteudos, principal, usuario, salvar
                 questao_simulado=snapshot,
                 chave=alternativa["chave"],
                 texto=alternativa["texto"],
+                imagem_public_id=alternativa.get("imagem_public_id", ""),
+                imagem_alt=alternativa.get("imagem_alt", ""),
                 correta=alternativa["correta"],
                 ordem=alternativa["ordem"],
             )
@@ -181,6 +215,7 @@ def validar_json_importacao(texto, simulado=None, salvar_no_banco=False):
         enunciado = (item.get("enunciado") or "").strip()
         dificuldade = item.get("dificuldade") or Questao.DificuldadeQuestao.MEDIA
         tipo_fonte = item.get("tipo_fonte") or Questao.TipoFonte.ORIGINAL
+        imagem = _validar_imagem_json(item.get("imagem"), prefixo, erros)
         alternativas = item.get("alternativas")
         slugs = item.get("conteudos") or []
         principal_slug = item.get("conteudo_principal")
@@ -226,18 +261,30 @@ def validar_json_importacao(texto, simulado=None, salvar_no_banco=False):
         for alt_indice, alternativa in enumerate(alternativas, start=1):
             chave = " ".join((alternativa.get("chave") or "").split()).upper()
             texto_alt = (alternativa.get("texto") or "").strip()
+            imagem_alt_dados = _validar_imagem_json(
+                alternativa.get("imagem"),
+                f"{prefixo} alternativa {chave or alt_indice}:",
+                erros,
+            )
             correta = bool(alternativa.get("correta"))
             ordem = alternativa.get("ordem") or alt_indice
             if chave not in CHAVES_VALIDAS:
                 erros.append(f'{prefixo} alternativa {alt_indice} possui chave inválida.')
             if chave in chaves:
                 erros.append(f'{prefixo} alternativa {chave} duplicada.')
-            if not texto_alt:
-                erros.append(f"{prefixo} alternativa {chave or alt_indice} sem texto.")
+            if not texto_alt and not imagem_alt_dados["imagem_public_id"]:
+                erros.append(f"{prefixo} alternativa {chave or alt_indice} sem texto ou imagem.")
             chaves.add(chave)
             corretas += 1 if correta else 0
             alt_validadas.append(
-                {"chave": chave, "texto": texto_alt, "correta": correta, "ordem": ordem}
+                {
+                    "chave": chave,
+                    "texto": texto_alt,
+                    "imagem_public_id": imagem_alt_dados["imagem_public_id"],
+                    "imagem_alt": imagem_alt_dados["imagem_alt"],
+                    "correta": correta,
+                    "ordem": ordem,
+                }
             )
         if corretas != 1:
             erros.append(f"{prefixo} informe exatamente 1 alternativa correta.")
@@ -252,6 +299,8 @@ def validar_json_importacao(texto, simulado=None, salvar_no_banco=False):
                 "fonte_nome": item.get("fonte_nome", ""),
                 "fonte_ano": item.get("fonte_ano"),
                 "fonte_url": item.get("fonte_url", ""),
+                "imagem_public_id": imagem["imagem_public_id"],
+                "imagem_alt": imagem["imagem_alt"],
                 "alternativas": alt_validadas,
                 "conteudos": conteudos,
                 "principal": principal,

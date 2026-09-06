@@ -36,6 +36,7 @@
                     <strong>{{ questao.codigo_origem|default:"Sem código" }}</strong>
                     <span class="badge text-bg-secondary">{{ questao.get_origem_display }}</span>
                     {{ questao.enunciado|truncatewords:18 }}
+                    {% include "questoes/partials/imagem_questao.html" %}
                 </li>
             {% empty %}
                 <li>Nenhuma questão adicionada.</li>

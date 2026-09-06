@@ -4,9 +4,13 @@ from django.db import IntegrityError, transaction
 from django.test import TestCase
 from django.urls import reverse
 import json
+from unittest.mock import patch
 
+import cloudinary
 from curriculo.models import Conteudo, Materia
+from django.core.files.uploadedfile import SimpleUploadedFile
 
+from .imagens import TAMANHO_MAXIMO_BYTES, gerar_url_imagem, upload_imagem_arquivo, validar_url_imagem
 from .models import Alternativa, Questao, QuestaoConteudo, RespostaQuestao
 
 
@@ -134,6 +138,13 @@ class QuestaoModelTests(QuestaoTestMixin, TestCase):
         with self.assertRaises(ValidationError):
             questao.full_clean()
 
+    def test_questao_sem_imagem_continua_valida(self):
+        questao = Questao(codigo="MAT-010-SEM-IMG", materia=self.matematica, enunciado="Enunciado")
+
+        questao.full_clean()
+
+        self.assertEqual(questao.imagem_public_id, "")
+
     def test_alternativa_constraints_por_questao(self):
         questao = self.criar_questao("MAT-011")
         outra = self.criar_questao("MAT-012")
@@ -156,6 +167,76 @@ class QuestaoModelTests(QuestaoTestMixin, TestCase):
                 )
 
         self.assertTrue(outra.alternativas.filter(chave="A").exists())
+
+    def test_alternativa_aceita_texto_texto_com_imagem_ou_somente_imagem(self):
+        questao = Questao.objects.create(
+            codigo="MAT-012-IMG",
+            materia=self.matematica,
+            enunciado="Enunciado",
+        )
+
+        Alternativa(questao=questao, chave="A", texto="Texto", ordem=1).full_clean()
+        Alternativa(
+            questao=questao,
+            chave="B",
+            texto="Texto",
+            imagem_public_id="plataforma-estudos/alternativas/b",
+            ordem=2,
+        ).full_clean()
+        Alternativa(
+            questao=questao,
+            chave="C",
+            texto="",
+            imagem_public_id="plataforma-estudos/alternativas/c",
+            ordem=3,
+        ).full_clean()
+        with self.assertRaises(ValidationError):
+            Alternativa(questao=questao, chave="D", texto="", ordem=4).full_clean()
+
+    def test_url_cloudinary_e_gerada_a_partir_de_public_id(self):
+        cloudinary.config(cloud_name="demo")
+        questao = Questao(
+            codigo="MAT-012-URL",
+            materia=self.matematica,
+            enunciado="Enunciado",
+            imagem_public_id="enem/2025/caderno7/q136",
+        )
+
+        self.assertIn("enem/2025/caderno7/q136", questao.imagem_url)
+        self.assertEqual(questao.imagem_alt_texto, "Imagem da questão")
+
+
+class ImagemSegurancaTests(QuestaoTestMixin, TestCase):
+    @patch("questoes.imagens.socket.getaddrinfo", return_value=[(None, None, None, None, ("93.184.216.34", 0))])
+    def test_valida_url_http_https_e_bloqueia_rede_local(self, getaddrinfo_mock):
+        self.assertEqual(validar_url_imagem("https://example.com/imagem.png"), "https://example.com/imagem.png")
+        with self.assertRaises(ValidationError):
+            validar_url_imagem("ftp://example.com/imagem.png")
+        with self.assertRaises(ValidationError):
+            validar_url_imagem("http://127.0.0.1/imagem.png")
+        with self.assertRaises(ValidationError):
+            validar_url_imagem("http://localhost/imagem.png")
+        getaddrinfo_mock.assert_called_once()
+
+    def test_geracao_de_url_nao_expoe_credenciais(self):
+        cloudinary.config(cloud_name="demo")
+        url = gerar_url_imagem("enem/2025/caderno7/q136")
+
+        self.assertIn("https://", url)
+        self.assertNotIn("api_secret", url.lower())
+
+    def test_upload_rejeita_svg_e_arquivo_maior_que_limite(self):
+        svg = SimpleUploadedFile("imagem.svg", b"<svg></svg>", content_type="image/svg+xml")
+        grande = SimpleUploadedFile(
+            "imagem.png",
+            b"x" * (TAMANHO_MAXIMO_BYTES + 1),
+            content_type="image/png",
+        )
+
+        with self.assertRaises(ValidationError):
+            upload_imagem_arquivo(svg)
+        with self.assertRaises(ValidationError):
+            upload_imagem_arquivo(grande)
 
     def test_questaoconteudo_valida_materia_e_duplicidade(self):
         questao = self.criar_questao("MAT-013")
@@ -447,6 +528,104 @@ class AdminQuestaoViewTests(QuestaoTestMixin, TestCase):
             [("A", 1), ("B", 2)],
         )
 
+    @patch("questoes.forms.upload_imagem_arquivo", return_value="plataforma-estudos/questoes/q1")
+    def test_admin_cria_questao_com_upload_de_imagem(self, upload_mock):
+        data = self._post_questao("MAT-036-IMG", status=Questao.StatusQuestao.RASCUNHO)
+        data["imagem_alt"] = "Gráfico da questão"
+        data["imagem_arquivo"] = SimpleUploadedFile("questao.png", b"conteudo", content_type="image/png")
+        self.client.force_login(self.staff)
+
+        response = self.client.post(
+            reverse("questoes_admin:admin_questao_criar"),
+            data,
+        )
+
+        questao = Questao.objects.get(codigo="MAT-036-IMG")
+        self.assertRedirects(response, reverse("questoes_admin:admin_questao_detalhe", args=[questao.pk]))
+        self.assertEqual(questao.imagem_public_id, "plataforma-estudos/questoes/q1")
+        self.assertEqual(questao.imagem_alt, "Gráfico da questão")
+        upload_mock.assert_called_once()
+
+    @patch("questoes.forms.upload_imagem_url", return_value="plataforma-estudos/questoes/url")
+    def test_admin_cria_questao_com_url_de_imagem(self, upload_mock):
+        data = self._post_questao("MAT-036-URL", status=Questao.StatusQuestao.RASCUNHO)
+        data["imagem_url"] = "https://example.com/imagem.png"
+        self.client.force_login(self.staff)
+
+        response = self.client.post(reverse("questoes_admin:admin_questao_criar"), data)
+
+        questao = Questao.objects.get(codigo="MAT-036-URL")
+        self.assertRedirects(response, reverse("questoes_admin:admin_questao_detalhe", args=[questao.pk]))
+        self.assertEqual(questao.imagem_public_id, "plataforma-estudos/questoes/url")
+        upload_mock.assert_called_once()
+
+    def test_admin_rejeita_arquivo_e_url_simultaneos(self):
+        data = self._post_questao("MAT-036-DUP", status=Questao.StatusQuestao.RASCUNHO)
+        data["imagem_url"] = "https://example.com/imagem.png"
+        data["imagem_arquivo"] = SimpleUploadedFile("questao.png", b"conteudo", content_type="image/png")
+        self.client.force_login(self.staff)
+
+        response = self.client.post(
+            reverse("questoes_admin:admin_questao_criar"),
+            data,
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Informe uma imagem por arquivo ou por URL")
+        self.assertFalse(Questao.objects.filter(codigo="MAT-036-DUP").exists())
+
+    def test_admin_remove_associacao_de_imagem_sem_apagar_asset(self):
+        questao = self.criar_questao("MAT-036-REMOVE")
+        questao.imagem_public_id = "plataforma-estudos/questoes/antiga"
+        questao.imagem_alt = "Imagem antiga"
+        questao.save(update_fields=["imagem_public_id", "imagem_alt", "atualizado_em"])
+        data = self._post_questao(
+            "MAT-036-REMOVE",
+            status=Questao.StatusQuestao.RASCUNHO,
+            questao=questao,
+        )
+        data["remover_imagem"] = "on"
+        self.client.force_login(self.staff)
+
+        response = self.client.post(reverse("questoes_admin:admin_questao_editar", args=[questao.pk]), data)
+
+        questao.refresh_from_db()
+        self.assertRedirects(response, reverse("questoes_admin:admin_questao_detalhe", args=[questao.pk]))
+        self.assertEqual(questao.imagem_public_id, "")
+        self.assertEqual(questao.imagem_alt, "")
+
+    @patch("questoes.forms.upload_imagem_url", side_effect=ValidationError("Não foi possível importar a imagem informada."))
+    def test_falha_cloudinary_e_tratada_no_formulario(self, upload_mock):
+        data = self._post_questao("MAT-036-FAIL", status=Questao.StatusQuestao.RASCUNHO)
+        data["imagem_url"] = "https://example.com/imagem.png"
+        self.client.force_login(self.staff)
+
+        response = self.client.post(reverse("questoes_admin:admin_questao_criar"), data)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Não foi possível importar a imagem informada.")
+        self.assertFalse(Questao.objects.filter(codigo="MAT-036-FAIL").exists())
+        upload_mock.assert_called_once()
+
+    @patch("questoes.forms.upload_imagem_arquivo", return_value="plataforma-estudos/alternativas/a")
+    def test_admin_cria_alternativa_somente_com_imagem(self, upload_mock):
+        data = self._post_questao("MAT-036-ALTIMG", status=Questao.StatusQuestao.PUBLICADA)
+        data["alternativas-1-texto"] = ""
+        data["alternativas-1-imagem_arquivo"] = SimpleUploadedFile("alternativa.webp", b"conteudo", content_type="image/webp")
+        self.client.force_login(self.staff)
+
+        response = self.client.post(
+            reverse("questoes_admin:admin_questao_criar"),
+            data,
+        )
+
+        questao = Questao.objects.get(codigo="MAT-036-ALTIMG")
+        alternativa = questao.alternativas.get(chave="B")
+        self.assertRedirects(response, reverse("questoes_admin:admin_questao_detalhe", args=[questao.pk]))
+        self.assertEqual(alternativa.texto, "")
+        self.assertEqual(alternativa.imagem_public_id, "plataforma-estudos/alternativas/a")
+        upload_mock.assert_called_once()
+
     def test_admin_edita_preserva_criado_por_e_slug_inexistente(self):
         questao = self.criar_questao("MAT-037")
         self.client.force_login(self.superuser)
@@ -692,6 +871,52 @@ class AdminQuestaoViewTests(QuestaoTestMixin, TestCase):
             Questao.objects.get(codigo="JSON-015").status,
             Questao.StatusQuestao.PUBLICADA,
         )
+
+    @patch("questoes.importacao_json.validar_public_id")
+    def test_importacao_json_aceita_imagem_null_ausente_e_public_id(self, validar_mock):
+        self.client.force_login(self.staff)
+        payload = self._payload_importacao("JSON-016")
+        payload["questoes"][0]["imagem"] = {
+            "public_id": "enem/2025/caderno7/q136",
+            "alt": "Gráfico da questão",
+        }
+        payload["questoes"][0]["alternativas"][0]["imagem"] = None
+        payload["questoes"][0]["alternativas"][1]["imagem"] = {
+            "public_id": "enem/2025/caderno7/q136-b",
+            "alt": "Figura da alternativa B",
+        }
+        payload["questoes"][0]["alternativas"][1]["texto"] = ""
+
+        response = self.client.post(
+            reverse("questoes_admin:admin_questoes_importar_json"),
+            {"json_questoes": json.dumps(payload)},
+        )
+
+        questao = Questao.objects.get(codigo="JSON-016")
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(questao.imagem_public_id, "enem/2025/caderno7/q136")
+        self.assertEqual(questao.imagem_alt, "Gráfico da questão")
+        self.assertEqual(
+            questao.alternativas.get(chave="B").imagem_public_id,
+            "enem/2025/caderno7/q136-b",
+        )
+        self.assertEqual(validar_mock.call_count, 2)
+
+    @patch("questoes.importacao_json.validar_public_id", side_effect=ValidationError('Imagem Cloudinary "nao-existe" não encontrada.'))
+    def test_importacao_json_public_id_inexistente_faz_rollback(self, validar_mock):
+        self.client.force_login(self.staff)
+        payload = self._payload_importacao("JSON-017")
+        payload["questoes"][0]["imagem"] = {"public_id": "nao-existe", "alt": ""}
+
+        response = self.client.post(
+            reverse("questoes_admin:admin_questoes_importar_json"),
+            {"json_questoes": json.dumps(payload)},
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Imagem Cloudinary &quot;nao-existe&quot; não encontrada.')
+        self.assertFalse(Questao.objects.filter(codigo="JSON-017").exists())
+        validar_mock.assert_called_once_with("nao-existe")
 
     def test_admin_busca_e_filtros(self):
         publicada = self.criar_questao("MAT-039", dificuldade=Questao.DificuldadeQuestao.FACIL)

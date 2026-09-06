@@ -595,3 +595,29 @@ a { text-decoration: none; }
         font-size: 1rem;
     }
 }
+
+.questao-imagem img {
+    display: block;
+    height: auto;
+    max-width: 760px;
+    width: 100%;
+}
+
+.alternativa-imagem img {
+    display: block;
+    height: auto;
+    max-width: 400px;
+    width: 100%;
+}
+
+.questao-imagem-preview {
+    height: auto;
+    max-width: 320px;
+    width: 100%;
+}
+
+.alternativa-imagem-preview {
+    height: auto;
+    max-width: 220px;
+    width: 100%;
+}

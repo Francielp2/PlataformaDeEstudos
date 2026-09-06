@@ -2,9 +2,41 @@ from django import forms
 from django.forms import inlineformset_factory
 
 from curriculo.models import Conteudo, Materia
+from questoes.imagens import upload_imagem_arquivo, upload_imagem_url
 from questoes.models import Questao
 
 from .models import AlternativaSimulado, QuestaoSimulado, Simulado
+
+
+def _configurar_campos_imagem(form):
+    form.fields["imagem_arquivo"].widget.attrs.setdefault("class", "form-control")
+    form.fields["imagem_url"].widget.attrs.setdefault("class", "form-control")
+    form.fields["imagem_alt"].widget.attrs.setdefault("class", "form-control")
+    form.fields["remover_imagem"].widget.attrs.setdefault("class", "form-check-input")
+
+
+def _validar_origem_imagem(cleaned_data, add_error):
+    arquivo = cleaned_data.get("imagem_arquivo")
+    url = cleaned_data.get("imagem_url")
+    remover = cleaned_data.get("remover_imagem")
+    if arquivo and url:
+        add_error("imagem_arquivo", "Informe uma imagem por arquivo ou por URL, não pelos dois campos.")
+    if remover and (arquivo or url):
+        add_error("remover_imagem", "Não é possível remover e enviar uma nova imagem ao mesmo tempo.")
+
+
+def _aplicar_imagem_form(cleaned_data, instance, prefixo):
+    if cleaned_data.get("remover_imagem"):
+        instance.imagem_public_id = ""
+        instance.imagem_alt = ""
+        return
+    arquivo = cleaned_data.get("imagem_arquivo")
+    url = cleaned_data.get("imagem_url")
+    if arquivo:
+        instance.imagem_public_id = upload_imagem_arquivo(arquivo, prefixo=prefixo)
+    elif url:
+        instance.imagem_public_id = upload_imagem_url(url, prefixo=prefixo)
+    instance.imagem_alt = cleaned_data.get("imagem_alt", "") if instance.imagem_public_id else ""
 
 
 class SimuladoForm(forms.ModelForm):
@@ -57,6 +89,9 @@ class SelecionarQuestoesForm(forms.Form):
 
 class QuestaoSimuladoForm(forms.ModelForm):
     codigo = forms.CharField(label="Código", required=False, max_length=40)
+    imagem_arquivo = forms.FileField(label="Escolher arquivo", required=False)
+    imagem_url = forms.URLField(label="URL da imagem", required=False)
+    remover_imagem = forms.BooleanField(label="Remover imagem atual", required=False)
     conteudos = forms.ModelMultipleChoiceField(
         label="Conteúdos",
         queryset=Conteudo.objects.none(),
@@ -84,6 +119,7 @@ class QuestaoSimuladoForm(forms.ModelForm):
             "fonte_nome",
             "fonte_ano",
             "fonte_url",
+            "imagem_alt",
         )
         labels = {
             "enunciado": "Enunciado",
@@ -93,6 +129,7 @@ class QuestaoSimuladoForm(forms.ModelForm):
             "fonte_nome": "Nome da fonte",
             "fonte_ano": "Ano",
             "fonte_url": "URL",
+            "imagem_alt": "Texto alternativo",
         }
         widgets = {
             "enunciado": forms.Textarea(attrs={"rows": 6}),
@@ -111,6 +148,8 @@ class QuestaoSimuladoForm(forms.ModelForm):
             conteudos = conteudos.filter(materia=simulado.materia)
         self.fields["conteudos"].queryset = conteudos
         self.fields["conteudo_principal"].queryset = conteudos
+        self.fields["imagem_alt"].required = False
+        _configurar_campos_imagem(self)
         for field in self.fields.values():
             widget = field.widget
             if isinstance(widget, forms.CheckboxInput):
@@ -131,16 +170,25 @@ class QuestaoSimuladoForm(forms.ModelForm):
                 "conteudo_principal",
                 "O conteúdo principal deve estar entre os conteúdos selecionados.",
             )
+        _validar_origem_imagem(cleaned_data, self.add_error)
         return cleaned_data
+
+    def aplicar_imagem(self, questao):
+        _aplicar_imagem_form(self.cleaned_data, questao, "simulados/questoes")
 
 
 class AlternativaSimuladoForm(forms.ModelForm):
+    imagem_arquivo = forms.FileField(label="Escolher arquivo", required=False)
+    imagem_url = forms.URLField(label="URL da imagem", required=False)
+    remover_imagem = forms.BooleanField(label="Remover imagem atual", required=False)
+
     class Meta:
         model = AlternativaSimulado
-        fields = ("chave", "texto", "correta", "ordem")
+        fields = ("chave", "texto", "imagem_alt", "correta", "ordem")
         labels = {
             "chave": "Chave",
             "texto": "Texto",
+            "imagem_alt": "Texto alternativo",
             "correta": "Correta",
             "ordem": "Ordem",
         }
@@ -149,6 +197,9 @@ class AlternativaSimuladoForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["ordem"].required = False
+        self.fields["texto"].required = False
+        self.fields["imagem_alt"].required = False
+        _configurar_campos_imagem(self)
         for field in self.fields.values():
             widget = field.widget
             if isinstance(widget, forms.CheckboxInput):
@@ -164,11 +215,41 @@ class AlternativaSimuladoForm(forms.ModelForm):
                 self.data.get(self.add_prefix("chave"), "").strip(),
                 self.data.get(self.add_prefix("texto"), "").strip(),
                 self.data.get(self.add_prefix("ordem"), "").strip(),
+                self.data.get(self.add_prefix("imagem_url"), "").strip(),
+                self.data.get(self.add_prefix("imagem_alt"), "").strip(),
+                self.files.get(self.add_prefix("imagem_arquivo")),
                 self.data.get(self.add_prefix("correta")),
             ]
             if not any(valores):
                 return False
         return super().has_changed()
+
+    def clean(self):
+        cleaned_data = super().clean()
+        chave = cleaned_data.get("chave")
+        texto = cleaned_data.get("texto")
+        imagem_arquivo = cleaned_data.get("imagem_arquivo")
+        imagem_url = cleaned_data.get("imagem_url")
+        imagem_atual = bool(self.instance and self.instance.imagem_public_id)
+        remover = cleaned_data.get("remover_imagem")
+        correta = cleaned_data.get("correta")
+        _validar_origem_imagem(cleaned_data, self.add_error)
+        if (chave or texto or correta or imagem_arquivo or imagem_url or imagem_atual) and not chave:
+            self.add_error("chave", "Informe a chave da alternativa.")
+        if (
+            (chave or correta)
+            and not texto
+            and not imagem_arquivo
+            and not imagem_url
+            and not (imagem_atual and not remover)
+        ):
+            self.add_error("texto", "Informe o texto ou a imagem da alternativa.")
+        if (imagem_arquivo or imagem_url or (imagem_atual and not remover)) and not texto:
+            self.instance.imagem_public_id = self.instance.imagem_public_id or "__imagem_pendente__"
+        return cleaned_data
+
+    def aplicar_imagem(self, alternativa):
+        _aplicar_imagem_form(self.cleaned_data, alternativa, "simulados/alternativas")
 
 
 AlternativaSimuladoFormSet = inlineformset_factory(

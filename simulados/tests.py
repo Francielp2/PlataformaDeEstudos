@@ -1,4 +1,5 @@
 import json
+from unittest.mock import patch
 
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
@@ -129,11 +130,20 @@ class SimuladoModelTests(SimuladoTestMixin, TestCase):
 
     def test_snapshot_nao_muda_quando_questao_original_e_editada_arquivada_ou_removida(self):
         questao = self.criar_questao()
+        questao.imagem_public_id = "enem/2025/c7/q136"
+        questao.imagem_alt = "Imagem original"
+        questao.save(update_fields=["imagem_public_id", "imagem_alt", "atualizado_em"])
+        alternativa = questao.alternativas.get(chave="A")
+        alternativa.imagem_public_id = "enem/2025/c7/q136-a"
+        alternativa.imagem_alt = "Alternativa original"
+        alternativa.save(update_fields=["imagem_public_id", "imagem_alt"])
         simulado = self.criar_simulado()
         snapshot = criar_snapshot_de_questao(simulado, questao)
 
         questao.enunciado = "Enunciado alterado"
         questao.explicacao = "Explicação alterada"
+        questao.imagem_public_id = "enem/2025/c7/q136-v2"
+        questao.imagem_alt = "Imagem alterada"
         questao.status = Questao.StatusQuestao.ARQUIVADA
         questao.save()
         questao.alternativas.filter(chave="A").update(texto="Correta alterada", correta=False)
@@ -143,9 +153,12 @@ class SimuladoModelTests(SimuladoTestMixin, TestCase):
         snapshot.refresh_from_db()
         self.assertEqual(snapshot.enunciado, "Enunciado MAT-001")
         self.assertEqual(snapshot.explicacao, "Explicação que pode revelar a resposta correta.")
+        self.assertEqual(snapshot.imagem_public_id, "enem/2025/c7/q136")
+        self.assertEqual(snapshot.imagem_alt, "Imagem original")
         self.assertIsNone(snapshot.questao_origem)
         self.assertEqual(snapshot.alternativas.get(chave="A").texto, "Correta original")
         self.assertTrue(snapshot.alternativas.get(chave="A").correta)
+        self.assertEqual(snapshot.alternativas.get(chave="A").imagem_public_id, "enem/2025/c7/q136-a")
 
     def test_publicacao_exige_questoes_validas_e_conteudo_principal(self):
         simulado = self.criar_simulado()
@@ -209,6 +222,43 @@ class ImportacaoJsonTests(SimuladoTestMixin, TestCase):
         self.assertTrue(Questao.objects.filter(codigo="JSON-001").exists())
         with self.assertRaises(ValidationError):
             importar_json(simulado, json.dumps(self.payload()), self.staff, salvar_no_banco=True)
+
+    @patch("simulados.services.validar_public_id")
+    def test_importacao_json_de_simulado_aceita_imagens_e_salva_no_banco(self, validar_mock):
+        simulado = self.criar_simulado()
+        payload = self.payload("JSON-IMG")
+        payload["questoes"][0]["imagem"] = {
+            "public_id": "enem/2025/caderno7/q136",
+            "alt": "Imagem da questão",
+        }
+        payload["questoes"][0]["alternativas"][0]["imagem"] = {
+            "public_id": "enem/2025/caderno7/q136-a",
+            "alt": "Imagem da alternativa A",
+        }
+        payload["questoes"][0]["alternativas"][0]["texto"] = ""
+
+        importar_json(simulado, json.dumps(payload), self.staff, salvar_no_banco=True)
+
+        snapshot = simulado.questoes.get()
+        questao_banco = Questao.objects.get(codigo="JSON-IMG")
+        self.assertEqual(snapshot.imagem_public_id, "enem/2025/caderno7/q136")
+        self.assertEqual(snapshot.alternativas.get(chave="A").imagem_public_id, "enem/2025/caderno7/q136-a")
+        self.assertEqual(questao_banco.imagem_public_id, "enem/2025/caderno7/q136")
+        self.assertEqual(questao_banco.alternativas.get(chave="A").imagem_public_id, "enem/2025/caderno7/q136-a")
+        self.assertEqual(validar_mock.call_count, 2)
+
+    @patch("simulados.services.validar_public_id", side_effect=ValidationError('Imagem Cloudinary "nao-existe" não encontrada.'))
+    def test_importacao_json_de_simulado_com_public_id_inexistente_faz_rollback(self, validar_mock):
+        simulado = self.criar_simulado()
+        payload = self.payload("JSON-IMG-INVALIDA")
+        payload["questoes"][0]["imagem"] = {"public_id": "nao-existe", "alt": ""}
+
+        with self.assertRaises(ValidationError):
+            importar_json(simulado, json.dumps(payload), self.staff)
+
+        self.assertEqual(simulado.questoes.count(), 0)
+        self.assertFalse(Questao.objects.filter(codigo="JSON-IMG-INVALIDA").exists())
+        validar_mock.assert_called_once_with("nao-existe")
 
     def test_alternativas_invalidas_cancelam_importacao(self):
         simulado = self.criar_simulado()

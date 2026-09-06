@@ -10,7 +10,7 @@
 
     <section class="section-box mb-4">
         <dl class="row mb-0">
-            <dt class="col-sm-3">Enunciado</dt><dd class="col-sm-9">{{ questao.enunciado|linebreaksbr }}</dd>
+            <dt class="col-sm-3">Enunciado</dt><dd class="col-sm-9">{{ questao.enunciado|linebreaksbr }}{% include "questoes/partials/imagem_questao.html" %}</dd>
             <dt class="col-sm-3">Dificuldade</dt><dd class="col-sm-9">{{ questao.get_dificuldade_display }}</dd>
             <dt class="col-sm-3">Conteúdos</dt><dd class="col-sm-9">{% for relacao in questao.questao_conteudos.all %}{{ relacao.conteudo.titulo }}{% if relacao.principal %} <span class="badge text-bg-info">Principal</span>{% endif %}{% if not forloop.last %}, {% endif %}{% endfor %}</dd>
             <dt class="col-sm-3">Fonte</dt><dd class="col-sm-9">{{ questao.get_tipo_fonte_display }} {{ questao.fonte_nome }} {{ questao.fonte_ano|default:"" }}</dd>
@@ -22,7 +22,11 @@
     <section class="section-box mb-4">
         <h2 class="h5">Alternativas</h2>
         {% for alternativa in questao.alternativas.all %}
-            <p><strong>{{ alternativa.chave }}.</strong> {{ alternativa.texto }} {% if alternativa.correta %}<span class="badge text-bg-success">Correta</span>{% endif %}</p>
+            <div class="mb-3">
+                <strong>{{ alternativa.chave }}.</strong> {{ alternativa.texto }}
+                {% if alternativa.correta %}<span class="badge text-bg-success">Correta</span>{% endif %}
+                {% include "questoes/partials/imagem_alternativa.html" %}
+            </div>
         {% endfor %}
     </section>
 

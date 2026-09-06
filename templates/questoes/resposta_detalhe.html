@@ -10,6 +10,7 @@
 
     <section class="section-box mb-4">
         <p>{{ resposta.questao.enunciado|linebreaksbr }}</p>
+        {% with questao=resposta.questao %}{% include "questoes/partials/imagem_questao.html" %}{% endwith %}
         <p>{% if resposta.correta %}<span class="badge text-bg-success">Acertou</span>{% else %}<span class="badge text-bg-secondary">Errou</span>{% endif %}</p>
         <p class="small text-muted">Conteúdos: {% for relacao in resposta.questao.questao_conteudos.all %}{{ relacao.conteudo.titulo }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
     </section>
@@ -21,6 +22,7 @@
                 <strong>{{ alternativa.chave }}.</strong> {{ alternativa.texto }}
                 {% if alternativa == resposta.alternativa_escolhida %}<span class="badge text-bg-info">Escolhida</span>{% endif %}
                 {% if alternativa.correta %}<span class="badge text-bg-success">Correta</span>{% endif %}
+                {% include "questoes/partials/imagem_alternativa.html" %}
             </div>
         {% endfor %}
     </section>

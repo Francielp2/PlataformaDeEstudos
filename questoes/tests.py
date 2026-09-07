@@ -10,7 +10,13 @@ import cloudinary
 from curriculo.models import Conteudo, Materia
 from django.core.files.uploadedfile import SimpleUploadedFile
 
-from .imagens import TAMANHO_MAXIMO_BYTES, gerar_url_imagem, upload_imagem_arquivo, validar_url_imagem
+from .imagens import (
+    TAMANHO_MAXIMO_BYTES,
+    _validar_resultado_cloudinary,
+    gerar_url_imagem,
+    upload_imagem_arquivo,
+    validar_url_imagem,
+)
 from .models import Alternativa, Questao, QuestaoConteudo, RespostaQuestao
 
 
@@ -223,7 +229,46 @@ class ImagemSegurancaTests(QuestaoTestMixin, TestCase):
         url = gerar_url_imagem("enem/2025/caderno7/q136")
 
         self.assertIn("https://", url)
+        self.assertIn("res.cloudinary.com/demo/image/upload", url)
+        self.assertIn("enem/2025/caderno7/q136", url)
         self.assertNotIn("api_secret", url.lower())
+
+    def test_validacao_resultado_cloudinary_retorna_public_id_oficial(self):
+        resultado = {
+            "resource_type": "image",
+            "format": "png",
+            "bytes": 1234,
+            "asset_id": "asset-id-nao-persistir",
+            "secure_url": "https://res.cloudinary.com/demo/image/upload/errado.png",
+            "original_filename": "arquivo-local",
+            "public_id": "plataforma-estudos/questoes/public-id-oficial",
+        }
+
+        self.assertEqual(
+            _validar_resultado_cloudinary(resultado),
+            "plataforma-estudos/questoes/public-id-oficial",
+        )
+
+    @patch("questoes.imagens.cloudinary.uploader.upload")
+    def test_upload_arquivo_salva_public_id_e_nao_asset_id_ou_secure_url(self, upload_mock):
+        upload_mock.return_value = {
+            "resource_type": "image",
+            "format": "webp",
+            "bytes": 1234,
+            "asset_id": "asset-id-nao-persistir",
+            "secure_url": "https://res.cloudinary.com/demo/image/upload/nao-salvar",
+            "public_id": "plataforma-estudos/questoes/public-id-retornado",
+        }
+        arquivo = SimpleUploadedFile("questao.webp", b"conteudo", content_type="image/webp")
+
+        public_id = upload_imagem_arquivo(arquivo)
+
+        self.assertEqual(public_id, "plataforma-estudos/questoes/public-id-retornado")
+        self.assertNotEqual(public_id, upload_mock.return_value["asset_id"])
+        self.assertNotEqual(public_id, upload_mock.return_value["secure_url"])
+        public_id_enviado = upload_mock.call_args.kwargs["public_id"]
+        self.assertTrue(public_id_enviado.startswith("plataforma-estudos/questoes/"))
+        self.assertNotIn("/questoes/questoes/", public_id_enviado)
 
     def test_upload_rejeita_svg_e_arquivo_maior_que_limite(self):
         svg = SimpleUploadedFile("imagem.svg", b"<svg></svg>", content_type="image/svg+xml")
@@ -408,6 +453,47 @@ class EstudanteQuestaoViewTests(QuestaoTestMixin, TestCase):
         self.assertContains(detalhe, "Escolhida")
         self.assertContains(detalhe, "Correta")
         self.assertContains(detalhe, "Explicação da questão")
+
+    def test_aluno_ve_imagens_na_resolucao_resultado_sequencia_e_detalhe(self):
+        cloudinary.config(cloud_name="demo", secure=True)
+        questao = self.criar_questao("MAT-031-IMG")
+        questao.imagem_public_id = "enem/2025/caderno7/q136"
+        questao.imagem_alt = "Gráfico da questão"
+        questao.save(update_fields=["imagem_public_id", "imagem_alt", "atualizado_em"])
+        alternativa_imagem = questao.alternativas.get(chave="B")
+        alternativa_imagem.texto = ""
+        alternativa_imagem.imagem_public_id = "enem/2025/caderno7/q136-b"
+        alternativa_imagem.imagem_alt = "Alternativa B"
+        alternativa_imagem.save(update_fields=["texto", "imagem_public_id", "imagem_alt"])
+        url_questao = "https://res.cloudinary.com/demo/image/upload/v1/enem/2025/caderno7/q136"
+        url_alternativa = "https://res.cloudinary.com/demo/image/upload/v1/enem/2025/caderno7/q136-b"
+        self.client.force_login(self.estudante)
+
+        detalhe = self.client.get(reverse("questoes:questao_detalhe", args=[questao.pk]))
+        self.assertContains(detalhe, f'src="{url_questao}"')
+        self.assertContains(detalhe, f'alt="{questao.imagem_alt}"')
+        self.assertContains(detalhe, f'src="{url_alternativa}"')
+        self.assertContains(detalhe, f'alt="{alternativa_imagem.imagem_alt}"')
+
+        resultado = self.client.post(
+            reverse("questoes:questao_detalhe", args=[questao.pk]),
+            {"alternativa": alternativa_imagem.pk},
+        )
+        self.assertContains(resultado, f'src="{url_questao}"')
+        resposta = RespostaQuestao.objects.get(usuario=self.estudante, questao=questao)
+        resposta_detalhe = self.client.get(reverse("questoes:resposta_detalhe", args=[resposta.pk]))
+        self.assertContains(resposta_detalhe, f'src="{url_questao}"')
+        self.assertContains(resposta_detalhe, f'src="{url_alternativa}"')
+
+        self.client.get(reverse("questoes:iniciar_sequencia"))
+        sequencia = self.client.get(reverse("questoes:sequencia"))
+        self.assertContains(sequencia, f'src="{url_questao}"')
+        self.assertContains(sequencia, f'src="{url_alternativa}"')
+        sequencia_resultado = self.client.post(
+            reverse("questoes:sequencia"),
+            {"alternativa": alternativa_imagem.pk},
+        )
+        self.assertContains(sequencia_resultado, f'src="{url_questao}"')
 
     def test_historico_isola_respostas_por_usuario(self):
         questao = self.criar_questao("MAT-032")
@@ -901,6 +987,24 @@ class AdminQuestaoViewTests(QuestaoTestMixin, TestCase):
             "enem/2025/caderno7/q136-b",
         )
         self.assertEqual(validar_mock.call_count, 2)
+
+    @patch("questoes.importacao_json.validar_public_id")
+    def test_importacao_json_preserva_public_id_simples_sem_extensao_e_requer_imagem(self, validar_mock):
+        self.client.force_login(self.staff)
+        payload = self._payload_importacao("JSON-016-SIMPLES")
+        payload["questoes"][0]["requer_imagem"] = True
+        payload["questoes"][0]["imagem"] = {"public_id": "abc123", "alt": "Imagem simples"}
+
+        response = self.client.post(
+            reverse("questoes_admin:admin_questoes_importar_json"),
+            {"json_questoes": json.dumps(payload)},
+        )
+
+        questao = Questao.objects.get(codigo="JSON-016-SIMPLES")
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(questao.imagem_public_id, "abc123")
+        self.assertNotEqual(questao.imagem_public_id, "abc123.png")
+        validar_mock.assert_called_once_with("abc123")
 
     @patch("questoes.importacao_json.validar_public_id", side_effect=ValidationError('Imagem Cloudinary "nao-existe" não encontrada.'))
     def test_importacao_json_public_id_inexistente_faz_rollback(self, validar_mock):

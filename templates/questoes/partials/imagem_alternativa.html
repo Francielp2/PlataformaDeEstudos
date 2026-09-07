@@ -1,5 +1,7 @@
-{% if alternativa.imagem_public_id %}
+{% with imagem_url=alternativa.imagem_url %}
+{% if imagem_url %}
     <div class="alternativa-imagem mt-2">
-        <img src="{{ alternativa.imagem_url }}" alt="{{ alternativa.imagem_alt_texto }}" class="img-fluid">
+        <img src="{{ imagem_url }}" alt="{{ alternativa.imagem_alt_texto }}" class="img-fluid">
     </div>
 {% endif %}
+{% endwith %}

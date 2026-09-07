@@ -3,6 +3,7 @@ import sys
 import cloudinary
 import dj_database_url
 from pathlib import Path
+from urllib.parse import urlparse
 
 from dotenv import load_dotenv
 
@@ -11,7 +12,22 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 load_dotenv(BASE_DIR / ".env", override=False)
 
-cloudinary.config(secure=True)
+cloudinary_url = os.getenv("CLOUDINARY_URL")
+if cloudinary_url:
+    cloudinary_config = urlparse(cloudinary_url)
+    cloudinary.config(
+        cloud_name=cloudinary_config.hostname,
+        api_key=cloudinary_config.username,
+        api_secret=cloudinary_config.password,
+        secure=True,
+    )
+else:
+    cloudinary.config(
+        cloud_name=os.getenv("CLOUDINARY_CLOUD_NAME"),
+        api_key=os.getenv("CLOUDINARY_API_KEY"),
+        api_secret=os.getenv("CLOUDINARY_API_SECRET"),
+        secure=True,
+    )
 
 
 SECRET_KEY = os.getenv("SECRET_KEY")

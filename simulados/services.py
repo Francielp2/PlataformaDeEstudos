@@ -220,6 +220,8 @@ def validar_json_importacao(texto, simulado=None, salvar_no_banco=False):
         slugs = item.get("conteudos") or []
         principal_slug = item.get("conteudo_principal")
 
+        if item.get("requer_imagem") is True and not imagem["imagem_public_id"]:
+            erros.append(f"{prefixo} requer imagem, mas nenhuma imagem foi informada.")
         if not enunciado:
             erros.append(f"{prefixo} enunciado é obrigatório.")
         if dificuldade not in dificuldades:

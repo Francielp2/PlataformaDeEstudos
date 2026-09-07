@@ -1,5 +1,7 @@
-{% if questao.imagem_public_id %}
+{% with imagem_url=questao.imagem_url %}
+{% if imagem_url %}
     <div class="questao-imagem my-3">
-        <img src="{{ questao.imagem_url }}" alt="{{ questao.imagem_alt_texto }}" class="img-fluid">
+        <img src="{{ imagem_url }}" alt="{{ questao.imagem_alt_texto }}" class="img-fluid">
     </div>
 {% endif %}
+{% endwith %}

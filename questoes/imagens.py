@@ -19,6 +19,9 @@ PASTA_BASE = "plataforma-estudos/questoes"
 
 
 def _public_id_unico(prefixo):
+    prefixo = (prefixo or "").strip("/")
+    if prefixo == "questoes":
+        return f"{PASTA_BASE}/{uuid.uuid4().hex}"
     return f"{PASTA_BASE}/{prefixo}/{uuid.uuid4().hex}"
 
 

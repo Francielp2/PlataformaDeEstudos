@@ -1,6 +1,7 @@
 import json
 from unittest.mock import patch
 
+import cloudinary
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError, transaction
@@ -155,10 +156,14 @@ class SimuladoModelTests(SimuladoTestMixin, TestCase):
         self.assertEqual(snapshot.explicacao, "Explicação que pode revelar a resposta correta.")
         self.assertEqual(snapshot.imagem_public_id, "enem/2025/c7/q136")
         self.assertEqual(snapshot.imagem_alt, "Imagem original")
+        cloudinary.config(cloud_name="demo", secure=True)
+        self.assertIn("https://res.cloudinary.com/demo/image/upload", snapshot.imagem_url)
+        self.assertIn("enem/2025/c7/q136", snapshot.imagem_url)
         self.assertIsNone(snapshot.questao_origem)
         self.assertEqual(snapshot.alternativas.get(chave="A").texto, "Correta original")
         self.assertTrue(snapshot.alternativas.get(chave="A").correta)
         self.assertEqual(snapshot.alternativas.get(chave="A").imagem_public_id, "enem/2025/c7/q136-a")
+        self.assertIn("enem/2025/c7/q136-a", snapshot.alternativas.get(chave="A").imagem_url)
 
     def test_publicacao_exige_questoes_validas_e_conteudo_principal(self):
         simulado = self.criar_simulado()
@@ -246,6 +251,32 @@ class ImportacaoJsonTests(SimuladoTestMixin, TestCase):
         self.assertEqual(questao_banco.imagem_public_id, "enem/2025/caderno7/q136")
         self.assertEqual(questao_banco.alternativas.get(chave="A").imagem_public_id, "enem/2025/caderno7/q136-a")
         self.assertEqual(validar_mock.call_count, 2)
+
+    @patch("simulados.services.validar_public_id")
+    def test_importacao_json_de_simulado_aceita_public_id_simples_e_requer_imagem_valido(self, validar_mock):
+        simulado = self.criar_simulado()
+        payload = self.payload("JSON-IMG-SIMPLES")
+        payload["questoes"][0]["requer_imagem"] = True
+        payload["questoes"][0]["imagem"] = {"public_id": "abc123", "alt": "Imagem simples"}
+
+        importar_json(simulado, json.dumps(payload), self.staff, salvar_no_banco=True)
+
+        snapshot = simulado.questoes.get()
+        questao_banco = Questao.objects.get(codigo="JSON-IMG-SIMPLES")
+        self.assertEqual(snapshot.imagem_public_id, "abc123")
+        self.assertEqual(questao_banco.imagem_public_id, "abc123")
+        validar_mock.assert_called_once_with("abc123")
+
+    def test_importacao_json_de_simulado_rejeita_requer_imagem_sem_public_id(self):
+        simulado = self.criar_simulado()
+        payload = self.payload("JSON-IMG-OBRIGATORIA")
+        payload["questoes"][0]["requer_imagem"] = True
+
+        with self.assertRaises(ValidationError) as ctx:
+            importar_json(simulado, json.dumps(payload), self.staff)
+
+        self.assertIn("requer imagem", str(ctx.exception))
+        self.assertEqual(simulado.questoes.count(), 0)
 
     @patch("simulados.services.validar_public_id", side_effect=ValidationError('Imagem Cloudinary "nao-existe" não encontrada.'))
     def test_importacao_json_de_simulado_com_public_id_inexistente_faz_rollback(self, validar_mock):
@@ -339,6 +370,40 @@ class SimuladoViewTests(SimuladoTestMixin, TestCase):
         self.assertContains(response, "100,00%")
         self.client.post(reverse("simulados:iniciar_simulado", args=[simulado.slug]))
         self.assertEqual(TentativaSimulado.objects.filter(usuario=self.estudante, simulado=simulado).count(), 2)
+
+    def test_execucao_e_revisao_do_simulado_exibem_imagens_do_snapshot(self):
+        cloudinary.config(cloud_name="demo", secure=True)
+        questao = self.criar_questao("MAT-IMG-SIM")
+        questao.imagem_public_id = "enem/2025/caderno7/q136"
+        questao.imagem_alt = "Imagem da questão"
+        questao.save(update_fields=["imagem_public_id", "imagem_alt", "atualizado_em"])
+        alternativa = questao.alternativas.get(chave="A")
+        alternativa.imagem_public_id = "enem/2025/caderno7/q136-a"
+        alternativa.imagem_alt = "Imagem da alternativa A"
+        alternativa.save(update_fields=["imagem_public_id", "imagem_alt"])
+        simulado = self.criar_simulado()
+        snapshot = criar_snapshot_de_questao(simulado, questao)
+        simulado.publicar()
+        url_questao = "https://res.cloudinary.com/demo/image/upload/v1/enem/2025/caderno7/q136"
+        url_alternativa = "https://res.cloudinary.com/demo/image/upload/v1/enem/2025/caderno7/q136-a"
+        self.client.force_login(self.estudante)
+
+        self.client.post(reverse("simulados:iniciar_simulado", args=[simulado.slug]))
+        tentativa = TentativaSimulado.objects.get(usuario=self.estudante, simulado=simulado)
+        execucao = self.client.get(reverse("simulados:tentativa_questao", args=[tentativa.pk, 1]))
+        self.assertContains(execucao, f'src="{url_questao}"')
+        self.assertContains(execucao, f'alt="{questao.imagem_alt}"')
+        self.assertContains(execucao, f'src="{url_alternativa}"')
+        self.assertContains(execucao, f'alt="{alternativa.imagem_alt}"')
+
+        self.client.post(
+            reverse("simulados:tentativa_questao", args=[tentativa.pk, 1]),
+            {"alternativa": snapshot.alternativas.get(chave="A").pk, "acao": "finalizar"},
+        )
+        self.client.post(reverse("simulados:finalizar_tentativa", args=[tentativa.pk]))
+        revisao = self.client.get(reverse("simulados:revisao_tentativa", args=[tentativa.pk]))
+        self.assertContains(revisao, f'src="{url_questao}"')
+        self.assertContains(revisao, f'src="{url_alternativa}"')
 
     def test_minha_lista_aceita_simulado_e_constraint_continua_exatamente_um_alvo(self):
         simulado = self.criar_simulado(status=Simulado.StatusSimulado.PUBLICADO)

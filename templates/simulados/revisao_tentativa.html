@@ -19,7 +19,7 @@
                 {% endif %}
             </div>
             <p>{{ questao.enunciado }}</p>
-            {% if questao.imagem_public_id %}
+            {% if questao.imagem_url %}
                 <div class="questao-imagem my-3">
                     <img src="{{ questao.imagem_url }}" alt="{{ questao.imagem_alt_texto }}" class="img-fluid">
                 </div>
@@ -29,7 +29,7 @@
                     <div class="list-group-item {% if alternativa.id == questao.resposta_id %}active{% endif %}">
                         {{ alternativa.chave }}. {{ alternativa.texto }}
                         {% if alternativa.id == questao.resposta_id %}<span class="ms-2">(sua resposta)</span>{% endif %}
-                        {% if alternativa.imagem_public_id %}
+                        {% if alternativa.imagem_url %}
                             <div class="alternativa-imagem mt-2">
                                 <img src="{{ alternativa.imagem_url }}" alt="{{ alternativa.imagem_alt_texto }}" class="img-fluid">
                             </div>

@@ -6,6 +6,10 @@
     <div class="section-box">
         <h1 class="h4">{% if resposta.correta %}Você acertou.{% else %}Você errou.{% endif %}</h1>
         <p class="mb-3">{{ questao.codigo }}</p>
+        <div class="mb-3">
+            <p>{{ questao.enunciado|linebreaksbr }}</p>
+            {% include "questoes/partials/imagem_questao.html" %}
+        </div>
         <a class="btn btn-primary" href="{% url 'questoes:resposta_detalhe' resposta.pk %}">Ver correção detalhada</a>
         <a class="btn btn-outline-secondary" href="{% url 'questoes:exercicios_lista' %}">Voltar aos exercícios</a>
     </div>

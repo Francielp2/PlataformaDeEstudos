@@ -31,6 +31,11 @@ urlpatterns = [
         views.admin_materias_importar_json,
         name="admin_materias_importar_json",
     ),
+    path(
+        "padroes-json/",
+        views.admin_padroes_importacao_json,
+        name="admin_padroes_importacao_json",
+    ),
     path("criar/", views.admin_materia_criar, name="admin_materia_criar"),
     path("<slug:slug>/", views.admin_materia_detalhe, name="admin_materia_detalhe"),
     path("<slug:slug>/editar/", views.admin_materia_editar, name="admin_materia_editar"),

@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
 from django.core.paginator import Paginator
 from django.db.models import Prefetch, Q
-from django.http import HttpResponseForbidden
+from django.http import HttpResponseForbidden, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.decorators.http import require_POST
@@ -34,6 +34,142 @@ def staff_required(view_func):
         return view_func(request, *args, **kwargs)
 
     return wrapper
+
+
+def _choices_json(choices):
+    return [{"valor": choice.value, "rotulo": choice.label} for choice in choices]
+
+
+def _padroes_importacao_json(simulado_id=None):
+    from questoes.models import Questao
+    from simulados.models import Simulado
+
+    materias = list(Materia.objects.order_by("ordem_exibicao", "nome"))
+    conteudos = list(
+        Conteudo.objects.select_related("materia", "pai").order_by(
+            "materia__ordem_exibicao",
+            "materia__nome",
+            "ordem_sugerida",
+            "titulo",
+        )
+    )
+    questoes = list(
+        Questao.objects.select_related("materia").prefetch_related(
+            "questao_conteudos__conteudo"
+        ).order_by("codigo")
+    )
+    simulados = list(
+        Simulado.objects.select_related("materia").order_by("ordem_exibicao", "titulo")
+    )
+
+    dados = {
+        "importadores": {
+            "materias": {
+                "campos_referencia": ["slug"],
+                "observacao": "O slug da matéria deve ser único.",
+            },
+            "conteudos": {
+                "campos_referencia": ["materia", "pai"],
+                "observacao": "materia usa o slug da matéria; pai usa slug de conteúdo da mesma matéria ou null.",
+            },
+            "questoes": {
+                "campos_referencia": ["materia", "conteudos", "conteudo_principal"],
+                "observacao": "materia usa slug da matéria; conteudos e conteudo_principal usam slugs de conteúdos já cadastrados.",
+            },
+            "questoes_simulado": {
+                "campos_referencia": ["conteudos", "conteudo_principal"],
+                "observacao": "conteudos e conteudo_principal usam slugs de conteúdos já cadastrados. Em simulados por matéria, use apenas conteúdos da matéria do simulado.",
+            },
+        },
+        "valores_aceitos": {
+            "conteudo_dificuldade": _choices_json(Conteudo.DificuldadeConteudo),
+            "conteudo_status": _choices_json(Conteudo.StatusConteudo),
+            "questao_dificuldade": _choices_json(Questao.DificuldadeQuestao),
+            "questao_tipo_fonte": _choices_json(Questao.TipoFonte),
+            "questao_status": _choices_json(Questao.StatusQuestao),
+            "simulado_tipo": _choices_json(Simulado.TipoSimulado),
+            "simulado_status": _choices_json(Simulado.StatusSimulado),
+            "alternativa_chaves": [chr(codigo) for codigo in range(ord("A"), ord("Z") + 1)],
+        },
+        "materias": [
+            {
+                "nome": materia.nome,
+                "slug": materia.slug,
+                "ativa": materia.ativa,
+                "ordem_exibicao": materia.ordem_exibicao,
+            }
+            for materia in materias
+        ],
+        "conteudos": [
+            {
+                "titulo": conteudo.titulo,
+                "slug": conteudo.slug,
+                "materia": conteudo.materia.slug,
+                "materia_nome": conteudo.materia.nome,
+                "pai": conteudo.pai.slug if conteudo.pai_id else None,
+                "dificuldade": conteudo.dificuldade,
+                "status": conteudo.status,
+                "ordem_sugerida": conteudo.ordem_sugerida,
+            }
+            for conteudo in conteudos
+        ],
+        "questoes_existentes": [
+            {
+                "codigo": questao.codigo,
+                "materia": questao.materia.slug,
+                "status": questao.status,
+                "dificuldade": questao.dificuldade,
+                "conteudos": [
+                    relacao.conteudo.slug
+                    for relacao in questao.questao_conteudos.all()
+                ],
+                "conteudo_principal": next(
+                    (
+                        relacao.conteudo.slug
+                        for relacao in questao.questao_conteudos.all()
+                        if relacao.principal
+                    ),
+                    None,
+                ),
+            }
+            for questao in questoes
+        ],
+        "simulados": [
+            {
+                "id": str(simulado.pk),
+                "titulo": simulado.titulo,
+                "slug": simulado.slug,
+                "tipo": simulado.tipo,
+                "materia": simulado.materia.slug if simulado.materia_id else None,
+                "status": simulado.status,
+            }
+            for simulado in simulados
+        ],
+    }
+
+    if simulado_id:
+        simulado = next(
+            (item for item in simulados if str(item.pk) == str(simulado_id)),
+            None,
+        )
+        if simulado:
+            dados["simulado_contexto"] = {
+                "id": str(simulado.pk),
+                "titulo": simulado.titulo,
+                "tipo": simulado.tipo,
+                "materia": simulado.materia.slug if simulado.materia_id else None,
+                "conteudos_permitidos": [
+                    {
+                        "titulo": conteudo.titulo,
+                        "slug": conteudo.slug,
+                        "materia": conteudo.materia.slug,
+                    }
+                    for conteudo in conteudos
+                    if simulado.tipo != Simulado.TipoSimulado.POR_MATERIA
+                    or conteudo.materia_id == simulado.materia_id
+                ],
+            }
+    return dados
 
 
 @login_required(login_url="usuarios:login")
@@ -190,6 +326,23 @@ def admin_materias_lista(request):
             "total_encontrado": paginator.count,
             "active": "admin_materias",
         },
+    )
+
+
+@staff_required
+def admin_padroes_importacao_json(request):
+    dados = _padroes_importacao_json(request.GET.get("simulado"))
+    if request.GET.get("formato") == "json":
+        response = JsonResponse(
+            dados,
+            json_dumps_params={"ensure_ascii": False, "indent": 2},
+        )
+        response["Content-Disposition"] = 'attachment; filename="padroes-importacao-json.json"'
+        return response
+    return render(
+        request,
+        "curriculo/admin_padroes_importacao_json.html",
+        {"dados": dados, "active": "admin_materias"},
     )
 
 

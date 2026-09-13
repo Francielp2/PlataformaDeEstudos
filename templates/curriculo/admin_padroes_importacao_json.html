@@ -1,0 +1,148 @@
+{% extends "usuarios/base_interno.html" %}
+
+{% block title %}Padrões para JSON{% endblock %}
+
+{% block content %}
+    <div class="page-heading d-flex justify-content-between align-items-start">
+        <div>
+            <h1>Padrões para JSON</h1>
+            <p>Referências do banco para montar importações de matérias, conteúdos, questões e simulados.</p>
+        </div>
+        <a class="btn btn-outline-secondary" href="{% url 'curriculo_admin:admin_padroes_importacao_json' %}?formato=json{% if request.GET.simulado %}&amp;simulado={{ request.GET.simulado }}{% endif %}">
+            <i class="bi bi-download"></i> Baixar JSON
+        </a>
+    </div>
+
+    {% if dados.simulado_contexto %}
+        <section class="section-box mb-3">
+            <h2 class="h6">Contexto do simulado</h2>
+            <p class="mb-1"><strong>{{ dados.simulado_contexto.titulo }}</strong></p>
+            <p class="small text-muted mb-0">
+                Tipo: <code>{{ dados.simulado_contexto.tipo }}</code>.
+                {% if dados.simulado_contexto.materia %}
+                    Use conteúdos da matéria <code>{{ dados.simulado_contexto.materia }}</code>.
+                {% else %}
+                    Este simulado aceita conteúdos de qualquer matéria.
+                {% endif %}
+            </p>
+        </section>
+    {% endif %}
+
+    <section class="section-box mb-3">
+        <h2 class="h6">Valores aceitos</h2>
+        <div class="row g-3">
+            <div class="col-md-4">
+                <strong class="small">Dificuldade de conteúdo</strong>
+                <ul class="small mb-0">{% for item in dados.valores_aceitos.conteudo_dificuldade %}<li><code>{{ item.valor }}</code> - {{ item.rotulo }}</li>{% endfor %}</ul>
+            </div>
+            <div class="col-md-4">
+                <strong class="small">Status de conteúdo</strong>
+                <ul class="small mb-0">{% for item in dados.valores_aceitos.conteudo_status %}<li><code>{{ item.valor }}</code> - {{ item.rotulo }}</li>{% endfor %}</ul>
+            </div>
+            <div class="col-md-4">
+                <strong class="small">Dificuldade de questão</strong>
+                <ul class="small mb-0">{% for item in dados.valores_aceitos.questao_dificuldade %}<li><code>{{ item.valor }}</code> - {{ item.rotulo }}</li>{% endfor %}</ul>
+            </div>
+            <div class="col-md-4">
+                <strong class="small">Tipo de fonte</strong>
+                <ul class="small mb-0">{% for item in dados.valores_aceitos.questao_tipo_fonte %}<li><code>{{ item.valor }}</code> - {{ item.rotulo }}</li>{% endfor %}</ul>
+            </div>
+            <div class="col-md-4">
+                <strong class="small">Status de questão</strong>
+                <ul class="small mb-0">{% for item in dados.valores_aceitos.questao_status %}<li><code>{{ item.valor }}</code> - {{ item.rotulo }}</li>{% endfor %}</ul>
+            </div>
+            <div class="col-md-4">
+                <strong class="small">Chaves de alternativas</strong>
+                <p class="small mb-0"><code>A</code> a <code>Z</code></p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section-box mb-3">
+        <h2 class="h6">Matérias</h2>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead><tr><th>Nome</th><th>Slug para JSON</th><th>Status</th><th>Ordem</th></tr></thead>
+                <tbody>
+                    {% for materia in dados.materias %}
+                        <tr>
+                            <td>{{ materia.nome }}</td>
+                            <td><code>{{ materia.slug }}</code></td>
+                            <td>{% if materia.ativa %}<span class="badge text-bg-success">Ativa</span>{% else %}<span class="badge text-bg-secondary">Inativa</span>{% endif %}</td>
+                            <td>{{ materia.ordem_exibicao }}</td>
+                        </tr>
+                    {% empty %}
+                        <tr><td colspan="4">Nenhuma matéria cadastrada.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="section-box mb-3">
+        <h2 class="h6">Conteúdos</h2>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead><tr><th>Título</th><th>Slug para JSON</th><th>Matéria</th><th>Pai</th><th>Status</th><th>Dificuldade</th></tr></thead>
+                <tbody>
+                    {% for conteudo in dados.conteudos %}
+                        <tr>
+                            <td>{{ conteudo.titulo }}</td>
+                            <td><code>{{ conteudo.slug }}</code></td>
+                            <td><code>{{ conteudo.materia }}</code></td>
+                            <td>{% if conteudo.pai %}<code>{{ conteudo.pai }}</code>{% else %}-{% endif %}</td>
+                            <td><code>{{ conteudo.status }}</code></td>
+                            <td><code>{{ conteudo.dificuldade }}</code></td>
+                        </tr>
+                    {% empty %}
+                        <tr><td colspan="6">Nenhum conteúdo cadastrado.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="section-box mb-3">
+        <h2 class="h6">Questões existentes</h2>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead><tr><th>Código</th><th>Matéria</th><th>Conteúdo principal</th><th>Conteúdos</th><th>Status</th></tr></thead>
+                <tbody>
+                    {% for questao in dados.questoes_existentes %}
+                        <tr>
+                            <td><code>{{ questao.codigo }}</code></td>
+                            <td><code>{{ questao.materia }}</code></td>
+                            <td>{% if questao.conteudo_principal %}<code>{{ questao.conteudo_principal }}</code>{% else %}-{% endif %}</td>
+                            <td>{% for conteudo in questao.conteudos %}<code>{{ conteudo }}</code>{% if not forloop.last %}, {% endif %}{% empty %}-{% endfor %}</td>
+                            <td><code>{{ questao.status }}</code></td>
+                        </tr>
+                    {% empty %}
+                        <tr><td colspan="5">Nenhuma questão cadastrada.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="section-box">
+        <h2 class="h6">Simulados</h2>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead><tr><th>Título</th><th>Slug</th><th>Tipo</th><th>Matéria</th><th>Status</th></tr></thead>
+                <tbody>
+                    {% for simulado in dados.simulados %}
+                        <tr>
+                            <td>{{ simulado.titulo }}</td>
+                            <td><code>{{ simulado.slug }}</code></td>
+                            <td><code>{{ simulado.tipo }}</code></td>
+                            <td>{% if simulado.materia %}<code>{{ simulado.materia }}</code>{% else %}-{% endif %}</td>
+                            <td><code>{{ simulado.status }}</code></td>
+                        </tr>
+                    {% empty %}
+                        <tr><td colspan="5">Nenhum simulado cadastrado.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+{% endblock %}

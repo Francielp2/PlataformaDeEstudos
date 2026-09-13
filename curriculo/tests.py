@@ -7,7 +7,8 @@ from django.test import TestCase
 from django.urls import reverse
 
 from usuarios.models import PerfilEstudante
-from questoes.models import Questao
+from questoes.models import Questao, QuestaoConteudo
+from simulados.models import Simulado
 
 from .forms import ConteudoForm, MateriaForm
 from .importacao_json import importar_conteudos_json, importar_materias_json
@@ -1200,6 +1201,50 @@ class CurriculoMateriaTests(TestCase):
         with self.assertRaises(ValidationError):
             importar_conteudos_json(json.dumps(payload), admin)
         self.assertFalse(Conteudo.objects.filter(slug="novo-valido").exists())
+
+    def test_padroes_importacao_json_mostra_referencias_e_exporta_json(self):
+        admin = self.criar_usuario("admin-padroes@example.com", is_staff=True)
+        conteudo = self.criar_conteudo(
+            "Funções",
+            materia=self.matematica,
+            slug="funcoes",
+            status=Conteudo.StatusConteudo.PUBLICADO,
+        )
+        questao = Questao.objects.create(
+            codigo="MAT-JSON-001",
+            materia=self.matematica,
+            enunciado="Enunciado",
+            criado_por=admin,
+        )
+        QuestaoConteudo.objects.create(questao=questao, conteudo=conteudo, principal=True)
+        simulado = Simulado.objects.create(
+            titulo="Simulado Matemática",
+            tipo=Simulado.TipoSimulado.POR_MATERIA,
+            materia=self.matematica,
+            criado_por=admin,
+        )
+        self.client.force_login(admin)
+
+        response = self.client.get(reverse("curriculo_admin:admin_padroes_importacao_json"))
+
+        self.assertContains(response, "Padrões para JSON")
+        self.assertContains(response, "matematica")
+        self.assertContains(response, "funcoes")
+        self.assertContains(response, "MAT-JSON-001")
+
+        response_json = self.client.get(
+            reverse("curriculo_admin:admin_padroes_importacao_json"),
+            {"formato": "json", "simulado": str(simulado.pk)},
+        )
+        dados = response_json.json()
+        self.assertEqual(response_json.status_code, 200)
+        self.assertEqual(dados["materias"][0]["slug"], "matematica")
+        self.assertEqual(dados["questoes_existentes"][0]["codigo"], "MAT-JSON-001")
+        self.assertEqual(dados["simulado_contexto"]["materia"], "matematica")
+        self.assertEqual(
+            dados["simulado_contexto"]["conteudos_permitidos"][0]["slug"],
+            "funcoes",
+        )
 
     def test_estudante_nao_envia_post_de_status_de_conteudo(self):
         estudante = self.criar_usuario("estudante@example.com")

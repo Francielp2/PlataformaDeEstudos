@@ -194,6 +194,13 @@ a { text-decoration: none; }
     min-width: 0;
 }
 
+.topbar-actions {
+    align-items: center;
+    display: flex;
+    justify-content: flex-end;
+    margin-left: 16px;
+}
+
 .menu-toggle,
 .mobile-app-label {
     display: none;
@@ -476,7 +483,7 @@ a { text-decoration: none; }
         z-index: 1020;
     }
 
-    .topbar form .btn {
+    .topbar-actions .btn {
         white-space: nowrap;
     }
 
@@ -585,13 +592,13 @@ a { text-decoration: none; }
         gap: 8px;
     }
 
-    .topbar form .btn {
+    .topbar-actions .btn {
         font-size: 0;
         padding-left: 9px;
         padding-right: 9px;
     }
 
-    .topbar form .btn i {
+    .topbar-actions .btn i {
         font-size: 1rem;
     }
 }

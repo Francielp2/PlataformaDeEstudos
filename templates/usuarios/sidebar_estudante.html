@@ -11,7 +11,7 @@
     <span class="sidebar-group">Organização</span>
     <a class="{% if active == 'minha-lista' %}active{% endif %}" href="{% url 'estudos:minha_lista' %}"><i class="bi bi-star"></i> Minha lista</a>
     <a class="{% if active == 'estudados' %}active{% endif %}" href="{% url 'estudos:conteudos_estudados' %}"><i class="bi bi-check-circle"></i> Estudados</a>
-    <a class="{% if active == 'desempenho' %}active{% endif %}" href="{% url 'usuarios:funcionalidade_futura' 'desempenho' %}"><i class="bi bi-graph-up"></i> Meu desempenho</a>
+    <a class="{% if active == 'desempenho' %}active{% endif %}" href="{% url 'questoes:desempenho' %}"><i class="bi bi-graph-up"></i> Meu desempenho</a>
     <span class="sidebar-group">Conta</span>
     <a class="{% if active == 'perfil' %}active{% endif %}" href="{% url 'usuarios:perfil' %}"><i class="bi bi-person"></i> Meu perfil</a>
     <form method="post" action="{% url 'usuarios:logout' %}" class="mt-2">

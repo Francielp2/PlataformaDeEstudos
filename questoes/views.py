@@ -100,6 +100,14 @@ def _registrar_resposta(usuario, questao, alternativa):
     return resposta
 
 
+def _respostas_usuario(usuario):
+    return (
+        RespostaQuestao.objects.filter(usuario=usuario)
+        .select_related("questao", "questao__materia", "alternativa_escolhida")
+        .prefetch_related("questao__questao_conteudos__conteudo")
+    )
+
+
 @login_required(login_url="usuarios:login")
 def exercicios_lista(request):
     questoes, filtros = _aplicar_filtros_questoes(request, _questoes_publicadas())
@@ -252,17 +260,41 @@ def sequencia_resumo(request):
 
 @login_required(login_url="usuarios:login")
 def historico(request):
-    respostas = (
-        RespostaQuestao.objects.filter(usuario=request.user)
-        .select_related("questao", "questao__materia", "alternativa_escolhida")
-        .prefetch_related("questao__questao_conteudos__conteudo")
-    )
+    respostas = _respostas_usuario(request.user)
     paginator = Paginator(respostas, 15)
     page_obj = paginator.get_page(request.GET.get("page"))
     return render(
         request,
         "questoes/historico.html",
         {"page_obj": page_obj, "active": "exercicios"},
+    )
+
+
+@login_required(login_url="usuarios:login")
+def desempenho(request):
+    respostas = _respostas_usuario(request.user)
+    resumo = respostas.aggregate(
+        total=Count("id"),
+        acertos=Count("id", filter=Q(correta=True)),
+        erros=Count("id", filter=Q(correta=False)),
+    )
+    total = resumo["total"] or 0
+    acertos = resumo["acertos"] or 0
+    percentual = round((acertos / total) * 100) if total else 0
+
+    paginator = Paginator(respostas, 15)
+    page_obj = paginator.get_page(request.GET.get("page"))
+    return render(
+        request,
+        "questoes/desempenho.html",
+        {
+            "page_obj": page_obj,
+            "total_respostas": total,
+            "total_acertos": acertos,
+            "total_erros": resumo["erros"] or 0,
+            "percentual": percentual,
+            "active": "desempenho",
+        },
     )
 
 

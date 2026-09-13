@@ -454,6 +454,55 @@ class EstudanteQuestaoViewTests(QuestaoTestMixin, TestCase):
         self.assertContains(detalhe, "Correta")
         self.assertContains(detalhe, "Explicação da questão")
 
+    def test_desempenho_lista_respostas_do_aluno_e_totais(self):
+        questao_acerto = self.criar_questao("MAT-031-A")
+        questao_erro = self.criar_questao("MAT-031-B")
+        questao_outro = self.criar_questao("MAT-031-C")
+        outro = Usuario.objects.create_user(
+            email="outro-desempenho@example.com",
+            password="SenhaForte123",
+            first_name="Outro",
+        )
+        RespostaQuestao.objects.create(
+            usuario=self.estudante,
+            questao=questao_acerto,
+            alternativa_escolhida=self.alternativa(questao_acerto, correta=True),
+            correta=True,
+        )
+        RespostaQuestao.objects.create(
+            usuario=self.estudante,
+            questao=questao_erro,
+            alternativa_escolhida=self.alternativa(questao_erro, correta=False),
+            correta=False,
+        )
+        RespostaQuestao.objects.create(
+            usuario=outro,
+            questao=questao_outro,
+            alternativa_escolhida=self.alternativa(questao_outro, correta=True),
+            correta=True,
+        )
+
+        self.client.force_login(self.estudante)
+        response = self.client.get(reverse("questoes:desempenho"))
+
+        self.assertContains(response, "Meu desempenho")
+        self.assertContains(response, questao_acerto.codigo)
+        self.assertContains(response, questao_erro.codigo)
+        self.assertNotContains(response, questao_outro.codigo)
+        self.assertEqual(response.context["total_respostas"], 2)
+        self.assertEqual(response.context["total_acertos"], 1)
+        self.assertEqual(response.context["total_erros"], 1)
+        self.assertEqual(response.context["percentual"], 50)
+        self.assertEqual(response.context["active"], "desempenho")
+
+    def test_sidebar_meu_desempenho_aponta_para_resultados_de_questoes(self):
+        self.client.force_login(self.estudante)
+
+        response = self.client.get(reverse("usuarios:painel_estudante"))
+
+        self.assertContains(response, reverse("questoes:desempenho"))
+        self.assertNotContains(response, reverse("usuarios:funcionalidade_futura", args=["desempenho"]))
+
     def test_aluno_ve_imagens_na_resolucao_resultado_sequencia_e_detalhe(self):
         cloudinary.config(cloud_name="demo", secure=True)
         questao = self.criar_questao("MAT-031-IMG")

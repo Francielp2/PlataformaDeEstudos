@@ -1,0 +1,20 @@
+{% extends "usuarios/base_interno.html" %}
+
+{% block title %}Meu desempenho{% endblock %}
+
+{% block content %}
+    <div class="page-heading">
+        <h1>Meu desempenho</h1>
+        <p>Resultados das questões individuais que você respondeu.</p>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-md-3"><div class="metric"><div class="metric-icon"><i class="bi bi-pencil-square"></i></div><span>Respostas</span><strong>{{ total_respostas }}</strong><span>questões respondidas</span></div></div>
+        <div class="col-md-3"><div class="metric"><div class="metric-icon"><i class="bi bi-check-circle"></i></div><span>Acertos</span><strong>{{ total_acertos }}</strong><span>respostas corretas</span></div></div>
+        <div class="col-md-3"><div class="metric"><div class="metric-icon"><i class="bi bi-x-circle"></i></div><span>Erros</span><strong>{{ total_erros }}</strong><span>respostas incorretas</span></div></div>
+        <div class="col-md-3"><div class="metric"><div class="metric-icon"><i class="bi bi-percent"></i></div><span>Aproveitamento</span><strong>{{ percentual }}%</strong><span>de acertos</span></div></div>
+    </div>
+
+    {% include "questoes/partials/tabela_respostas.html" %}
+    {% include "partials/paginacao.html" %}
+{% endblock %}

@@ -1,36 +1,40 @@
-{% extends "usuarios/base_interno.html" %}
+{% extends "components/base_importar_json.html" %}
 
 {% block title %}Importar JSON{% endblock %}
-
 {% block voltar_url %}{% url 'simulados_admin:admin_simulado_questoes' simulado.pk %}{% endblock %}
-
-{% block content %}
-    <div class="page-heading d-flex justify-content-between align-items-start">
-        <div>
-            <h1>Importar questões por JSON</h1>
-            <p>{{ simulado.titulo }}</p>
-        </div>
-        <a class="btn btn-outline-secondary" href="{% url 'curriculo_admin:admin_padroes_importacao_json' %}?simulado={{ simulado.pk }}">
-            <i class="bi bi-braces"></i> Ver padrões
-        </a>
+{% block imp_titulo %}Importar questões por JSON{% endblock %}
+{% block imp_descricao %}{{ simulado.titulo }}{% endblock %}
+{% block imp_padroes_url %}{% url 'curriculo_admin:admin_padroes_importacao_json' %}?simulado={{ simulado.pk }}{% endblock %}
+{% block imp_cancelar_url %}{% url 'simulados_admin:admin_simulado_questoes' simulado.pk %}{% endblock %}
+{% block imp_campo %}
+    {% include "components/campo_json.html" with field=form.json_questoes %}
+    <div class="grade-form mt-3">
+        {% include "components/campo.html" with field=form.salvar_no_banco col="" rotulo="Salvar questões importadas também no banco de questões" %}
     </div>
-    <section class="section-box mb-3">
-        <h2 class="h6">Formato oficial</h2>
-        <pre class="mb-0"><code>{"questoes":[{"codigo":"ENEM-2024-MAT-140","enunciado":"...","imagem":{"public_id":"enem/2025/caderno7/q136","alt":"Imagem da questão"},"explicacao":"...","dificuldade":"medium","tipo_fonte":"enem","fonte_nome":"ENEM","fonte_ano":2024,"fonte_url":"https://...","conteudo_principal":"matematica-basica","conteudos":["matematica-basica"],"alternativas":[{"chave":"A","texto":"...","imagem":null,"correta":false,"ordem":1},{"chave":"B","texto":"...","correta":true,"ordem":2}]}]}</code></pre>
-    </section>
-    <form method="post" class="form-panel" novalidate>
-        {% csrf_token %}
-        {% if form.non_field_errors %}<div class="alert alert-danger">{% for error in form.non_field_errors %}<div>{{ error }}</div>{% endfor %}</div>{% endif %}
-        <label class="form-label" for="{{ form.json_questoes.id_for_label }}">JSON</label>
-        {{ form.json_questoes }}
-        {% for error in form.json_questoes.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
-        <div class="form-check mt-3">
-            {{ form.salvar_no_banco }}
-            <label class="form-check-label" for="{{ form.salvar_no_banco.id_for_label }}">Salvar questões importadas também no banco de questões</label>
-        </div>
-        <div class="d-flex gap-2 mt-3">
-            <button class="btn btn-primary" type="submit">Importar</button>
-            <a class="btn btn-outline-secondary" href="{% url 'simulados_admin:admin_simulado_questoes' simulado.pk %}">Cancelar</a>
-        </div>
-    </form>
+{% endblock %}
+{% block imp_exemplo %}{
+  "questoes": [
+    {
+      "codigo": "ENEM-2024-MAT-140",
+      "enunciado": "...",
+      "imagem": {"public_id": "enem/2025/caderno7/q136", "alt": "Imagem da questão"},
+      "explicacao": "...",
+      "dificuldade": "medium",
+      "tipo_fonte": "enem",
+      "fonte_nome": "ENEM",
+      "fonte_ano": 2024,
+      "fonte_url": "https://...",
+      "conteudo_principal": "matematica-basica",
+      "conteudos": ["matematica-basica"],
+      "alternativas": [
+        {"chave": "A", "texto": "...", "imagem": null, "correta": false, "ordem": 1},
+        {"chave": "B", "texto": "...", "correta": true, "ordem": 2}
+      ]
+    }
+  ]
+}{% endblock %}
+{% block imp_regras %}
+    <li>As questões entram neste simulado, na ordem do JSON.</li>
+    <li>Em simulados por matéria, use apenas conteúdos da matéria do simulado ("Ver padrões" mostra os permitidos).</li>
+    <li>Marque exatamente uma alternativa correta por questão.</li>
 {% endblock %}

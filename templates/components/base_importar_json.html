@@ -1,0 +1,68 @@
+{% extends "usuarios/base_interno.html" %}
+{% comment %}
+Modelo das telas de importação por JSON. Blocos: titulo, imp_titulo, imp_descricao,
+imp_padroes_url, imp_campo (inclua components/campo_json.html), imp_exemplo (texto JSON),
+imp_regras (itens <li>), imp_cancelar_url.
+{% endcomment %}
+
+{% block content %}
+    <header class="cabecalho">
+        <div>
+            <h1>{% block imp_titulo %}{% endblock %}</h1>
+            <p class="cabecalho-texto">{% block imp_descricao %}{% endblock %}</p>
+        </div>
+        <div class="cabecalho-acoes">
+            <a class="btn btn-outline-secondary" href="{% block imp_padroes_url %}{% endblock %}"><i class="bi bi-braces" aria-hidden="true"></i> Ver padrões</a>
+        </div>
+    </header>
+
+    <div class="com-lateral">
+        <form method="post" class="formulario" novalidate>
+            {% csrf_token %}
+            {% if form.errors %}
+                <div class="resumo-erros" role="alert">
+                    <i class="bi bi-exclamation-octagon" aria-hidden="true"></i>
+                    <div>
+                        <strong>A importação não foi feita. Nada foi gravado.</strong>
+                        <p class="mb-2">Corrija {% if form.non_field_errors|length > 1 %}os {{ form.non_field_errors|length }} problemas{% else %}o que está listado{% endif %} abaixo e tente de novo:</p>
+                        <ul>
+                            {% for error in form.non_field_errors %}<li>{{ error }}</li>{% endfor %}
+                            {% for field in form %}{% for error in field.errors %}<li>{{ field.label }}: {{ error }}</li>{% endfor %}{% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            {% endif %}
+            <section class="secao-form">
+                {% block imp_campo %}{% endblock %}
+            </section>
+            <div class="barra-acoes">
+                <button class="btn btn-primary" type="submit"><i class="bi bi-upload" aria-hidden="true"></i> Importar</button>
+                <a class="btn btn-outline-secondary" href="{% block imp_cancelar_url %}{% endblock %}">Cancelar</a>
+                <span class="dica-acoes">Tudo ou nada: se um item tiver erro, nenhum é gravado.</span>
+            </div>
+        </form>
+
+        <aside aria-label="Ajuda da importação">
+            <details class="recolhivel" open>
+                <summary><i class="bi bi-code-square" aria-hidden="true"></i> Formato esperado</summary>
+                <div class="recolhivel-corpo">
+                    <div class="position-relative">
+                        <pre class="exemplo-codigo" id="exemplo-json"><code>{% block imp_exemplo %}{% endblock %}</code></pre>
+                        <button class="btn btn-sm botao-copiar" type="button" data-copiar-de="#exemplo-json"><i class="bi bi-clipboard" aria-hidden="true"></i> Copiar</button>
+                    </div>
+                </div>
+            </details>
+            <div class="painel painel--compacto">
+                <h2 class="painel-titulo">Regras</h2>
+                <ul class="small mb-0 ps-3">{% block imp_regras %}{% endblock %}</ul>
+            </div>
+            <div class="dica">
+                <i class="bi bi-lightbulb" aria-hidden="true"></i>
+                <div>
+                    <strong>Slugs certos de primeira</strong>
+                    <p>Em "Ver padrões" você copia com um clique os slugs e valores aceitos do banco.</p>
+                </div>
+            </div>
+        </aside>
+    </div>
+{% endblock %}

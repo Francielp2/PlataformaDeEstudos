@@ -3,17 +3,51 @@
 {% block title %}{{ titulo }}{% endblock %}
 
 {% block content %}
-    <div class="page-heading">
-        <h1>{{ titulo }}</h1>
-        <p>Dados básicos e perfil.</p>
-    </div>
+    <header class="cabecalho">
+        <div>
+            <h1>{{ titulo }}</h1>
+            <p class="cabecalho-texto">Dados básicos e perfil. Campos com <span class="obrigatorio">*</span> são obrigatórios.</p>
+        </div>
+    </header>
 
-    <div class="form-panel">
-        <form method="post" class="form-section" novalidate>
-            {% csrf_token %}
-            {% include "usuarios/partials/form_campos.html" with form=form %}
-            <button class="btn btn-primary" type="submit"><i class="bi bi-check2"></i> Salvar</button>
+    <form method="post" class="formulario" novalidate>
+        {% csrf_token %}
+        {% include "components/resumo_erros.html" with form=form %}
+
+        <fieldset class="secao-form">
+            <legend>Dados pessoais</legend>
+            <p class="secao-form-descricao">Nome, e-mail de acesso e etapa escolar.</p>
+            <div class="grade-form">
+                {% include "components/campo.html" with field=form.first_name col="col-meio" %}
+                {% include "components/campo.html" with field=form.last_name col="col-meio" %}
+                {% include "components/campo.html" with field=form.email col="col-meio" %}
+                {% include "components/campo.html" with field=form.etapa_escolar col="col-meio" %}
+            </div>
+        </fieldset>
+
+        <fieldset class="secao-form">
+            <legend>Acesso</legend>
+            <p class="secao-form-descricao">Contas inativas não conseguem entrar. Usuários administrativos acessam este painel.</p>
+            <div class="grade-form">
+                {% include "components/campo.html" with field=form.is_active col="col-meio" %}
+                {% include "components/campo.html" with field=form.is_staff col="col-meio" %}
+            </div>
+        </fieldset>
+
+        <fieldset class="secao-form">
+            <legend>Senha</legend>
+            <p class="secao-form-descricao">{% if form.password1.field.required %}Defina a senha inicial da conta.{% else %}Deixe em branco para manter a senha atual.{% endif %}</p>
+            <div class="grade-form">
+                {% include "components/campo.html" with field=form.password1 col="col-meio" %}
+                {% include "components/campo.html" with field=form.password2 col="col-meio" %}
+            </div>
+        </fieldset>
+
+        {% for field in form %}{% if field.name not in "first_name last_name email etapa_escolar is_active is_staff password1 password2" %}{% include "components/campo.html" with field=field col="" %}{% endif %}{% endfor %}
+
+        <div class="barra-acoes barra-acoes--fixa">
+            <button class="btn btn-primary" type="submit"><i class="bi bi-check2" aria-hidden="true"></i> Salvar</button>
             <a class="btn btn-outline-secondary" href="{{ voltar_url }}">Cancelar</a>
-        </form>
-    </div>
+        </div>
+    </form>
 {% endblock %}

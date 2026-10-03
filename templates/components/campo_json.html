@@ -1,0 +1,6 @@
+{% load ui %}{% comment %}Campo de colar JSON (numeração de linhas via JS). Parâmetro: field.{% endcomment %}
+<div class="campo campo-json{% if field.errors %} campo-com-erro{% endif %}">
+    <label class="form-label" for="{{ field.id_for_label }}">JSON <span class="obrigatorio" aria-hidden="true">*</span><span class="visually-hidden">(obrigatório)</span></label>
+    {% widget field spellcheck="false" autocapitalize="off" %}
+    {% if field.errors %}<div class="campo-erro" id="{{ field.auto_id }}_erro"><i class="bi bi-exclamation-circle" aria-hidden="true"></i><span>{{ field.errors|join:" " }}</span></div>{% endif %}
+</div>

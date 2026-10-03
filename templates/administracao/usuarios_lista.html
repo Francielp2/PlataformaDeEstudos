@@ -1,101 +1,101 @@
 {% extends "usuarios/base_interno.html" %}
+{% load ui %}
 
 {% block title %}Gerenciar usuários{% endblock %}
 
 {% block content %}
-    <div class="page-heading d-flex justify-content-between align-items-start">
+    <header class="cabecalho">
         <div>
             <h1>Gerenciar usuários</h1>
-            <p>Cadastro e acompanhamento de contas da plataforma.</p>
+            <p class="cabecalho-texto">Cadastro e acompanhamento de contas da plataforma.</p>
         </div>
-        <a class="btn btn-primary" href="{% url 'usuarios:admin_usuario_criar' %}"><i class="bi bi-person-plus"></i> Criar usuário</a>
-    </div>
+        <div class="cabecalho-acoes">
+            <a class="btn btn-primary" href="{% url 'usuarios:admin_usuario_criar' %}"><i class="bi bi-person-plus" aria-hidden="true"></i> Criar usuário</a>
+        </div>
+    </header>
 
-    <form method="get" class="filters-box">
-        <div class="row g-2">
-        <div class="col-md-5">
-            <input class="form-control" type="search" name="q" value="{{ busca }}" placeholder="Buscar por nome ou e-mail">
+    <form method="get" class="filtros" data-filtro-automatico role="search" aria-label="Filtrar usuários">
+        <div class="filtro-busca">
+            <i class="bi bi-search" aria-hidden="true"></i>
+            <input class="form-control" type="search" name="q" value="{{ busca }}" placeholder="Buscar por nome ou e-mail" aria-label="Buscar por nome ou e-mail">
         </div>
-        <div class="col-md-3">
-            <select class="form-select" name="tipo" aria-label="Filtrar por tipo">
-                <option value="" {% if not tipo %}selected{% endif %}>Todos os tipos</option>
-                <option value="estudante" {% if tipo == "estudante" %}selected{% endif %}>Estudantes</option>
-                <option value="administrador" {% if tipo == "administrador" %}selected{% endif %}>Administradores</option>
-                <option value="superusuario" {% if tipo == "superusuario" %}selected{% endif %}>Superusuários</option>
-            </select>
-        </div>
-        <div class="col-md-2">
-            <select class="form-select" name="status" aria-label="Filtrar por status">
-                <option value="" {% if not status %}selected{% endif %}>Todos</option>
-                <option value="ativo" {% if status == "ativo" %}selected{% endif %}>Ativos</option>
-                <option value="inativo" {% if status == "inativo" %}selected{% endif %}>Inativos</option>
-            </select>
-        </div>
-        <div class="col-md-2 d-grid">
-            <button class="btn btn-outline-primary" type="submit">Filtrar</button>
-        </div>
-        </div>
+        <select class="form-select" name="tipo" aria-label="Filtrar por tipo">
+            <option value="" {% if not tipo %}selected{% endif %}>Todos os tipos</option>
+            <option value="estudante" {% if tipo == "estudante" %}selected{% endif %}>Estudantes</option>
+            <option value="administrador" {% if tipo == "administrador" %}selected{% endif %}>Administradores</option>
+            <option value="superusuario" {% if tipo == "superusuario" %}selected{% endif %}>Superusuários</option>
+        </select>
+        <select class="form-select" name="status" aria-label="Filtrar por status">
+            <option value="" {% if not status %}selected{% endif %}>Todos</option>
+            <option value="ativo" {% if status == "ativo" %}selected{% endif %}>Ativos</option>
+            <option value="inativo" {% if status == "inativo" %}selected{% endif %}>Inativos</option>
+        </select>
+        <button class="btn btn-outline-primary botao-filtrar" type="submit"><i class="bi bi-funnel" aria-hidden="true"></i> Filtrar</button>
     </form>
 
-    <p class="text-muted small mb-3">
-        {{ total_encontrado }} {% if total_encontrado == 1 %}usuário encontrado{% else %}usuários encontrados{% endif %}
-    </p>
+    <div class="filtros-resumo" aria-live="polite">
+        <span><strong>{{ total_encontrado }}</strong> {% if total_encontrado == 1 %}usuário encontrado{% else %}usuários encontrados{% endif %}</span>
+        {% if busca or tipo or status %}<a class="limpar-filtros" href="{% url 'usuarios:admin_usuarios_lista' %}">Limpar filtros</a>{% endif %}
+    </div>
 
-    <div class="table-responsive section-box">
-        <table class="table table-hover align-middle mb-0">
-            <thead>
-                <tr>
-                    <th>Nome</th>
-                    <th>E-mail</th>
-                    <th>Tipo</th>
-                    <th>Status</th>
-                    <th>Cadastro</th>
-                    <th>Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for usuario in page_obj %}
-                    <tr class="{% if usuario == request.user %}table-light{% endif %}">
-                        <td>
-                            {{ usuario.get_full_name|default:"Não informado" }}
-                            {% if usuario == request.user %}
-                                <span class="badge text-bg-info ms-1">Você</span>
-                            {% endif %}
-                        </td>
-                        <td>{{ usuario.email }}</td>
-                        <td>
-                            {% if usuario.is_superuser %}
-                                <span class="badge text-bg-dark">Superusuário</span>
-                            {% elif usuario.is_staff %}
-                                <span class="badge text-bg-primary">Administrador</span>
-                            {% else %}
-                                <span class="badge text-bg-secondary">Estudante</span>
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if usuario.is_active %}
-                                <span class="badge text-bg-success">Ativo</span>
-                            {% else %}
-                                <span class="badge text-bg-secondary">Inativo</span>
-                            {% endif %}
-                        </td>
-                        <td>{{ usuario.date_joined|date:"d/m/Y H:i" }}</td>
-                        <td class="actions">
-                            <a class="btn btn-sm btn-outline-secondary" href="{% url 'usuarios:admin_usuario_detalhe' usuario.pk %}"><i class="bi bi-eye"></i> Ver</a>
-                            <a class="btn btn-sm btn-outline-primary" href="{% url 'usuarios:admin_usuario_editar' usuario.pk %}"><i class="bi bi-pencil"></i> Editar</a>
-                            {% if usuario != request.user and not usuario.is_superuser or request.user.is_superuser and usuario != request.user %}
-                                <a class="btn btn-sm btn-outline-secondary" href="{% url 'usuarios:admin_usuario_ativar' usuario.pk %}"><i class="bi {% if usuario.is_active %}bi-pause-circle{% else %}bi-play-circle{% endif %}"></i> {% if usuario.is_active %}Desativar{% else %}Ativar{% endif %}</a>
-                            {% endif %}
-                            {% if usuario != request.user and not usuario.is_superuser or request.user.is_superuser and usuario != request.user %}
-                                <a class="btn btn-sm btn-outline-danger" href="{% url 'usuarios:admin_usuario_excluir' usuario.pk %}"><i class="bi bi-trash"></i> Excluir</a>
-                            {% endif %}
-                        </td>
+    <div class="tabela-card">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th scope="col">Nome</th>
+                        <th scope="col">E-mail</th>
+                        <th scope="col">Tipo</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Cadastro</th>
+                        <th scope="col" class="text-end">Ações</th>
                     </tr>
-                {% empty %}
-                    <tr><td colspan="6">Nenhum usuário encontrado.</td></tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    {% for usuario in page_obj %}
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="avatar" aria-hidden="true">{{ usuario|iniciais }}</span>
+                                    <a class="celula-titulo" href="{% url 'usuarios:admin_usuario_detalhe' usuario.pk %}">{{ usuario.get_full_name|default:"Não informado" }}</a>
+                                    {% if usuario == request.user %}<span class="chip tom-ceu">Você</span>{% endif %}
+                                </div>
+                            </td>
+                            <td>{{ usuario.email }}</td>
+                            <td>
+                                {% if usuario.is_superuser %}
+                                    <span class="chip tom-lilas"><i class="bi bi-shield-lock" aria-hidden="true"></i> Superusuário</span>
+                                {% elif usuario.is_staff %}
+                                    <span class="chip tom-ceu"><i class="bi bi-person-gear" aria-hidden="true"></i> Administrador</span>
+                                {% else %}
+                                    <span class="chip tom-menta"><i class="bi bi-mortarboard" aria-hidden="true"></i> Estudante</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if usuario.is_active %}
+                                    <span class="chip tom-menta"><i class="bi bi-check-circle" aria-hidden="true"></i> Ativo</span>
+                                {% else %}
+                                    <span class="chip tom-neutro"><i class="bi bi-pause-circle" aria-hidden="true"></i> Inativo</span>
+                                {% endif %}
+                            </td>
+                            <td class="celula-data">{{ usuario.date_joined|date:"d/m/Y H:i" }}</td>
+                            <td class="celula-acoes">
+                                <div class="acoes-linha">
+                                    <a class="btn btn-sm btn-outline-secondary" href="{% url 'usuarios:admin_usuario_detalhe' usuario.pk %}" title="Ver"><i class="bi bi-eye" aria-hidden="true"></i><span class="visually-hidden">Ver {{ usuario.email }}</span></a>
+                                    <a class="btn btn-sm btn-outline-secondary" href="{% url 'usuarios:admin_usuario_editar' usuario.pk %}"><i class="bi bi-pencil" aria-hidden="true"></i> Editar</a>
+                                    {% if usuario != request.user and not usuario.is_superuser or request.user.is_superuser and usuario != request.user %}
+                                        <a class="btn btn-sm btn-outline-secondary" href="{% url 'usuarios:admin_usuario_ativar' usuario.pk %}"><i class="bi {% if usuario.is_active %}bi-pause-circle{% else %}bi-play-circle{% endif %}" aria-hidden="true"></i> {% if usuario.is_active %}Desativar{% else %}Ativar{% endif %}</a>
+                                        <a class="btn btn-sm btn-outline-danger" href="{% url 'usuarios:admin_usuario_excluir' usuario.pk %}"><i class="bi bi-trash3" aria-hidden="true"></i> Excluir</a>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr><td colspan="6" class="tabela-vazia">Nenhum usuário encontrado.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 
     {% include "partials/paginacao.html" %}

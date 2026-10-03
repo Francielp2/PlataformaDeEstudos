@@ -1,26 +1,13 @@
-{% extends "usuarios/base_interno.html" %}
+{% extends "components/base_importar_json.html" %}
 
 {% block title %}Importar matérias por JSON{% endblock %}
-
 {% block voltar_url %}{% url 'curriculo_admin:admin_materias_lista' %}{% endblock %}
-
-{% block content %}
-    <div class="page-heading d-flex justify-content-between align-items-start">
-        <div>
-            <h1>Importar matérias por JSON</h1>
-            <p>Cole um JSON com matérias para cadastrá-las. Registros existentes não são atualizados.</p>
-        </div>
-        <a class="btn btn-outline-secondary" href="{% url 'curriculo_admin:admin_padroes_importacao_json' %}?origem=materias">
-            <i class="bi bi-braces"></i> Ver padrões
-        </a>
-    </div>
-
-    <section class="section-box mb-3">
-        <h2 class="h6">Formato esperado</h2>
-        <p class="small text-muted mb-2">
-            Use <code>slug</code> único e valores booleanos reais em <code>ativa</code>.
-        </p>
-        <pre class="mb-0"><code>{
+{% block imp_titulo %}Importar matérias por JSON{% endblock %}
+{% block imp_descricao %}Cole um JSON com matérias para cadastrá-las. Registros existentes não são atualizados.{% endblock %}
+{% block imp_padroes_url %}{% url 'curriculo_admin:admin_padroes_importacao_json' %}?origem=materias{% endblock %}
+{% block imp_cancelar_url %}{% url 'curriculo_admin:admin_materias_lista' %}{% endblock %}
+{% block imp_campo %}{% include "components/campo_json.html" with field=form.json_materias %}{% endblock %}
+{% block imp_exemplo %}{
   "materias": [
     {
       "nome": "Matemática",
@@ -30,24 +17,8 @@
       "ativa": true
     }
   ]
-}</code></pre>
-    </section>
-
-    <form method="post" class="form-panel" novalidate>
-        {% csrf_token %}
-        {% if form.non_field_errors %}
-            <div class="alert alert-danger">
-                {% for error in form.non_field_errors %}
-                    <div>{{ error }}</div>
-                {% endfor %}
-            </div>
-        {% endif %}
-        <label class="form-label" for="{{ form.json_materias.id_for_label }}">JSON</label>
-        {{ form.json_materias }}
-        {% for error in form.json_materias.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
-        <div class="d-flex gap-2 mt-3">
-            <button class="btn btn-primary" type="submit">Importar</button>
-            <a class="btn btn-outline-secondary" href="{% url 'curriculo_admin:admin_materias_lista' %}">Cancelar</a>
-        </div>
-    </form>
+}{% endblock %}
+{% block imp_regras %}
+    <li>Use <code>slug</code> único e valores booleanos reais em <code>ativa</code>.</li>
+    <li>Nome e slug não podem repetir os já cadastrados.</li>
 {% endblock %}

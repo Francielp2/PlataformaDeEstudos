@@ -1,9 +1,6 @@
 /* Leitura e resposta de questões (exercícios, sequência, correção e simulados):
    coluna de leitura confortável, alternativas grandes e feedback claro. */
 
-.leitura { max-width: 820px; }
-.leitura--centro { margin-inline: auto; }
-
 .questao-cartao {
     background: var(--superficie);
     border: 1px solid var(--linha);

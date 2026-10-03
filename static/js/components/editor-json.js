@@ -1,7 +1,7 @@
 // Numeração de linhas para os campos de colar JSON das importações.
 
 export function iniciarEditoresJson() {
-    document.querySelectorAll("textarea[data-editor-json]").forEach(function (campo) {
+    document.querySelectorAll("textarea[data-editor-json], .campo-json textarea").forEach(function (campo) {
         const moldura = document.createElement("div");
         moldura.className = "editor-json";
         const linhas = document.createElement("pre");

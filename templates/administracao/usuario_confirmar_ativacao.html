@@ -5,16 +5,24 @@
 {% block voltar_url %}{% url 'usuarios:admin_usuario_detalhe' usuario_obj.pk %}{% endblock %}
 
 {% block content %}
-    <div class="section-box">
-        <h1 class="h4">Confirmar alteração de status</h1>
-        <p>
-            Deseja {% if usuario_obj.is_active %}desativar{% else %}ativar{% endif %}
-            a conta de <strong>{{ usuario_obj.email }}</strong>?
-        </p>
-        <form method="post">
-            {% csrf_token %}
-            <button class="btn btn-primary" type="submit">Confirmar</button>
-            <a class="btn btn-outline-secondary" href="{% url 'usuarios:admin_usuarios_lista' %}">Cancelar</a>
-        </form>
+    <div class="leitura leitura--estreita leitura--centro">
+        <section class="painel">
+            <div class="dialogo-corpo p-0 mb-4">
+                <span class="dialogo-icone tom-sol" aria-hidden="true"><i class="bi {% if usuario_obj.is_active %}bi-pause-circle{% else %}bi-play-circle{% endif %}"></i></span>
+                <div>
+                    <h1 class="h3">Confirmar alteração de status</h1>
+                    <p>
+                        Deseja {% if usuario_obj.is_active %}desativar{% else %}ativar{% endif %}
+                        a conta de <strong>{{ usuario_obj.email }}</strong>?
+                    </p>
+                    {% if usuario_obj.is_active %}<p class="texto-suave small mt-2 mb-0">A pessoa não conseguirá mais entrar até a conta ser reativada.</p>{% endif %}
+                </div>
+            </div>
+            <form method="post" class="d-flex flex-wrap gap-2 acoes-largas">
+                {% csrf_token %}
+                <button class="btn btn-primary" type="submit">Confirmar</button>
+                <a class="btn btn-outline-secondary" href="{% url 'usuarios:admin_usuarios_lista' %}">Cancelar</a>
+            </form>
+        </section>
     </div>
 {% endblock %}

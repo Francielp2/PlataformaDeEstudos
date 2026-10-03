@@ -3,87 +3,86 @@
 {% block title %}Gerenciar matérias{% endblock %}
 
 {% block content %}
-    <div class="page-heading d-flex justify-content-between align-items-start">
+    <header class="cabecalho">
         <div>
             <h1>Gerenciar matérias</h1>
-            <p>Cadastro e organização das disciplinas da plataforma.</p>
+            <p class="cabecalho-texto">Cadastro e organização das disciplinas da plataforma.</p>
         </div>
-        <div class="d-flex gap-2">
-            <a class="btn btn-outline-secondary" href="{% url 'curriculo_admin:admin_materias_importar_json' %}"><i class="bi bi-download"></i> Importar JSON</a>
-            <a class="btn btn-primary" href="{% url 'curriculo_admin:admin_materia_criar' %}"><i class="bi bi-plus-circle"></i> Criar matéria</a>
+        <div class="cabecalho-acoes">
+            <a class="btn btn-outline-secondary" href="{% url 'curriculo_admin:admin_materias_importar_json' %}"><i class="bi bi-filetype-json" aria-hidden="true"></i> Importar JSON</a>
+            <a class="btn btn-primary" href="{% url 'curriculo_admin:admin_materia_criar' %}"><i class="bi bi-plus-lg" aria-hidden="true"></i> Criar matéria</a>
         </div>
-    </div>
+    </header>
 
-    <form method="get" class="filters-box">
-        <div class="row g-2">
-        <div class="col-md-7">
-            <input class="form-control" type="search" name="q" value="{{ busca }}" placeholder="Buscar por matéria ou slug">
+    <form method="get" class="filtros" data-filtro-automatico role="search" aria-label="Filtrar matérias">
+        <div class="filtro-busca">
+            <i class="bi bi-search" aria-hidden="true"></i>
+            <input class="form-control" type="search" name="q" value="{{ busca }}" placeholder="Buscar por matéria ou slug" aria-label="Buscar por matéria ou slug">
         </div>
-        <div class="col-md-3">
-            <select class="form-select" name="status" aria-label="Filtrar por status">
-                <option value="" {% if not status %}selected{% endif %}>Todas</option>
-                <option value="ativas" {% if status == "ativas" %}selected{% endif %}>Ativas</option>
-                <option value="inativas" {% if status == "inativas" %}selected{% endif %}>Inativas</option>
-            </select>
-        </div>
-        <div class="col-md-2 d-grid">
-            <button class="btn btn-outline-primary" type="submit">Filtrar</button>
-        </div>
-        </div>
+        <select class="form-select" name="status" aria-label="Filtrar por status">
+            <option value="" {% if not status %}selected{% endif %}>Todas</option>
+            <option value="ativas" {% if status == "ativas" %}selected{% endif %}>Ativas</option>
+            <option value="inativas" {% if status == "inativas" %}selected{% endif %}>Inativas</option>
+        </select>
+        <button class="btn btn-outline-primary botao-filtrar" type="submit"><i class="bi bi-funnel" aria-hidden="true"></i> Filtrar</button>
     </form>
 
-    <p class="text-muted small mb-3">
-        {{ total_encontrado }} {% if total_encontrado == 1 %}matéria encontrada{% else %}matérias encontradas{% endif %}
-    </p>
+    <div class="filtros-resumo" aria-live="polite">
+        <span><strong>{{ total_encontrado }}</strong> {% if total_encontrado == 1 %}matéria encontrada{% else %}matérias encontradas{% endif %}</span>
+        {% if busca or status %}<a class="limpar-filtros" href="{% url 'curriculo_admin:admin_materias_lista' %}">Limpar filtros</a>{% endif %}
+    </div>
 
-    <div class="table-responsive section-box">
-        <table class="table table-hover align-middle mb-0">
-            <thead>
-                <tr>
-                    <th>Matéria</th>
-                    <th>Slug</th>
-                    <th>Status</th>
-                    <th>Ordem</th>
-                    <th>Criada por</th>
-                    <th>Cadastro</th>
-                    <th>Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for materia in page_obj %}
+    <div class="tabela-card">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead>
                     <tr>
-                        <td>{{ materia.nome }}</td>
-                        <td>{{ materia.slug }}</td>
-                        <td>
-                            {% if materia.ativa %}
-                                <span class="badge text-bg-success">Ativa</span>
-                            {% else %}
-                                <span class="badge text-bg-secondary">Inativa</span>
-                            {% endif %}
-                        </td>
-                        <td>{{ materia.ordem_exibicao }}</td>
-                        <td>
-                            {% if materia.criado_por %}
-                                {{ materia.criado_por.get_full_name|default:materia.criado_por.email }}
-                            {% else %}
-                                Sistema
-                            {% endif %}
-                        </td>
-                        <td>{{ materia.criado_em|date:"d/m/Y H:i" }}</td>
-                        <td class="actions">
-                            <a class="btn btn-sm btn-outline-secondary" href="{% url 'curriculo_admin:admin_materia_detalhe' materia.slug %}"><i class="bi bi-eye"></i> Ver</a>
-                            <a class="btn btn-sm btn-outline-primary" href="{% url 'curriculo_admin:admin_materia_editar' materia.slug %}"><i class="bi bi-pencil"></i> Editar</a>
-                            <form method="post" action="{% url 'curriculo_admin:admin_materia_alternar_status' materia.slug %}" class="d-inline">
-                                {% csrf_token %}
-                                <button class="btn btn-sm btn-outline-secondary" type="submit"><i class="bi {% if materia.ativa %}bi-pause-circle{% else %}bi-play-circle{% endif %}"></i> {% if materia.ativa %}Desativar{% else %}Ativar{% endif %}</button>
-                            </form>
-                        </td>
+                        <th scope="col">Matéria</th>
+                        <th scope="col">Slug</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Ordem</th>
+                        <th scope="col">Criada por</th>
+                        <th scope="col">Cadastro</th>
+                        <th scope="col" class="text-end">Ações</th>
                     </tr>
-                {% empty %}
-                    <tr><td colspan="7">Nenhuma matéria encontrada.</td></tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    {% for materia in page_obj %}
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    {% include "components/selo_materia.html" with materia=materia tamanho="sm" %}
+                                    <a class="celula-titulo" href="{% url 'curriculo_admin:admin_materia_detalhe' materia.slug %}">{{ materia.nome }}</a>
+                                </div>
+                            </td>
+                            <td><code>{{ materia.slug }}</code></td>
+                            <td>
+                                {% if materia.ativa %}
+                                    <span class="chip tom-menta"><i class="bi bi-check-circle" aria-hidden="true"></i> Ativa</span>
+                                {% else %}
+                                    <span class="chip tom-neutro"><i class="bi bi-pause-circle" aria-hidden="true"></i> Inativa</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ materia.ordem_exibicao }}</td>
+                            <td>{% if materia.criado_por %}{{ materia.criado_por.get_full_name|default:materia.criado_por.email }}{% else %}Sistema{% endif %}</td>
+                            <td class="celula-data">{{ materia.criado_em|date:"d/m/Y H:i" }}</td>
+                            <td class="celula-acoes">
+                                <div class="acoes-linha">
+                                    <a class="btn btn-sm btn-outline-secondary" href="{% url 'curriculo_admin:admin_materia_detalhe' materia.slug %}" title="Ver"><i class="bi bi-eye" aria-hidden="true"></i><span class="visually-hidden">Ver {{ materia.nome }}</span></a>
+                                    <a class="btn btn-sm btn-outline-secondary" href="{% url 'curriculo_admin:admin_materia_editar' materia.slug %}"><i class="bi bi-pencil" aria-hidden="true"></i> Editar</a>
+                                    <form method="post" action="{% url 'curriculo_admin:admin_materia_alternar_status' materia.slug %}" data-confirmar="{% if materia.ativa %}Desativar a matéria {{ materia.nome }}? Ela deixa de aparecer para os estudantes.{% else %}Ativar a matéria {{ materia.nome }}? Ela volta a aparecer para os estudantes.{% endif %}" data-confirmar-acao="{% if materia.ativa %}Desativar{% else %}Ativar{% endif %}">
+                                        {% csrf_token %}
+                                        <button class="btn btn-sm btn-outline-secondary" type="submit"><i class="bi {% if materia.ativa %}bi-pause-circle{% else %}bi-play-circle{% endif %}" aria-hidden="true"></i> {% if materia.ativa %}Desativar{% else %}Ativar{% endif %}</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr><td colspan="7" class="tabela-vazia">Nenhuma matéria encontrada.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 
     {% include "partials/paginacao.html" %}

@@ -1,0 +1,149 @@
+/* Tokens do design system: cores (com contraste AA validado), tipografia,
+   espaçamento, raios, sombras e movimento. Toda cor da interface sai daqui. */
+
+:root {
+    /* Verde da marca (derivado de #32A041). Texto branco só sobre 700+. */
+    --verde-50: #eef8ef;
+    --verde-100: #d9f0dc;
+    --verde-200: #b3e0b9;
+    --verde-300: #84cb8d;
+    --verde-400: #55b562;
+    --verde-500: #32a041;
+    --verde-600: #278535;
+    --verde-700: #1f6b2b;
+    --verde-800: #195423;
+    --verde-900: #12401b;
+
+    /* Vermelho de acento (derivado de #C8191E). Texto vermelho usa 600+. */
+    --vermelho-50: #fdeeee;
+    --vermelho-100: #fad4d5;
+    --vermelho-200: #f3a7a9;
+    --vermelho-300: #e8747a;
+    --vermelho-400: #db454b;
+    --vermelho-500: #c8191e;
+    --vermelho-600: #a81419;
+    --vermelho-700: #871014;
+
+    /* Neutros levemente esverdeados. */
+    --tinta: #18251c;
+    --tinta-2: #2f3f34;
+    --tinta-suave: #5a6b5f;
+    --linha: #d9e3d9;
+    --linha-suave: #e9efe8;
+    --fundo: #f5f8f3;
+    --fundo-2: #edf2eb;
+    --superficie: #ffffff;
+
+    /* Tons auxiliares para matérias e categorias: fundo, tinta e destaque. */
+    --sol-fundo: #fff6d6;
+    --sol-tinta: #7a5a00;
+    --sol: #f2b705;
+    --ceu-fundo: #e7f1fc;
+    --ceu-tinta: #1b5797;
+    --ceu: #2d7fd3;
+    --lilas-fundo: #f0ebfc;
+    --lilas-tinta: #5636a8;
+    --lilas: #7b5cd6;
+    --laranja-fundo: #fdefe4;
+    --laranja-tinta: #9a4510;
+    --laranja: #e8742a;
+    --menta-fundo: var(--verde-50);
+    --menta-tinta: var(--verde-700);
+    --menta: var(--verde-500);
+    --coral-fundo: var(--vermelho-50);
+    --coral-tinta: var(--vermelho-600);
+    --coral: var(--vermelho-500);
+
+    /* Papéis semânticos. */
+    --cor-acao: var(--verde-700);
+    --cor-acao-hover: var(--verde-800);
+    --cor-acao-texto: #ffffff;
+    --cor-link: var(--verde-700);
+    --cor-foco: #1b5797;
+    --sucesso-fundo: var(--verde-50);
+    --sucesso-tinta: var(--verde-800);
+    --erro-fundo: var(--vermelho-50);
+    --erro-tinta: var(--vermelho-600);
+    --aviso-fundo: var(--sol-fundo);
+    --aviso-tinta: var(--sol-tinta);
+    --info-fundo: var(--ceu-fundo);
+    --info-tinta: var(--ceu-tinta);
+
+    /* Tipografia. */
+    --fonte-titulo: "Fredoka", "Atkinson Hyperlegible", system-ui, sans-serif;
+    --fonte-texto: "Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --fonte-mono: ui-monospace, "SFMono-Regular", "Cascadia Mono", Consolas, monospace;
+    --texto-xs: 0.8125rem;
+    --texto-sm: 0.9375rem;
+    --texto-md: 1.0625rem;
+    --texto-lg: 1.25rem;
+    --titulo-sm: 1.375rem;
+    --titulo-md: 1.75rem;
+    --titulo-lg: 2.25rem;
+    --titulo-xl: clamp(2.25rem, 1.6rem + 2vw, 3rem);
+    --altura-linha: 1.6;
+
+    /* Espaçamento (escala de 4px). */
+    --esp-1: 0.25rem;
+    --esp-2: 0.5rem;
+    --esp-3: 0.75rem;
+    --esp-4: 1rem;
+    --esp-5: 1.5rem;
+    --esp-6: 2rem;
+    --esp-7: 3rem;
+
+    /* Forma: raios diferentes por hierarquia. */
+    --raio-sm: 10px;
+    --raio-md: 14px;
+    --raio-lg: 20px;
+    --raio-xl: 28px;
+    --raio-pilula: 999px;
+
+    /* Sombras com tom da tinta, reservadas para o que flutua. */
+    --sombra-1: 0 1px 2px rgb(24 37 28 / 0.06);
+    --sombra-2: 0 2px 4px rgb(24 37 28 / 0.05), 0 10px 24px -12px rgb(24 37 28 / 0.22);
+    --sombra-3: 0 24px 48px -16px rgb(24 37 28 / 0.32);
+
+    /* Movimento. */
+    --duracao-rapida: 120ms;
+    --duracao: 200ms;
+    --curva: cubic-bezier(0.2, 0.7, 0.2, 1);
+
+    /* Medidas do layout. */
+    --largura-sidebar: 268px;
+    --altura-topbar: 68px;
+    --largura-conteudo: 1240px;
+    --alvo-toque: 44px;
+}
+
+/* Alto contraste: escolhido no controle de acessibilidade (salvo no navegador). */
+:root[data-contraste="alto"] {
+    --tinta: #000000;
+    --tinta-2: #000000;
+    --tinta-suave: #1f2a22;
+    --linha: #3d4a40;
+    --linha-suave: #6b786e;
+    --fundo: #ffffff;
+    --fundo-2: #ffffff;
+    --cor-acao: var(--verde-900);
+    --cor-acao-hover: #000000;
+    --cor-link: var(--verde-900);
+    --cor-foco: #000000;
+    --sol-tinta: #4d3800;
+    --ceu-tinta: #0d3a6b;
+    --lilas-tinta: #3a1f80;
+    --laranja-tinta: #6b2e05;
+    --erro-tinta: var(--vermelho-700);
+    --sucesso-tinta: var(--verde-900);
+}
+
+/* Tamanho de fonte escolhido pelo estudante. */
+:root[data-fonte="grande"] { font-size: 112.5%; }
+:root[data-fonte="maior"] { font-size: 125%; }
+
+@media (prefers-reduced-motion: reduce) {
+    :root {
+        --duracao-rapida: 0ms;
+        --duracao: 0ms;
+    }
+}

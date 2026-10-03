@@ -1,0 +1,50 @@
+/* Pequenos componentes: botão copiar, código copiável, abas de seção e utilitários. */
+
+.copiavel {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    max-width: 100%;
+    min-height: 32px;
+    padding: 0.15rem 0.35rem 0.15rem 0.6rem;
+    border: 1px solid var(--linha);
+    border-radius: 8px;
+    background: var(--fundo);
+    color: var(--tinta);
+    font: 0.875rem/1.4 var(--fonte-mono);
+    cursor: pointer;
+}
+.copiavel:hover { border-color: var(--verde-300); background: var(--verde-50); }
+.copiavel code { color: inherit; font-size: inherit; overflow-wrap: anywhere; text-align: left; }
+.copiavel i { color: var(--tinta-suave); font-size: 0.95rem; }
+.copiavel.copiado { border-color: var(--verde-500); background: var(--verde-100); }
+.copiavel.copiado i { color: var(--verde-700); }
+
+.botao-copiar { position: absolute; top: var(--esp-2); right: var(--esp-2); }
+.exemplo-codigo .botao-copiar { --bs-btn-bg: rgb(255 255 255 / 0.12); --bs-btn-color: #fff; --bs-btn-border-color: transparent; --bs-btn-hover-bg: rgb(255 255 255 / 0.22); --bs-btn-hover-color: #fff; }
+
+.secao { margin-top: var(--esp-6); }
+.secao-topo { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--esp-2) var(--esp-4); margin-bottom: var(--esp-4); }
+.secao-titulo { font-size: var(--titulo-sm); margin: 0; }
+
+.indice { display: flex; flex-wrap: wrap; gap: var(--esp-2); margin-bottom: var(--esp-4); }
+.indice a {
+    display: inline-flex; align-items: center; gap: 0.35rem; min-height: 38px; padding: 0.25rem 0.85rem;
+    border-radius: var(--raio-pilula); background: var(--superficie); border: 1px solid var(--linha);
+    color: var(--tinta-2); font-weight: 700; font-size: var(--texto-sm); text-decoration: none;
+}
+.indice a:hover { border-color: var(--verde-300); background: var(--verde-50); color: var(--verde-800); }
+
+.texto-longo { max-width: 72ch; }
+.texto-longo p:last-child { margin-bottom: 0; }
+
+.imagem-questao { margin: var(--esp-4) 0; }
+.imagem-questao img { border-radius: var(--raio-md); border: 1px solid var(--linha); background: #fff; max-height: 520px; object-fit: contain; }
+.imagem-alternativa { margin-top: var(--esp-2); }
+.imagem-alternativa img { border-radius: var(--raio-sm); border: 1px solid var(--linha); background: #fff; max-height: 240px; object-fit: contain; }
+
+.carregando { position: relative; pointer-events: none; opacity: 0.7; }
+
+@media (max-width: 575.98px) {
+    .acoes-largas > .btn, .acoes-largas > form, .acoes-largas > form .btn { width: 100%; }
+}

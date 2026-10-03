@@ -1,0 +1,9 @@
+{% comment %}Cartão de número. Parâmetros: valor, rotulo, detalhe, icone, tom, url (opcional).{% endcomment %}
+{% if url %}<a class="numero-card {{ tom|default:'tom-menta' }}" href="{{ url }}">{% else %}<div class="numero-card {{ tom|default:'tom-menta' }}">{% endif %}
+    <span class="numero-icone" aria-hidden="true"><i class="bi {{ icone }}"></i></span>
+    <span>
+        <span class="numero-valor">{{ valor }}</span>
+        <span class="numero-rotulo">{{ rotulo }}</span>
+        {% if detalhe %}<span class="numero-detalhe">{{ detalhe }}</span>{% endif %}
+    </span>
+{% if url %}</a>{% else %}</div>{% endif %}

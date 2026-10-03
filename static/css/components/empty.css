@@ -1,0 +1,23 @@
+/* Estados vazios ilustrados e convidativos. */
+
+.vazio {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--esp-2);
+    padding: var(--esp-6) var(--esp-4);
+    border: 2px dashed var(--linha);
+    border-radius: var(--raio-lg);
+    background: var(--superficie);
+}
+.vazio img { width: 132px; height: auto; margin-bottom: var(--esp-2); }
+.vazio-icone {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 72px; height: 72px; border-radius: 22px; margin-bottom: var(--esp-2);
+    background: var(--verde-50); color: var(--verde-700); font-size: 2rem;
+}
+.vazio h2, .vazio h3, .vazio strong.vazio-titulo { font-family: var(--fonte-titulo); font-weight: 600; font-size: var(--texto-lg); margin: 0; }
+.vazio p { color: var(--tinta-suave); max-width: 46ch; margin: 0; }
+.vazio .btn { margin-top: var(--esp-3); }
+.vazio--compacto { padding: var(--esp-4); border-width: 1px; }

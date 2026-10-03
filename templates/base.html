@@ -1,29 +1,48 @@
-<!DOCTYPE html>
+{% load static %}<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#1f6b2b">
+    <title>{% block title %}Plataforma de Estudos e Organização para ENEM{% endblock %} | Plataforma de Estudos</title>
 
-    <title>
-        {% block title %}Plataforma de Estudos e Organização para ENEM{% endblock %}
-    </title>
+    <script>
+        // Aplica as preferências de acessibilidade antes da primeira pintura.
+        (function () {
+            var raiz = document.documentElement;
+            raiz.classList.add("js");
+            try {
+                var fonte = localStorage.getItem("pe-fonte");
+                var contraste = localStorage.getItem("pe-contraste");
+                if (fonte) { raiz.setAttribute("data-fonte", fonte); }
+                if (contraste) { raiz.setAttribute("data-contraste", contraste); }
+            } catch (erro) {}
+        })();
+    </script>
 
-    {% load static %}
+    <link rel="icon" type="image/svg+xml" href="{% static 'images/brand/marca.svg' %}">
     <link rel="icon" type="image/png" href="{% static 'images/favicon.png' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Fredoka:wght@500;600&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/app.css' %}">
+    {% block extra_css %}{% endblock %}
 </head>
-<body>
+<body class="{% block body_class %}{% endblock %}">
+    <a class="pular-conteudo" href="#conteudo">Pular para o conteúdo</a>
+    <div id="anuncios" class="visually-hidden" aria-live="polite" aria-atomic="true"></div>
+
     {% block body %}
-        <main class="container py-4">
+        <main id="conteudo" class="container py-4" tabindex="-1">
             {% include "partials/mensagens.html" %}
-            {% block content %}
-            {% endblock %}
+            {% block content %}{% endblock %}
         </main>
     {% endblock %}
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="{% static 'js/main.js' %}"></script>
+    <script type="module" src="{% static 'js/app.js' %}"></script>
+    {% block extra_js %}{% endblock %}
 </body>
 </html>

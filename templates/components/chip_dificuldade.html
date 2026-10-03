@@ -1,0 +1,1 @@
+{% load ui %}{% comment %}Chip de dificuldade (ícone de intensidade + texto). Parâmetros: valor, rotulo.{% endcomment %}{% with v=valor|dificuldade_visual %}<span class="chip {{ v.tom }}"><i class="bi {{ v.icone }}" aria-hidden="true"></i> {{ rotulo }}</span>{% endwith %}

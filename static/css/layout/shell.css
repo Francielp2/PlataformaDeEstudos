@@ -1,0 +1,32 @@
+/* Shell da área logada: sidebar fixa à esquerda (desktop) e área principal. */
+
+.app-shell {
+    display: grid;
+    grid-template-columns: var(--largura-sidebar) minmax(0, 1fr);
+    min-height: 100vh;
+}
+
+.app-main { display: flex; flex-direction: column; min-width: 0; }
+
+.app-conteudo {
+    flex: 1;
+    width: 100%;
+    max-width: calc(var(--largura-conteudo) + 2 * var(--esp-6));
+    margin: 0 auto;
+    padding: var(--esp-5) var(--esp-6) var(--esp-7);
+}
+
+/* A área administrativa é mais densa: menos respiro, mesma identidade. */
+.perfil-admin .app-conteudo { max-width: 1440px; padding-top: var(--esp-4); }
+
+.app-rodape {
+    padding: var(--esp-4) var(--esp-6) var(--esp-5);
+    color: var(--tinta-suave);
+    font-size: var(--texto-xs);
+    text-align: center;
+}
+
+@media (max-width: 991.98px) {
+    .app-shell { grid-template-columns: minmax(0, 1fr); }
+    .app-conteudo { padding: var(--esp-4) var(--esp-4) var(--esp-6); }
+}

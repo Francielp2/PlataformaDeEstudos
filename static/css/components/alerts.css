@@ -1,0 +1,50 @@
+/* Mensagens do sistema (toasts) e avisos dentro da página. */
+
+.toasts {
+    position: fixed;
+    top: calc(var(--altura-topbar) + var(--esp-2));
+    right: var(--esp-4);
+    z-index: 1080;
+    display: grid;
+    gap: var(--esp-2);
+    width: min(420px, calc(100vw - 2 * var(--esp-4)));
+}
+.toast-msg {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--esp-3);
+    padding: var(--esp-3) var(--esp-3) var(--esp-3) var(--esp-4);
+    border-radius: var(--raio-md);
+    background: var(--superficie);
+    border: 1px solid var(--linha);
+    border-left: 6px solid var(--tom-destaque, var(--verde-500));
+    box-shadow: var(--sombra-3);
+    animation: toast-entra var(--duracao) var(--curva);
+}
+.toast-msg > i { color: var(--tom-tinta, var(--verde-700)); font-size: 1.3rem; line-height: 1.3; }
+.toast-msg p { margin: 0; flex: 1; font-weight: 700; }
+.toast-fechar { width: 36px; height: 36px; border: 0; border-radius: 50%; background: transparent; color: var(--tinta-suave); flex: 0 0 auto; }
+.toast-fechar:hover { background: var(--fundo-2); color: var(--tinta); }
+.toast-msg.saindo { opacity: 0; transform: translateY(-6px); transition: opacity var(--duracao) var(--curva), transform var(--duracao) var(--curva); }
+@keyframes toast-entra { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
+
+/* Aviso dentro da página (substitui os alerts do Bootstrap). */
+.aviso {
+    display: flex;
+    gap: var(--esp-3);
+    align-items: flex-start;
+    padding: var(--esp-3) var(--esp-4);
+    border-radius: var(--raio-md);
+    background: var(--tom-fundo, var(--info-fundo));
+    color: var(--tinta);
+}
+.aviso > i { color: var(--tom-tinta, var(--info-tinta)); font-size: 1.25rem; line-height: 1.35; }
+.aviso p { margin: 0; }
+.aviso strong { color: var(--tom-tinta, var(--info-tinta)); }
+:root[data-contraste="alto"] .aviso { border: 2px solid var(--linha); }
+
+.alert-success, .alert-info, .alert-warning, .alert-danger, .alert-light { border: 0; }
+.alert-success { background: var(--sucesso-fundo); color: var(--sucesso-tinta); }
+.alert-danger, .alert-error { background: var(--erro-fundo); color: var(--erro-tinta); }
+.alert-warning { background: var(--aviso-fundo); color: var(--aviso-tinta); }
+.alert-info { background: var(--info-fundo); color: var(--info-tinta); }

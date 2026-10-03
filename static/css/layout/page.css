@@ -1,0 +1,68 @@
+/* Cabeçalhos de página: "faixa" ilustrada do estudante e cabeçalho simples. */
+
+.faixa {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: var(--esp-5);
+    margin-bottom: var(--esp-5);
+    padding: var(--esp-5) var(--esp-6);
+    min-height: 184px;
+    border-radius: var(--raio-xl);
+    background: var(--verde-50);
+    overflow: hidden;
+    isolation: isolate;
+}
+/* Morro decorativo no rodapé da faixa. */
+.faixa::before {
+    content: "";
+    position: absolute;
+    inset: auto -10% -60% 35%;
+    height: 120%;
+    border-radius: 50%;
+    background: var(--verde-100);
+    z-index: -1;
+}
+.faixa h1 { font-size: var(--titulo-xl); margin-bottom: var(--esp-2); }
+.faixa-texto { font-size: var(--texto-lg); color: var(--tinta-2); margin-bottom: 0; max-width: 52ch; }
+.faixa-acoes { display: flex; flex-wrap: wrap; gap: var(--esp-2); margin-top: var(--esp-4); }
+.faixa-ilustracao { width: 220px; height: auto; align-self: end; margin-bottom: calc(-1 * var(--esp-5)); }
+
+.faixa--sol { background: var(--sol-fundo); }
+.faixa--sol::before { background: #fdeba8; }
+.faixa--ceu { background: var(--ceu-fundo); }
+.faixa--ceu::before { background: #d3e5f9; }
+.faixa--lilas { background: var(--lilas-fundo); }
+.faixa--lilas::before { background: #e2d9fa; }
+.faixa--coral { background: var(--vermelho-50); }
+.faixa--coral::before { background: #fbdcdd; }
+
+:root[data-contraste="alto"] .faixa { background: #fff; border: 2px solid var(--linha); }
+:root[data-contraste="alto"] .faixa::before { display: none; }
+
+/* Cabeçalho simples (telas de tarefa e área administrativa). */
+.cabecalho {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--esp-3) var(--esp-5);
+    margin-bottom: var(--esp-5);
+}
+.cabecalho h1 { font-size: var(--titulo-lg); margin-bottom: var(--esp-1); }
+.cabecalho-texto { color: var(--tinta-suave); margin-bottom: 0; max-width: 70ch; }
+.cabecalho-meta { display: flex; flex-wrap: wrap; gap: var(--esp-2); margin-top: var(--esp-3); }
+.cabecalho-acoes { display: flex; flex-wrap: wrap; gap: var(--esp-2); align-items: center; }
+.perfil-admin .cabecalho h1 { font-size: var(--titulo-md); }
+
+.cabecalho-selo { display: flex; align-items: center; gap: var(--esp-4); }
+
+@media (max-width: 767.98px) {
+    .faixa { grid-template-columns: minmax(0, 1fr); padding: var(--esp-5) var(--esp-4); min-height: 0; }
+    .faixa h1 { font-size: var(--titulo-md); }
+    .faixa-texto { font-size: var(--texto-md); }
+    .faixa-ilustracao { display: none; }
+    .cabecalho h1 { font-size: var(--titulo-md); }
+    .cabecalho-acoes { width: 100%; }
+}

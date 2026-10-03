@@ -1,33 +1,33 @@
 {% extends "base.html" %}
+{% load static ui %}
+
+{% block body_class %}{% if request.user.is_staff %}perfil-admin{% else %}perfil-estudante{% endif %}{% endblock %}
 
 {% block body %}
     <div class="app-shell">
-        <aside class="sidebar sidebar-desktop">
-            <div class="sidebar-title">
-                <div class="brand-mark"><i class="bi bi-journal-bookmark"></i></div>
-                <div>
-                    <span>Plataforma de Estudos</span>
-                    <small>ENEM</small>
-                </div>
-            </div>
-
+        <aside class="sidebar sidebar-desktop" aria-label="Navegação principal">
+            <a class="marca" href="{% if request.user.is_staff %}{% url 'usuarios:admin_painel' %}{% else %}{% url 'usuarios:painel_estudante' %}{% endif %}">
+                <img src="{% static 'images/brand/marca.svg' %}" alt="" width="44" height="44">
+                <span><span class="marca-nome">Plataforma de Estudos</span><span class="marca-sub">{% if request.user.is_staff %}Administração{% else %}ENEM{% endif %}</span></span>
+            </a>
             {% if request.user.is_staff %}
                 {% include "usuarios/sidebar_admin.html" %}
             {% else %}
                 {% include "usuarios/sidebar_estudante.html" %}
+                <div class="sidebar-incentivo">
+                    <img src="{% static 'images/illustrations/broto.svg' %}" alt="" width="56" height="56">
+                    <span>Um pouco por dia já faz diferença.</span>
+                </div>
             {% endif %}
         </aside>
 
-        <div class="offcanvas offcanvas-start mobile-sidebar" tabindex="-1" id="mobileSidebar" aria-labelledby="mobileSidebarLabel">
+        <div class="offcanvas offcanvas-start menu-mobile" tabindex="-1" id="menuMobile" aria-labelledby="menuMobileTitulo">
             <div class="offcanvas-header">
-                <div class="sidebar-title border-0 mb-0 pb-0" id="mobileSidebarLabel">
-                    <div class="brand-mark"><i class="bi bi-journal-bookmark"></i></div>
-                    <div>
-                        <span>Plataforma de Estudos</span>
-                        <small>ENEM</small>
-                    </div>
-                </div>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Fechar menu"></button>
+                <span class="marca" id="menuMobileTitulo">
+                    <img src="{% static 'images/brand/marca.svg' %}" alt="" width="44" height="44">
+                    <span><span class="marca-nome">Plataforma de Estudos</span><span class="marca-sub">{% if request.user.is_staff %}Administração{% else %}ENEM{% endif %}</span></span>
+                </span>
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Fechar menu"></button>
             </div>
             <div class="offcanvas-body">
                 {% if request.user.is_staff %}
@@ -40,22 +40,10 @@
 
         <div class="app-main">
             <header class="topbar">
-                <div class="topbar-left">
-                    <button class="btn btn-outline-secondary btn-sm menu-toggle" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar" aria-controls="mobileSidebar" aria-expanded="false" aria-label="Abrir menu">
-                        <i class="bi bi-list"></i>
+                <div class="topbar-esquerda">
+                    <button class="botao-icone botao-menu" type="button" data-bs-toggle="offcanvas" data-bs-target="#menuMobile" aria-controls="menuMobile" aria-label="Abrir menu">
+                        <i class="bi bi-list" aria-hidden="true"></i>
                     </button>
-                    <span class="mobile-app-label">ENEM</span>
-                    <div class="user-summary">
-                        <div class="user-avatar">{{ request.user.first_name|default:request.user.email|slice:":1" }}{% if request.user.last_name %}{{ request.user.last_name|slice:":1" }}{% endif %}</div>
-                        <div class="user-summary-text">
-                            <strong>{{ request.user.get_full_name|default:request.user.email }}</strong>
-                            <span class="text-muted d-block small">
-                                {% if request.user.is_superuser %}Superusuário{% elif request.user.is_staff %}Administrador{% else %}Estudante{% endif %}
-                            </span>
-                        </div>
-                    </div>
-                </div>
-                <div class="topbar-actions">
                     {% if request.resolver_match.url_name != "painel_estudante" and request.resolver_match.url_name != "admin_painel" %}
                         {% comment %}
                             O botão leva à página-pai da tela atual, nunca ao histórico do navegador.
@@ -63,35 +51,63 @@
                             "voltar_url" no contexto); sem isso, volta ao painel do usuário.
                         {% endcomment %}
                         {% block voltar %}
-                            <a class="btn btn-outline-secondary btn-sm" id="appBackButton" href="{% block voltar_url %}{% if voltar_url %}{{ voltar_url }}{% elif request.user.is_staff %}{% url 'usuarios:admin_painel' %}{% else %}{% url 'usuarios:painel_estudante' %}{% endif %}{% endblock %}">
-                                <i class="bi bi-arrow-left"></i> {% block voltar_texto %}Voltar{% endblock %}
+                            <a class="btn btn-outline-secondary botao-voltar" id="appBackButton" href="{% block voltar_url %}{% if voltar_url %}{{ voltar_url }}{% elif request.user.is_staff %}{% url 'usuarios:admin_painel' %}{% else %}{% url 'usuarios:painel_estudante' %}{% endif %}{% endblock %}">
+                                <i class="bi bi-arrow-left" aria-hidden="true"></i> <span class="rotulo-voltar">{% block voltar_texto %}Voltar{% endblock %}</span>
                             </a>
                         {% endblock %}
                     {% endif %}
                 </div>
+
+                <div class="topbar-direita">
+                    <button class="busca-rapida" type="button" data-abrir-paleta aria-haspopup="dialog" aria-label="Buscar páginas (Ctrl+K)">
+                        <i class="bi bi-search" aria-hidden="true"></i>
+                        <span>Ir para uma página…</span>
+                        <kbd>Ctrl K</kbd>
+                    </button>
+
+                    <div class="dropdown">
+                        <button class="botao-icone" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false" aria-label="Acessibilidade: tamanho do texto e contraste">
+                            <i class="bi bi-universal-access" aria-hidden="true"></i>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-end painel-acessibilidade">
+                            <h2>Acessibilidade</h2>
+                            <span class="grupo-rotulo" id="rotuloFonte">Tamanho do texto</span>
+                            <div class="grupo-opcoes" role="group" aria-labelledby="rotuloFonte">
+                                <button type="button" data-pref-fonte="" aria-pressed="true">A</button>
+                                <button type="button" data-pref-fonte="grande" aria-pressed="false" style="font-size: 1.15em;">A+</button>
+                                <button type="button" data-pref-fonte="maior" aria-pressed="false" style="font-size: 1.3em;">A++</button>
+                            </div>
+                            <span class="grupo-rotulo" id="rotuloContraste">Contraste</span>
+                            <div class="grupo-opcoes mb-0" role="group" aria-labelledby="rotuloContraste">
+                                <button type="button" data-pref-contraste="" aria-pressed="true">Padrão</button>
+                                <button type="button" data-pref-contraste="alto" aria-pressed="false">Alto</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <a class="usuario-botao" href="{% url 'usuarios:perfil' %}" title="Meu perfil">
+                        <span class="avatar" aria-hidden="true">{{ request.user|iniciais }}</span>
+                        <span class="usuario-texto">
+                            <strong>{{ request.user.get_full_name|default:request.user.email }}</strong>
+                            <small>{% if request.user.is_superuser %}Superusuário{% elif request.user.is_staff %}Administrador{% else %}Estudante{% endif %}</small>
+                        </span>
+                    </a>
+                </div>
             </header>
 
-            <main class="content-area">
-                <div class="content-inner">
-                    {% include "partials/mensagens.html" %}
-                    {% block content %}{% endblock %}
-                </div>
+            <main id="conteudo" class="app-conteudo" tabindex="-1">
+                {% include "partials/mensagens.html" %}
+                {% block content %}{% endblock %}
             </main>
         </div>
     </div>
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const mobileSidebar = document.getElementById("mobileSidebar");
-            if (mobileSidebar && window.bootstrap) {
-                mobileSidebar.querySelectorAll(".sidebar-nav a").forEach(function (link) {
-                    link.addEventListener("click", function () {
-                        const instance = bootstrap.Offcanvas.getInstance(mobileSidebar);
-                        if (instance) {
-                            instance.hide();
-                        }
-                    });
-                });
-            }
-        });
-    </script>
+
+    <dialog class="paleta" id="paleta" aria-label="Busca rápida">
+        <div class="paleta-busca">
+            <i class="bi bi-search" aria-hidden="true"></i>
+            <input type="search" placeholder="Para onde você quer ir?" aria-label="Buscar páginas e itens desta tela" role="combobox" aria-expanded="true" aria-controls="paletaLista" aria-autocomplete="list" autocomplete="off">
+        </div>
+        <ul class="paleta-lista" id="paletaLista" role="listbox" aria-label="Resultados"></ul>
+        <div class="paleta-rodape"><span><kbd>↑</kbd> <kbd>↓</kbd> navegar</span><span><kbd>Enter</kbd> abrir</span><span><kbd>Esc</kbd> fechar</span></div>
+    </dialog>
 {% endblock %}

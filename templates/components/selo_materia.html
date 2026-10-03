@@ -1,0 +1,1 @@
+{% load ui %}{% comment %}Selo da matéria. Parâmetros: materia (objeto, slug ou nome), tamanho ("sm"/"lg", opcional).{% endcomment %}{% with v=materia|materia_visual %}<span class="selo{% if tamanho %} selo--{{ tamanho }}{% endif %} {{ v.tom }}" aria-hidden="true"><i class="bi {{ v.icone }}"></i></span>{% endwith %}

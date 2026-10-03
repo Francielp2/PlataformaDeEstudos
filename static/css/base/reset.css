@@ -1,0 +1,30 @@
+/* Reset leve sobre o reboot do Bootstrap: caixa, mídia e movimento reduzido. */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; scroll-padding-top: calc(var(--altura-topbar) + var(--esp-4)); }
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--fundo);
+    color: var(--tinta);
+    font-family: var(--fonte-texto);
+    font-size: var(--texto-md);
+    line-height: var(--altura-linha);
+    -webkit-font-smoothing: antialiased;
+}
+
+img, svg, video, iframe { max-width: 100%; }
+img { height: auto; }
+
+[hidden] { display: none !important; }
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}

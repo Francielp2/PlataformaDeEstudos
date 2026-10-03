@@ -1,0 +1,139 @@
+/* Cartões: painel de seção, cartão de item (com selo da matéria) e atalhos. */
+
+.painel {
+    background: var(--superficie);
+    border: 1px solid var(--linha);
+    border-radius: var(--raio-lg);
+    padding: var(--esp-5);
+}
+.painel + .painel { margin-top: var(--esp-4); }
+.painel--suave { background: var(--fundo-2); border-color: transparent; }
+.painel--compacto { padding: var(--esp-4); }
+.painel-titulo { font-size: var(--texto-lg); margin-bottom: var(--esp-1); }
+.painel-descricao { color: var(--tinta-suave); font-size: var(--texto-sm); margin-bottom: var(--esp-4); }
+.painel-topo {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--esp-2) var(--esp-4);
+    margin-bottom: var(--esp-4);
+}
+.painel-topo .painel-titulo, .painel-topo .painel-descricao { margin-bottom: 0; }
+.painel-icone {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 40px; height: 40px; border-radius: 12px; flex: 0 0 auto;
+    background: var(--verde-50); color: var(--verde-700); font-size: 1.2rem;
+}
+.painel-cabeca { display: flex; align-items: center; gap: var(--esp-3); }
+.perfil-admin .painel { padding: var(--esp-4); border-radius: var(--raio-md); }
+
+/* Grade de cartões responsiva. */
+.grade-cartoes {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+    gap: var(--esp-4);
+}
+.grade-cartoes--larga { grid-template-columns: repeat(auto-fill, minmax(min(100%, 360px), 1fr)); }
+
+/* Cartão de item (conteúdo, matéria, questão, simulado). */
+.item {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: var(--esp-3);
+    padding: var(--esp-4) var(--esp-4) var(--esp-4);
+    background: var(--superficie);
+    border: 1px solid var(--linha);
+    border-radius: var(--raio-lg);
+    transition: border-color var(--duracao) var(--curva), box-shadow var(--duracao) var(--curva);
+}
+.item:hover { border-color: #bfd1c0; box-shadow: var(--sombra-2); }
+.item-topo { display: flex; align-items: flex-start; gap: var(--esp-3); }
+.item-cabeca { min-width: 0; flex: 1; }
+.item-materia { display: block; font-size: var(--texto-sm); font-weight: 700; color: var(--tinta-suave); }
+.item-titulo { font-size: 1.1875rem; margin: 0.1rem 0 0; line-height: 1.25; overflow-wrap: anywhere; }
+.item-titulo a { color: inherit; text-decoration: none; }
+.item-titulo a:hover { color: var(--verde-800); text-decoration: underline; }
+.item-texto { color: var(--tinta-2); margin: 0; }
+.item-meta { display: flex; flex-wrap: wrap; gap: var(--esp-2); align-items: center; }
+.item-acoes {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--esp-2);
+    margin-top: auto;
+    padding-top: var(--esp-2);
+}
+.item-acoes .acao-principal { flex: 1 1 auto; }
+.item-acoes form { display: inline-flex; margin: 0; }
+
+/* Marcação "Estudado" bem visível no cartão. */
+.item.esta-estudado { border-color: var(--verde-300); background: linear-gradient(180deg, var(--verde-50), var(--superficie) 70%); }
+.selo-estudado {
+    display: inline-flex; align-items: center; gap: 0.3rem;
+    font-size: var(--texto-xs); font-weight: 700; color: var(--verde-800);
+}
+
+/* Atalho grande (painel inicial). */
+.atalho {
+    display: flex;
+    align-items: center;
+    gap: var(--esp-3);
+    min-height: 84px;
+    padding: var(--esp-3) var(--esp-4);
+    border-radius: var(--raio-lg);
+    background: var(--superficie);
+    border: 1px solid var(--linha);
+    color: var(--tinta);
+    text-decoration: none;
+    transition: border-color var(--duracao-rapida) var(--curva), background-color var(--duracao-rapida) var(--curva);
+}
+.atalho:hover { color: var(--tinta); text-decoration: none; border-color: var(--verde-300); background: var(--verde-50); }
+.atalho-texto { flex: 1; min-width: 0; }
+.atalho-texto strong { display: block; font-family: var(--fonte-titulo); font-weight: 600; font-size: 1.0625rem; }
+.atalho-texto span { display: block; color: var(--tinta-suave); font-size: var(--texto-sm); }
+.atalho > .bi-chevron-right { color: var(--tinta-suave); }
+
+/* Lista de definições com hierarquia (páginas de informação). */
+.ficha { display: grid; grid-template-columns: minmax(130px, 34%) minmax(0, 1fr); gap: var(--esp-3) var(--esp-4); margin: 0; }
+.ficha dt { color: var(--tinta-suave); font-weight: 700; font-size: var(--texto-sm); }
+.ficha dd { margin: 0; overflow-wrap: anywhere; }
+@media (max-width: 575.98px) { .ficha { grid-template-columns: minmax(0, 1fr); gap: 0.15rem; } .ficha dd { margin-bottom: var(--esp-3); } }
+
+/* Lista de atividade (linhas espaçadas com ícone). */
+.atividades { list-style: none; margin: 0; padding: 0; }
+.atividade {
+    display: flex;
+    align-items: center;
+    gap: var(--esp-3);
+    padding: var(--esp-3) 0;
+    border-bottom: 1px solid var(--linha-suave);
+}
+.atividade:last-child { border-bottom: 0; }
+.atividade > .btn, .atividade > .chip { flex: 0 0 auto; }
+@media (max-width: 575.98px) {
+    .atividade { flex-wrap: wrap; }
+    .atividade > .btn { margin-left: calc(36px + var(--esp-3)); }
+}
+.atividade-corpo { flex: 1; min-width: 0; }
+.atividade-titulo { display: block; font-weight: 700; overflow-wrap: break-word; }
+.atividade-meta { display: block; font-size: var(--texto-sm); color: var(--tinta-suave); }
+
+/* Painel de dica lateral. */
+.dica {
+    display: flex;
+    gap: var(--esp-3);
+    padding: var(--esp-4);
+    border-radius: var(--raio-lg);
+    background: var(--sol-fundo);
+    color: var(--sol-tinta);
+}
+.dica i { font-size: 1.5rem; line-height: 1; }
+.dica strong { display: block; color: #5c4400; font-family: var(--fonte-titulo); font-weight: 600; font-size: 1.0625rem; margin-bottom: 0.15rem; }
+.dica p { margin: 0; color: var(--tinta-2); }
+
+/* Grade de duas colunas com lateral (conteúdo + dicas). */
+.com-lateral { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: var(--esp-5); align-items: start; }
+.com-lateral > aside { display: grid; gap: var(--esp-4); position: sticky; top: calc(var(--altura-topbar) + var(--esp-4)); }
+@media (max-width: 1199.98px) { .com-lateral { grid-template-columns: minmax(0, 1fr); } .com-lateral > aside { position: static; } }

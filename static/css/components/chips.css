@@ -1,0 +1,41 @@
+/* Chips (status, dificuldade, metadados) e selos de matéria. Cor nunca é o único
+   sinal: todo chip de estado leva ícone e texto. */
+
+.chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    max-width: 100%;
+    padding: 0.2rem 0.65rem;
+    border-radius: var(--raio-pilula);
+    background: var(--tom-fundo, var(--fundo-2));
+    color: var(--tom-tinta, var(--tinta-2));
+    font-size: var(--texto-xs);
+    font-weight: 700;
+    line-height: 1.5;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: middle;
+}
+.chip i { font-size: 0.95em; }
+.chip--contorno { background: var(--superficie); box-shadow: inset 0 0 0 1px var(--linha); }
+.chip--grande { font-size: var(--texto-sm); padding: 0.3rem 0.85rem; }
+:root[data-contraste="alto"] .chip { box-shadow: inset 0 0 0 1.5px currentColor; }
+
+/* Selo da matéria: ícone e cor próprios. */
+.selo {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    flex: 0 0 auto;
+    background: var(--tom-fundo);
+    color: var(--tom-tinta);
+    font-size: 1.4rem;
+}
+.selo--sm { width: 36px; height: 36px; border-radius: 11px; font-size: 1.05rem; }
+.selo--lg { width: 64px; height: 64px; border-radius: 20px; font-size: 1.9rem; }
+:root[data-contraste="alto"] .selo { box-shadow: inset 0 0 0 2px currentColor; }

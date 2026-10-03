@@ -1,0 +1,30 @@
+{% load ui %}{% comment %}Um campo de formulário com rótulo, obrigatoriedade, ajuda e erro. Parâmetros: field, col (classe de coluna, opcional), rotulo (opcional).{% endcomment %}
+{% if field.is_hidden %}{{ field }}{% elif field|eh_checkbox %}
+<div class="campo {{ col|default:'col-meio' }}">
+    <div class="campo-check">
+        {% widget field %}
+        <div>
+            <label for="{{ field.id_for_label }}">{{ rotulo|default:field.label }}</label>
+            {% if field.help_text %}<div class="form-text mt-0" id="{{ field.auto_id }}_ajuda">{{ field.help_text }}</div>{% endif %}
+        </div>
+    </div>
+    {% if field.errors %}<div class="campo-erro" id="{{ field.auto_id }}_erro"><i class="bi bi-exclamation-circle" aria-hidden="true"></i><span>{{ field.errors|join:" " }}</span></div>{% endif %}
+</div>
+{% else %}
+<div class="campo {% if col is not None %}{{ col }}{% else %}{{ field|coluna_campo }}{% endif %}{% if field.errors %} campo-com-erro{% endif %}">
+    <label class="form-label" for="{{ field.id_for_label }}">
+        {{ rotulo|default:field.label }}
+        {% if field.field.required %}<span class="obrigatorio" aria-hidden="true">*</span><span class="visually-hidden">(obrigatório)</span>{% else %}<span class="opcional">opcional</span>{% endif %}
+    </label>
+    {% if field|eh_senha %}
+        <div class="campo-senha">
+            {% widget field %}
+            <button class="mostrar-senha" type="button" data-mostrar-senha="{{ field.id_for_label }}" aria-label="Mostrar senha" aria-pressed="false" hidden><i class="bi bi-eye" aria-hidden="true"></i></button>
+        </div>
+    {% else %}
+        {% widget field %}
+    {% endif %}
+    {% if field.help_text %}<div class="form-text" id="{{ field.auto_id }}_ajuda">{{ field.help_text }}</div>{% endif %}
+    {% if field.errors %}<div class="campo-erro" id="{{ field.auto_id }}_erro"><i class="bi bi-exclamation-circle" aria-hidden="true"></i><span>{{ field.errors|join:" " }}</span></div>{% endif %}
+</div>
+{% endif %}

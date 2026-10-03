@@ -1,0 +1,53 @@
+/* Tipografia: Fredoka nos títulos, Atkinson Hyperlegible no texto, foco e links. */
+
+h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
+    font-family: var(--fonte-titulo);
+    font-weight: 600;
+    color: var(--tinta);
+    line-height: 1.2;
+    letter-spacing: -0.005em;
+    margin-top: 0;
+}
+
+h1, .h1 { font-size: var(--titulo-lg); }
+h2, .h2 { font-size: var(--titulo-md); }
+h3, .h3 { font-size: var(--titulo-sm); }
+h4, .h4 { font-size: var(--texto-lg); }
+h5, .h5 { font-size: 1.1875rem; }
+h6, .h6 { font-size: var(--texto-md); }
+
+p { margin-top: 0; }
+small, .small { font-size: var(--texto-sm); }
+strong, b { font-weight: 700; }
+code, kbd, pre, .font-monospace { font-family: var(--fonte-mono); }
+
+a { color: var(--cor-link); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+a:hover { color: var(--verde-900); text-decoration-thickness: 2px; }
+
+.texto-suave, .text-muted { color: var(--tinta-suave) !important; }
+.numero { font-family: var(--fonte-titulo); font-variant-numeric: tabular-nums; }
+
+/* Foco sempre visível e com contraste nos dois fundos (claro e verde). */
+:focus { outline: none; }
+:focus-visible {
+    outline: 3px solid var(--cor-foco);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 5px #ffffff;
+    border-radius: 6px;
+}
+
+.visually-hidden-focusable:not(:focus):not(:focus-within) { position: absolute !important; }
+
+.pular-conteudo {
+    position: absolute;
+    left: var(--esp-4);
+    top: -100px;
+    z-index: 2000;
+    padding: var(--esp-3) var(--esp-4);
+    background: var(--cor-acao);
+    color: #fff;
+    border-radius: var(--raio-sm);
+    font-weight: 700;
+    text-decoration: none;
+}
+.pular-conteudo:focus { top: var(--esp-3); color: #fff; }

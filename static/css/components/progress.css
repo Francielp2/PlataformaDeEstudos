@@ -1,0 +1,25 @@
+/* Barras de progresso (desempenho por matéria, sequência e simulado). */
+
+.barra {
+    position: relative;
+    height: 12px;
+    border-radius: var(--raio-pilula);
+    background: var(--fundo-2);
+    overflow: hidden;
+}
+.barra > span {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--tom-destaque, var(--verde-500));
+    transition: width var(--duracao) var(--curva);
+}
+.barra--fina { height: 8px; }
+:root[data-contraste="alto"] .barra { box-shadow: inset 0 0 0 1.5px var(--linha); }
+:root[data-contraste="alto"] .barra > span { background: var(--tinta); }
+
+.linha-progresso { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--esp-1) var(--esp-3); align-items: center; }
+.linha-progresso .barra { grid-column: 1 / -1; }
+.linha-progresso-rotulo { font-weight: 700; overflow-wrap: anywhere; }
+.linha-progresso-valor { font-family: var(--fonte-titulo); font-weight: 600; font-variant-numeric: tabular-nums; }
+.lista-progresso { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--esp-4); }

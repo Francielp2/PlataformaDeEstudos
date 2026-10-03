@@ -1,0 +1,13 @@
+{% load static %}{% comment %}Estado vazio. Parâmetros: titulo, texto, ilustracao (nome do SVG) ou icone, acao_url, acao_rotulo, acao_icone, compacto, nivel (h2/h3, padrão h2).{% endcomment %}
+<div class="vazio{% if compacto %} vazio--compacto{% endif %}">
+    {% if ilustracao %}
+        <img src="{% static 'images/illustrations/'|add:ilustracao|add:'.svg' %}" alt="" width="132" height="99">
+    {% elif icone %}
+        <span class="vazio-icone" aria-hidden="true"><i class="bi {{ icone }}"></i></span>
+    {% endif %}
+    {% if nivel == "h3" %}<h3>{{ titulo }}</h3>{% else %}<h2>{{ titulo }}</h2>{% endif %}
+    {% if texto %}<p>{{ texto }}</p>{% endif %}
+    {% if acao_url %}
+        <a class="btn btn-primary" href="{{ acao_url }}">{% if acao_icone %}<i class="bi {{ acao_icone }}" aria-hidden="true"></i>{% endif %} {{ acao_rotulo }}</a>
+    {% endif %}
+</div>

@@ -1,0 +1,158 @@
+/* Formulários organizados: seções com título, grade de 12 colunas,
+   obrigatoriedade marcada, erros junto do campo e barra de ações. */
+
+.formulario { display: grid; gap: var(--esp-4); }
+
+.secao-form {
+    margin: 0;
+    padding: var(--esp-5);
+    border: 1px solid var(--linha);
+    border-radius: var(--raio-lg);
+    background: var(--superficie);
+    min-width: 0;
+}
+.perfil-admin .secao-form { padding: var(--esp-4) var(--esp-5); border-radius: var(--raio-md); }
+.secao-form > legend, .secao-form-titulo {
+    float: none;
+    width: auto;
+    margin: 0 0 0.15rem;
+    padding: 0;
+    font-family: var(--fonte-titulo);
+    font-weight: 600;
+    font-size: var(--texto-lg);
+    color: var(--tinta);
+}
+.secao-form-descricao { color: var(--tinta-suave); font-size: var(--texto-sm); margin-bottom: var(--esp-4); }
+
+.grade-form {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: var(--esp-4);
+}
+.grade-form > * { grid-column: span 12; min-width: 0; }
+.grade-form > .col-meio { grid-column: span 6; }
+.grade-form > .col-terco { grid-column: span 4; }
+.grade-form > .col-quarto { grid-column: span 3; }
+.grade-form > .col-dois-tercos { grid-column: span 8; }
+@media (max-width: 767.98px) {
+    .grade-form > .col-meio, .grade-form > .col-terco, .grade-form > .col-quarto, .grade-form > .col-dois-tercos { grid-column: span 12; }
+}
+
+.campo .form-label { display: flex; align-items: baseline; gap: 0.3rem; }
+.obrigatorio { color: var(--erro-tinta); font-weight: 700; }
+.opcional { color: var(--tinta-suave); font-weight: 400; font-size: var(--texto-xs); }
+.campo-erro { display: flex; gap: 0.35rem; align-items: flex-start; margin-top: 0.35rem; color: var(--erro-tinta); font-size: var(--texto-sm); font-weight: 700; }
+.campo-check {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--esp-3);
+    min-height: var(--alvo-toque);
+    padding: var(--esp-3);
+    border: 1px solid var(--linha);
+    border-radius: var(--raio-sm);
+    background: var(--fundo);
+}
+.campo-check .form-check-input { margin-top: 0.1rem; }
+.campo-check label { font-weight: 700; }
+
+/* Resumo de erros no topo quando há mais de um campo com problema. */
+.resumo-erros {
+    display: flex;
+    gap: var(--esp-3);
+    padding: var(--esp-4);
+    border-radius: var(--raio-md);
+    background: var(--erro-fundo);
+    color: var(--erro-tinta);
+    border: 1px solid var(--vermelho-200);
+}
+.resumo-erros i { font-size: 1.35rem; line-height: 1.2; }
+.resumo-erros strong { display: block; margin-bottom: 0.2rem; }
+.resumo-erros ul { margin: 0; padding-left: 1.1rem; color: var(--tinta); }
+.resumo-erros a { color: var(--erro-tinta); font-weight: 700; }
+
+/* Barra de ações: fica fixa no rodapé em formulários longos. */
+.barra-acoes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--esp-2);
+    align-items: center;
+    padding: var(--esp-3) var(--esp-4);
+    border-radius: var(--raio-md);
+    background: var(--superficie);
+    border: 1px solid var(--linha);
+}
+.barra-acoes--fixa {
+    position: sticky;
+    bottom: var(--esp-3);
+    z-index: 10;
+    box-shadow: var(--sombra-3);
+}
+.barra-acoes .dica-acoes { margin-left: auto; color: var(--tinta-suave); font-size: var(--texto-sm); }
+
+/* Senha com botão de mostrar/ocultar. */
+.campo-senha { position: relative; }
+.campo-senha .form-control { padding-right: 3rem; }
+.campo-senha .mostrar-senha {
+    position: absolute; right: 2px; top: 2px; bottom: 2px;
+    width: var(--alvo-toque); border: 0; background: transparent; color: var(--tinta-suave); border-radius: var(--raio-sm);
+}
+.campo-senha .mostrar-senha:hover { color: var(--verde-800); }
+
+/* Editor de JSON das importações: fonte mono e numeração de linhas. */
+.editor-json {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    border: 1.5px solid var(--linha);
+    border-radius: var(--raio-md);
+    background: var(--superficie);
+    overflow: hidden;
+}
+.editor-json:focus-within { border-color: var(--verde-600); box-shadow: 0 0 0 4px rgb(50 160 65 / 0.2); }
+.editor-json-linhas {
+    margin: 0;
+    padding: 0.75rem 0.6rem;
+    min-width: 3rem;
+    background: var(--fundo-2);
+    color: var(--tinta-suave);
+    font: 0.875rem/1.6 var(--fonte-mono);
+    text-align: right;
+    user-select: none;
+    overflow: hidden;
+    white-space: pre;
+}
+.editor-json textarea {
+    border: 0 !important;
+    border-radius: 0;
+    box-shadow: none !important;
+    min-height: 22rem;
+    padding: 0.75rem;
+    font: 0.875rem/1.6 var(--fonte-mono);
+    resize: vertical;
+    white-space: pre;
+    overflow-wrap: normal;
+    overflow-x: auto;
+    tab-size: 2;
+}
+
+.exemplo-codigo {
+    position: relative;
+    margin: 0;
+    padding: var(--esp-4);
+    border-radius: var(--raio-md);
+    background: var(--verde-900);
+    color: #e6f3e8;
+    font: 0.875rem/1.6 var(--fonte-mono);
+    overflow-x: auto;
+}
+.exemplo-codigo code { color: inherit; }
+
+details.recolhivel { border: 1px solid var(--linha); border-radius: var(--raio-md); background: var(--superficie); }
+details.recolhivel > summary {
+    display: flex; align-items: center; gap: var(--esp-2);
+    min-height: var(--alvo-toque); padding: var(--esp-3) var(--esp-4);
+    cursor: pointer; font-weight: 700; list-style: none;
+}
+details.recolhivel > summary::-webkit-details-marker { display: none; }
+details.recolhivel > summary::after { content: "\F282"; font-family: "bootstrap-icons"; margin-left: auto; transition: transform var(--duracao) var(--curva); }
+details.recolhivel[open] > summary::after { transform: rotate(180deg); }
+details.recolhivel > .recolhivel-corpo { padding: 0 var(--esp-4) var(--esp-4); }

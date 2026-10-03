@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 300" aria-hidden="true">
+  <circle cx="330" cy="70" r="40" fill="#f2b705"/>
+  <circle cx="330" cy="70" r="58" fill="#f2b705" opacity="0.15"/>
+  <path d="M0 300c60-80 150-104 240-84s130 10 180-36v120z" fill="#278535"/>
+  <path d="M0 300c80-50 170-62 250-48s120 8 170-20v68z" fill="#32a041"/>
+  <rect x="110" y="214" width="200" height="28" rx="7" fill="#ffffff"/>
+  <rect x="110" y="214" width="18" height="28" fill="#d9f0dc"/>
+  <rect x="122" y="184" width="182" height="30" rx="7" fill="#c8191e"/>
+  <rect x="122" y="184" width="18" height="30" fill="#a81419"/>
+  <rect x="116" y="156" width="170" height="28" rx="7" fill="#2d7fd3"/>
+  <rect x="116" y="156" width="18" height="28" fill="#1b5797"/>
+  <rect x="130" y="128" width="152" height="28" rx="7" fill="#f2b705"/>
+  <rect x="130" y="128" width="18" height="28" fill="#c79500"/>
+  <path d="M160 142h96M150 170h104M150 199h120M144 228h132" stroke="#ffffff" stroke-width="4" stroke-linecap="round" opacity="0.5"/>
+  <path d="M262 128c-3-22 9-38 28-41-2 19-12 34-28 41z" fill="#84cb8d"/>
+  <path d="M262 128c-12-13-28-13-38-3 13 10 26 10 38 3z" fill="#b3e0b9"/>
+  <circle cx="60" cy="80" r="5" fill="#b3e0b9"/>
+  <circle cx="92" cy="120" r="4" fill="#f2b705"/>
+  <circle cx="40" cy="150" r="3" fill="#ffffff" opacity="0.6"/>
+</svg>

@@ -1,0 +1,25 @@
+/* Tabelas dentro de cartão, com rolagem horizontal no mobile. */
+
+.tabela-card {
+    background: var(--superficie);
+    border: 1px solid var(--linha);
+    border-radius: var(--raio-lg);
+    overflow: hidden;
+}
+.perfil-admin .tabela-card { border-radius: var(--raio-md); }
+.tabela-card .table-responsive { margin: 0; }
+.tabela-card .table > thead th:first-child, .tabela-card .table > tbody td:first-child { padding-left: var(--esp-4); }
+.tabela-card .table > thead th:last-child, .tabela-card .table > tbody td:last-child { padding-right: var(--esp-4); }
+.tabela-card .table > tbody tr:last-child td { border-bottom: 0; }
+.tabela-vazia { padding: var(--esp-5) !important; text-align: center; color: var(--tinta-suave); }
+
+.celula-titulo { font-weight: 700; color: var(--tinta); }
+.celula-data { white-space: nowrap; font-variant-numeric: tabular-nums; }
+.celula-sub { display: block; font-size: var(--texto-sm); color: var(--tinta-suave); }
+.celula-acoes { white-space: nowrap; text-align: right; }
+.celula-acoes .acoes-linha { display: inline-flex; flex-wrap: wrap; gap: var(--esp-1); justify-content: flex-end; }
+.celula-acoes form { display: inline-flex; margin: 0; }
+.miniatura { width: 96px; height: 54px; object-fit: cover; border-radius: 10px; background: var(--fundo-2); }
+
+.contagem { color: var(--tinta-suave); font-size: var(--texto-sm); margin-bottom: var(--esp-3); }
+.contagem strong { color: var(--tinta); }

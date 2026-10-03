@@ -1,0 +1,208 @@
+/* Ajustes sobre o Bootstrap 5: variáveis globais, botões, campos, tabelas,
+   paginação, breadcrumb e offcanvas na identidade da plataforma. */
+
+:root {
+    --bs-body-font-family: var(--fonte-texto);
+    --bs-body-color: var(--tinta);
+    --bs-body-bg: var(--fundo);
+    --bs-border-color: var(--linha);
+    --bs-link-color: var(--cor-link);
+    --bs-link-hover-color: var(--verde-900);
+    --bs-primary: var(--verde-700);
+    --bs-primary-rgb: 31, 107, 43;
+    --bs-success: var(--verde-700);
+    --bs-danger: var(--vermelho-600);
+    --bs-border-radius: var(--raio-sm);
+    --bs-border-radius-lg: var(--raio-md);
+    --bs-focus-ring-color: rgb(27 87 151 / 0.35);
+}
+
+/* Botões: verde escuro para a ação principal, contorno para as secundárias. */
+.btn {
+    --bs-btn-font-family: var(--fonte-texto);
+    --bs-btn-font-weight: 700;
+    --bs-btn-padding-y: 0.6rem;
+    --bs-btn-padding-x: 1.1rem;
+    --bs-btn-border-radius: var(--raio-pilula);
+    --bs-btn-focus-box-shadow: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    min-height: var(--alvo-toque);
+    line-height: 1.2;
+    text-decoration: none;
+    transition: background-color var(--duracao-rapida) var(--curva), border-color var(--duracao-rapida) var(--curva), color var(--duracao-rapida) var(--curva), transform var(--duracao-rapida) var(--curva);
+}
+.btn:active { transform: translateY(1px); }
+.btn-sm {
+    --bs-btn-padding-y: 0.4rem;
+    --bs-btn-padding-x: 0.85rem;
+    --bs-btn-font-size: var(--texto-sm);
+    min-height: 38px;
+}
+.btn-lg {
+    --bs-btn-padding-y: 0.8rem;
+    --bs-btn-padding-x: 1.5rem;
+    --bs-btn-font-size: var(--texto-lg);
+    min-height: 52px;
+}
+
+.btn-primary, .btn-success {
+    --bs-btn-bg: var(--cor-acao);
+    --bs-btn-border-color: var(--cor-acao);
+    --bs-btn-color: #fff;
+    --bs-btn-hover-bg: var(--cor-acao-hover);
+    --bs-btn-hover-border-color: var(--cor-acao-hover);
+    --bs-btn-hover-color: #fff;
+    --bs-btn-active-bg: var(--verde-900);
+    --bs-btn-active-border-color: var(--verde-900);
+    --bs-btn-disabled-bg: var(--verde-300);
+    --bs-btn-disabled-border-color: var(--verde-300);
+    --bs-btn-disabled-color: var(--verde-900);
+}
+
+.btn-outline-primary, .btn-outline-success, .btn-outline-secondary, .btn-light {
+    --bs-btn-bg: var(--superficie);
+    --bs-btn-color: var(--tinta-2);
+    --bs-btn-border-color: var(--linha);
+    --bs-btn-hover-bg: var(--verde-50);
+    --bs-btn-hover-color: var(--verde-800);
+    --bs-btn-hover-border-color: var(--verde-300);
+    --bs-btn-active-bg: var(--verde-100);
+    --bs-btn-active-color: var(--verde-900);
+    --bs-btn-active-border-color: var(--verde-400);
+    --bs-btn-disabled-color: var(--tinta-suave);
+    --bs-btn-disabled-bg: var(--fundo-2);
+    --bs-btn-disabled-border-color: var(--linha);
+}
+.btn-outline-primary, .btn-outline-success { --bs-btn-color: var(--verde-700); --bs-btn-border-color: var(--verde-300); }
+
+.btn-danger {
+    --bs-btn-bg: var(--vermelho-600);
+    --bs-btn-border-color: var(--vermelho-600);
+    --bs-btn-hover-bg: var(--vermelho-700);
+    --bs-btn-hover-border-color: var(--vermelho-700);
+    --bs-btn-active-bg: var(--vermelho-700);
+}
+.btn-outline-danger, .btn-outline-warning {
+    --bs-btn-bg: var(--superficie);
+    --bs-btn-color: var(--vermelho-600);
+    --bs-btn-border-color: var(--vermelho-200);
+    --bs-btn-hover-bg: var(--vermelho-50);
+    --bs-btn-hover-color: var(--vermelho-700);
+    --bs-btn-hover-border-color: var(--vermelho-300);
+    --bs-btn-active-bg: var(--vermelho-100);
+    --bs-btn-active-color: var(--vermelho-700);
+}
+.btn-outline-warning { --bs-btn-color: var(--laranja-tinta); --bs-btn-border-color: #f2c39d; --bs-btn-hover-bg: var(--laranja-fundo); --bs-btn-hover-color: var(--laranja-tinta); --bs-btn-hover-border-color: var(--laranja); }
+
+/* Botão discreto, usado para ações secundárias dentro de cards. */
+.btn-ghost {
+    --bs-btn-bg: transparent;
+    --bs-btn-border-color: transparent;
+    --bs-btn-color: var(--tinta-2);
+    --bs-btn-hover-bg: var(--fundo-2);
+    --bs-btn-hover-color: var(--tinta);
+    --bs-btn-hover-border-color: transparent;
+    --bs-btn-active-bg: var(--linha-suave);
+    --bs-btn-padding-x: 0.75rem;
+}
+
+/* Campos de formulário. */
+.form-control, .form-select {
+    min-height: var(--alvo-toque);
+    border-radius: var(--raio-sm);
+    border: 1.5px solid var(--linha);
+    background-color: var(--superficie);
+    color: var(--tinta);
+    font-size: var(--texto-md);
+    padding: 0.55rem 0.85rem;
+    transition: border-color var(--duracao-rapida) var(--curva), box-shadow var(--duracao-rapida) var(--curva);
+}
+.form-select { padding-right: 2.4rem; }
+.form-control::placeholder { color: #7d8b80; }
+.form-control:hover, .form-select:hover { border-color: #b9c8ba; }
+.form-control:focus, .form-select:focus {
+    border-color: var(--verde-600);
+    box-shadow: 0 0 0 4px rgb(50 160 65 / 0.2);
+    outline: none;
+}
+.form-control.is-invalid, .form-select.is-invalid, .campo-com-erro .form-control, .campo-com-erro .form-select {
+    border-color: var(--vermelho-500);
+    background-image: none;
+}
+textarea.form-control { min-height: 6.5rem; line-height: 1.55; }
+.form-control-sm, .form-select-sm { min-height: 38px; font-size: var(--texto-sm); }
+
+.form-label { font-weight: 700; color: var(--tinta-2); margin-bottom: 0.35rem; }
+.form-text { color: var(--tinta-suave); font-size: var(--texto-sm); margin-top: 0.35rem; }
+.invalid-feedback { color: var(--erro-tinta); font-size: var(--texto-sm); font-weight: 700; }
+
+.form-check { min-height: 28px; display: flex; align-items: flex-start; gap: 0.6rem; padding-left: 0; }
+.form-check .form-check-input { float: none; margin: 0.15rem 0 0; flex: 0 0 auto; }
+.form-check-input { width: 1.35rem; height: 1.35rem; border: 1.5px solid #9fb0a2; }
+.form-check-input:checked { background-color: var(--cor-acao); border-color: var(--cor-acao); }
+.form-check-input:focus { box-shadow: 0 0 0 4px rgb(50 160 65 / 0.25); border-color: var(--verde-600); }
+.form-switch .form-check-input { width: 2.6rem; border-radius: 2rem; }
+
+/* Tabelas: cabeçalho leve, linhas confortáveis, zebra suave. */
+.table {
+    --bs-table-bg: transparent;
+    --bs-table-color: var(--tinta);
+    --bs-table-hover-bg: var(--verde-50);
+    --bs-table-border-color: var(--linha-suave);
+    margin-bottom: 0;
+}
+.table > thead th {
+    font-size: var(--texto-sm);
+    font-weight: 700;
+    color: var(--tinta-suave);
+    background: var(--fundo);
+    border-bottom: 1px solid var(--linha);
+    padding: 0.7rem 0.9rem;
+    white-space: nowrap;
+}
+.table > tbody td { padding: 0.8rem 0.9rem; vertical-align: middle; }
+.table-sm > tbody td, .table-sm > thead th { padding: 0.5rem 0.75rem; }
+
+/* Paginação. */
+.pagination { --bs-pagination-border-radius: var(--raio-pilula); gap: var(--esp-1); }
+.page-link {
+    min-width: var(--alvo-toque);
+    min-height: var(--alvo-toque);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--raio-pilula) !important;
+    border: 1px solid var(--linha);
+    color: var(--tinta-2);
+    font-weight: 700;
+    text-decoration: none;
+}
+.page-link:hover { background: var(--verde-50); color: var(--verde-800); border-color: var(--verde-300); }
+.page-item.active .page-link { background: var(--cor-acao); border-color: var(--cor-acao); color: #fff; }
+
+/* Breadcrumb. */
+.breadcrumb { --bs-breadcrumb-divider-color: var(--tinta-suave); font-size: var(--texto-sm); margin-bottom: var(--esp-3); }
+.breadcrumb a { color: var(--tinta-suave); text-decoration: none; }
+.breadcrumb a:hover { color: var(--verde-700); text-decoration: underline; }
+.breadcrumb-item.active { color: var(--tinta-2); }
+
+/* Badges genéricos do Bootstrap ficam no tom da plataforma. */
+.badge { font-weight: 700; border-radius: var(--raio-pilula); padding: 0.35em 0.7em; }
+
+.dropdown-menu {
+    border: 1px solid var(--linha);
+    border-radius: var(--raio-md);
+    box-shadow: var(--sombra-3);
+    padding: var(--esp-2);
+}
+.dropdown-item { border-radius: var(--raio-sm); padding: 0.55rem 0.75rem; min-height: 40px; display: flex; align-items: center; gap: 0.6rem; }
+.dropdown-item:active { background: var(--verde-700); }
+
+.offcanvas { --bs-offcanvas-width: 300px; }
+
+.ratio > iframe { border-radius: var(--raio-md); }
+
+.alert { border-radius: var(--raio-md); }

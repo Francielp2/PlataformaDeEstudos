@@ -1,17 +1,17 @@
-<nav class="sidebar-nav" aria-label="Menu administrativo">
-    <span class="sidebar-group">Geral</span>
-    <a class="{% if active == 'admin_painel' %}active{% endif %}" href="{% url 'usuarios:admin_painel' %}"><i class="bi bi-speedometer2"></i> Painel</a>
-    <span class="sidebar-group">Gerenciamento</span>
-    <a class="{% if active == 'admin_usuarios' %}active{% endif %}" href="{% url 'usuarios:admin_usuarios_lista' %}"><i class="bi bi-people"></i> Usuários</a>
-    <a class="{% if active == 'admin_materias' %}active{% endif %}" href="{% url 'curriculo_admin:admin_materias_lista' %}"><i class="bi bi-journal-bookmark"></i> Matérias</a>
-    <a class="{% if active == 'admin_conteudos' %}active{% endif %}" href="{% url 'curriculo_admin:admin_conteudos_lista' %}"><i class="bi bi-book"></i> Conteúdos</a>
-    <a class="{% if active == 'admin_videos' %}active{% endif %}" href="{% url 'videos_admin:lista' %}"><i class="bi bi-play-btn"></i> Vídeos</a>
-    <a class="{% if active == 'admin_questoes' %}active{% endif %}" href="{% url 'questoes_admin:admin_questoes_lista' %}"><i class="bi bi-question-circle"></i> Questões</a>
-    <a class="{% if active == 'admin_simulados' %}active{% endif %}" href="{% url 'simulados_admin:admin_simulados_lista' %}"><i class="bi bi-clipboard-check"></i> Simulados</a>
-    <span class="sidebar-group">Conta</span>
-    <a class="{% if active == 'perfil' %}active{% endif %}" href="{% url 'usuarios:perfil' %}"><i class="bi bi-person"></i> Perfil</a>
-    <form method="post" action="{% url 'usuarios:logout' %}" class="mt-2">
+<nav class="menu" aria-label="Menu administrativo">
+    <span class="menu-grupo">Geral</span>
+    <a class="menu-link{% if active == 'admin_painel' %} ativo{% endif %}" href="{% url 'usuarios:admin_painel' %}"{% if active == 'admin_painel' %} aria-current="page"{% endif %}><i class="bi bi-speedometer2" aria-hidden="true"></i> Painel</a>
+    <span class="menu-grupo">Gerenciamento</span>
+    <a class="menu-link{% if active == 'admin_usuarios' %} ativo{% endif %}" href="{% url 'usuarios:admin_usuarios_lista' %}"{% if active == 'admin_usuarios' %} aria-current="page"{% endif %}><i class="bi bi-people" aria-hidden="true"></i> Usuários</a>
+    <a class="menu-link{% if active == 'admin_materias' %} ativo{% endif %}" href="{% url 'curriculo_admin:admin_materias_lista' %}"{% if active == 'admin_materias' %} aria-current="page"{% endif %}><i class="bi bi-journal-bookmark" aria-hidden="true"></i> Matérias</a>
+    <a class="menu-link{% if active == 'admin_conteudos' %} ativo{% endif %}" href="{% url 'curriculo_admin:admin_conteudos_lista' %}"{% if active == 'admin_conteudos' %} aria-current="page"{% endif %}><i class="bi bi-book" aria-hidden="true"></i> Conteúdos</a>
+    <a class="menu-link{% if active == 'admin_videos' %} ativo{% endif %}" href="{% url 'videos_admin:lista' %}"{% if active == 'admin_videos' %} aria-current="page"{% endif %}><i class="bi bi-play-btn" aria-hidden="true"></i> Vídeos</a>
+    <a class="menu-link{% if active == 'admin_questoes' %} ativo{% endif %}" href="{% url 'questoes_admin:admin_questoes_lista' %}"{% if active == 'admin_questoes' %} aria-current="page"{% endif %}><i class="bi bi-question-circle" aria-hidden="true"></i> Questões</a>
+    <a class="menu-link{% if active == 'admin_simulados' %} ativo{% endif %}" href="{% url 'simulados_admin:admin_simulados_lista' %}"{% if active == 'admin_simulados' %} aria-current="page"{% endif %}><i class="bi bi-clipboard-check" aria-hidden="true"></i> Simulados</a>
+    <span class="menu-grupo">Conta</span>
+    <a class="menu-link{% if active == 'perfil' %} ativo{% endif %}" href="{% url 'usuarios:perfil' %}"{% if active == 'perfil' %} aria-current="page"{% endif %}><i class="bi bi-person" aria-hidden="true"></i> Perfil</a>
+    <form method="post" action="{% url 'usuarios:logout' %}">
         {% csrf_token %}
-        <button class="sidebar-button" type="submit"><i class="bi bi-box-arrow-right"></i> Sair</button>
+        <button class="menu-botao" type="submit"><i class="bi bi-box-arrow-right" aria-hidden="true"></i> Sair</button>
     </form>
 </nav>

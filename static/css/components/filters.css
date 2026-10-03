@@ -1,0 +1,41 @@
+/* Filtros que se aplicam ao mudar (com JS) e mostram o que está ativo. */
+
+.filtros {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--esp-2);
+    align-items: center;
+    padding: var(--esp-3);
+    margin-bottom: var(--esp-3);
+    background: var(--superficie);
+    border: 1px solid var(--linha);
+    border-radius: var(--raio-lg);
+}
+.filtros .filtro-busca { position: relative; flex: 2 1 240px; }
+.filtros .filtro-busca i { position: absolute; left: 0.9rem; top: 50%; transform: translateY(-50%); color: var(--tinta-suave); pointer-events: none; }
+.filtros .filtro-busca .form-control { padding-left: 2.5rem; }
+.filtros .form-select { flex: 1 1 180px; width: auto; }
+.filtros .btn { flex: 0 0 auto; }
+/* Com JS ativo os selects aplicam sozinhos; o botão continua para a busca e sem JS. */
+.js .filtros[data-filtro-automatico] .botao-filtrar { display: none; }
+
+.filtros-resumo {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--esp-2);
+    margin-bottom: var(--esp-4);
+    color: var(--tinta-suave);
+    font-size: var(--texto-sm);
+}
+.filtros-resumo strong { color: var(--tinta); }
+.filtro-ativo {
+    display: inline-flex; align-items: center; gap: 0.35rem;
+    min-height: 32px; padding: 0.15rem 0.4rem 0.15rem 0.75rem;
+    border-radius: var(--raio-pilula);
+    background: var(--verde-100); color: var(--verde-900);
+    font-weight: 700; text-decoration: none;
+}
+.filtro-ativo:hover { color: var(--verde-900); background: var(--verde-200); text-decoration: none; }
+.filtro-ativo i { display: inline-flex; width: 22px; height: 22px; align-items: center; justify-content: center; border-radius: 50%; background: rgb(255 255 255 / 0.7); }
+.limpar-filtros { font-weight: 700; }

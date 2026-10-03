@@ -1,20 +1,22 @@
 {% if page_obj.has_other_pages %}
-    <nav class="mt-3" aria-label="Paginação">
+    <nav class="mt-4" aria-label="Paginação">
         <ul class="pagination justify-content-center flex-wrap">
             {% if page_obj.has_previous %}
-                <li class="page-item"><a class="page-link" href="?{% if querystring %}{{ querystring }}&amp;{% endif %}page={{ page_obj.previous_page_number }}">Anterior</a></li>
+                <li class="page-item"><a class="page-link px-3" href="?{% if querystring %}{{ querystring }}&amp;{% endif %}page={{ page_obj.previous_page_number }}" rel="prev"><i class="bi bi-chevron-left" aria-hidden="true"></i> Anterior</a></li>
             {% endif %}
 
             {% for numero_pagina in page_obj.paginator.page_range %}
                 {% if numero_pagina == page_obj.number %}
                     <li class="page-item active" aria-current="page"><span class="page-link">{{ numero_pagina }}</span></li>
-                {% else %}
+                {% elif numero_pagina == 1 or numero_pagina == page_obj.paginator.num_pages or numero_pagina >= page_obj.number|add:"-2" and numero_pagina <= page_obj.number|add:"2" %}
                     <li class="page-item"><a class="page-link" href="?{% if querystring %}{{ querystring }}&amp;{% endif %}page={{ numero_pagina }}" aria-label="Ir para a página {{ numero_pagina }}">{{ numero_pagina }}</a></li>
+                {% elif numero_pagina == page_obj.number|add:"-3" or numero_pagina == page_obj.number|add:"3" %}
+                    <li class="page-item disabled" aria-hidden="true"><span class="page-link border-0 bg-transparent">…</span></li>
                 {% endif %}
             {% endfor %}
 
             {% if page_obj.has_next %}
-                <li class="page-item"><a class="page-link" href="?{% if querystring %}{{ querystring }}&amp;{% endif %}page={{ page_obj.next_page_number }}">Próxima</a></li>
+                <li class="page-item"><a class="page-link px-3" href="?{% if querystring %}{{ querystring }}&amp;{% endif %}page={{ page_obj.next_page_number }}" rel="next">Próxima <i class="bi bi-chevron-right" aria-hidden="true"></i></a></li>
             {% endif %}
         </ul>
     </nav>

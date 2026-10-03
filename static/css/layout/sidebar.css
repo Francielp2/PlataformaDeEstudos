@@ -1,0 +1,87 @@
+/* Sidebar clara com marca, grupos de navegação e item ativo em pílula verde.
+   O mesmo menu é reaproveitado dentro do offcanvas no mobile. */
+
+.sidebar {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--esp-4);
+    padding: var(--esp-5) var(--esp-4) var(--esp-4);
+    background: var(--superficie);
+    border-right: 1px solid var(--linha);
+}
+
+.marca {
+    display: flex;
+    align-items: center;
+    gap: var(--esp-3);
+    padding: 0 var(--esp-2);
+    color: var(--tinta);
+    text-decoration: none;
+}
+.marca:hover { color: var(--tinta); text-decoration: none; }
+.marca img { width: 44px; height: 44px; flex: 0 0 auto; }
+.marca-nome { font-family: var(--fonte-titulo); font-weight: 600; font-size: 1.125rem; line-height: 1.1; display: block; }
+.marca-sub { display: block; color: var(--verde-700); font-weight: 700; font-size: var(--texto-xs); margin-top: 2px; }
+
+.menu { display: flex; flex-direction: column; gap: 2px; }
+.menu-grupo {
+    margin: var(--esp-4) var(--esp-3) var(--esp-1);
+    font-size: var(--texto-xs);
+    font-weight: 700;
+    color: var(--tinta-suave);
+}
+.menu-grupo:first-child { margin-top: 0; }
+
+.menu-link, .menu-botao {
+    display: flex;
+    align-items: center;
+    gap: var(--esp-3);
+    min-height: var(--alvo-toque);
+    padding: 0.5rem var(--esp-3);
+    border: 0;
+    border-radius: var(--raio-pilula);
+    background: transparent;
+    color: var(--tinta-2);
+    font: inherit;
+    font-weight: 700;
+    text-align: left;
+    text-decoration: none;
+    width: 100%;
+    transition: background-color var(--duracao-rapida) var(--curva), color var(--duracao-rapida) var(--curva);
+}
+.menu-link i, .menu-botao i { font-size: 1.15rem; width: 1.4rem; text-align: center; color: var(--tinta-suave); }
+.menu-link:hover, .menu-botao:hover { background: var(--fundo-2); color: var(--tinta); text-decoration: none; }
+.menu-link.ativo { background: var(--verde-100); color: var(--verde-900); }
+.menu-link.ativo i { color: var(--verde-700); }
+.menu-botao:hover { color: var(--vermelho-600); }
+.menu-botao:hover i { color: var(--vermelho-600); }
+
+/* Cartão de incentivo no rodapé da sidebar do estudante. */
+.sidebar-incentivo {
+    margin-top: auto;
+    display: flex;
+    gap: var(--esp-3);
+    align-items: center;
+    padding: var(--esp-3);
+    border-radius: var(--raio-lg);
+    background: var(--verde-50);
+    color: var(--verde-900);
+    font-size: var(--texto-sm);
+    font-weight: 700;
+    line-height: 1.35;
+}
+.sidebar-incentivo img { width: 56px; height: 56px; flex: 0 0 auto; }
+
+.perfil-admin .sidebar-incentivo { display: none; }
+
+@media (max-width: 991.98px) {
+    .sidebar-desktop { display: none; }
+}
+
+.offcanvas.menu-mobile { border-right: 0; }
+.offcanvas.menu-mobile .offcanvas-body { display: flex; flex-direction: column; gap: var(--esp-4); padding: var(--esp-3) var(--esp-4) var(--esp-4); }
+.offcanvas.menu-mobile .offcanvas-header { padding: var(--esp-4); border-bottom: 1px solid var(--linha-suave); }

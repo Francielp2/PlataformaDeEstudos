@@ -1,0 +1,56 @@
+/* Área pública (início, login e cadastro): painel da marca + cartão do formulário. */
+
+.publico {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+}
+
+.publico-marca {
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: var(--esp-6);
+    padding: var(--esp-6) clamp(var(--esp-5), 5vw, 4.5rem);
+    background: var(--verde-800);
+    color: #fff;
+}
+.publico-marca .marca { color: #fff; padding: 0; }
+.publico-marca .marca-sub { color: var(--verde-200); }
+.publico-marca h1, .publico-marca h2 { color: #fff; }
+.publico-titulo { font-size: var(--titulo-xl); max-width: 15ch; margin-bottom: var(--esp-4); color: #fff; }
+.publico-texto { font-size: var(--texto-lg); color: var(--verde-100); max-width: 34ch; margin-bottom: 0; }
+.publico-lista { list-style: none; padding: 0; margin: 0; display: grid; gap: var(--esp-3); }
+.publico-lista li { display: flex; gap: var(--esp-3); align-items: center; font-weight: 700; color: var(--verde-50); }
+.publico-lista i {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 36px; height: 36px; border-radius: 12px; flex: 0 0 auto;
+    background: rgb(255 255 255 / 0.12); color: #fff;
+}
+.publico-ilustracao { width: min(420px, 100%); align-self: flex-end; margin-bottom: calc(-1 * var(--esp-6)); }
+
+.publico-formulario {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--esp-6) var(--esp-5);
+}
+.cartao-auth {
+    width: 100%;
+    max-width: 460px;
+}
+.cartao-auth h2 { font-size: var(--titulo-md); margin-bottom: var(--esp-1); }
+.cartao-auth .subtitulo { color: var(--tinta-suave); margin-bottom: var(--esp-5); }
+.cartao-auth--largo { max-width: 620px; }
+.troca-auth { margin: var(--esp-5) 0 0; text-align: center; color: var(--tinta-suave); }
+
+@media (max-width: 991.98px) {
+    .publico { grid-template-columns: minmax(0, 1fr); }
+    .publico-marca { padding: var(--esp-5) var(--esp-4); gap: var(--esp-4); }
+    .publico-titulo { font-size: var(--titulo-md); }
+    .publico-texto { font-size: var(--texto-md); }
+    .publico-ilustracao, .publico-lista { display: none; }
+    .publico-formulario { align-items: flex-start; padding: var(--esp-5) var(--esp-4) var(--esp-6); }
+}

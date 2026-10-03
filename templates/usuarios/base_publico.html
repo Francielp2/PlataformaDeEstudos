@@ -1,15 +1,32 @@
 {% extends "base.html" %}
+{% load static %}
+
+{% block body_class %}area-publica{% endblock %}
 
 {% block body %}
-    <main class="auth-page">
-        <section class="auth-card">
-            <div class="mb-4">
-                <h1 class="h4 mb-1">Plataforma Inteligente de Estudos</h1>
-                <p class="text-muted mb-0">ENEM e vestibulares</p>
+    <div class="publico">
+        <aside class="publico-marca">
+            <a class="marca" href="{% url 'core:home' %}">
+                <img src="{% static 'images/brand/marca.svg' %}" alt="" width="44" height="44">
+                <span><span class="marca-nome">Plataforma de Estudos</span><span class="marca-sub">ENEM e vestibulares</span></span>
+            </a>
+            <div>
+                <p class="publico-titulo h1">{% block publico_titulo %}Estude no seu ritmo para o ENEM.{% endblock %}</p>
+                <p class="publico-texto">{% block publico_texto %}Matérias, exercícios com correção e simulados num só lugar, com acompanhamento do seu desempenho.{% endblock %}</p>
             </div>
+            <ul class="publico-lista">
+                <li><i class="bi bi-journal-bookmark" aria-hidden="true"></i> Conteúdos organizados por matéria</li>
+                <li><i class="bi bi-pencil-square" aria-hidden="true"></i> Questões com correção detalhada</li>
+                <li><i class="bi bi-graph-up" aria-hidden="true"></i> Seu desempenho por conteúdo</li>
+            </ul>
+            <img class="publico-ilustracao" src="{% static 'images/illustrations/publico.svg' %}" alt="" width="420" height="300">
+        </aside>
 
-            {% include "partials/mensagens.html" %}
-            {% block content %}{% endblock %}
-        </section>
-    </main>
+        <main id="conteudo" class="publico-formulario" tabindex="-1">
+            <div class="cartao-auth{% block cartao_classe %}{% endblock %}">
+                {% include "partials/mensagens.html" %}
+                {% block content %}{% endblock %}
+            </div>
+        </main>
+    </div>
 {% endblock %}

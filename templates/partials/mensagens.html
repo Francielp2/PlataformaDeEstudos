@@ -1,10 +1,22 @@
 {% if messages %}
-    <div class="messages">
+    <div class="toasts" aria-live="polite">
         {% for message in messages %}
-            <div class="alert alert-{{ message.tags|default:'info' }} d-flex align-items-center gap-2 mb-3" role="alert">
-                <i class="bi {% if message.tags == 'success' %}bi-check-circle{% elif message.tags == 'error' %}bi-exclamation-triangle{% else %}bi-info-circle{% endif %}"></i>
-                {{ message }}
-            </div>
+            {% if message.tags == "error" %}
+                <div class="toast-msg tom-coral" role="alert">
+                    <i class="bi bi-exclamation-octagon" aria-hidden="true"></i>
+            {% elif message.tags == "warning" %}
+                <div class="toast-msg tom-sol" role="alert">
+                    <i class="bi bi-exclamation-triangle" aria-hidden="true"></i>
+            {% elif message.tags == "success" %}
+                <div class="toast-msg tom-menta" role="status" data-auto-fechar="true">
+                    <i class="bi bi-check-circle" aria-hidden="true"></i>
+            {% else %}
+                <div class="toast-msg tom-ceu" role="status" data-auto-fechar="true">
+                    <i class="bi bi-info-circle" aria-hidden="true"></i>
+            {% endif %}
+                    <p>{{ message }}</p>
+                    <button class="toast-fechar" type="button" aria-label="Fechar mensagem"><i class="bi bi-x-lg" aria-hidden="true"></i></button>
+                </div>
         {% endfor %}
     </div>
 {% endif %}

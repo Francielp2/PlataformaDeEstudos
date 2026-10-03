@@ -1,0 +1,47 @@
+/* Cartões de número: fundo suavemente tingido, ícone colorido e número grande. */
+
+.numeros { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); gap: var(--esp-4); margin-bottom: var(--esp-5); }
+.perfil-admin .numeros { grid-template-columns: repeat(auto-fit, minmax(min(100%, 140px), 1fr)); gap: var(--esp-3); }
+
+.numero-card {
+    display: flex;
+    align-items: center;
+    gap: var(--esp-4);
+    padding: var(--esp-4);
+    border-radius: var(--raio-lg);
+    background: var(--tom-fundo, var(--verde-50));
+    color: var(--tinta);
+    text-decoration: none;
+}
+a.numero-card:hover { color: var(--tinta); text-decoration: none; box-shadow: inset 0 0 0 2px var(--tom-destaque, var(--verde-300)); }
+.numero-icone {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 52px; height: 52px; border-radius: 16px; flex: 0 0 auto;
+    background: var(--superficie);
+    color: var(--tom-tinta, var(--verde-700));
+    font-size: 1.5rem;
+}
+.numero-valor { display: block; font-family: var(--fonte-titulo); font-weight: 600; font-size: 2rem; line-height: 1; font-variant-numeric: tabular-nums; }
+.numero-rotulo { display: block; font-weight: 700; margin-top: 0.3rem; }
+.numero-detalhe { display: block; font-size: var(--texto-sm); color: var(--tinta-suave); }
+.perfil-admin .numero-card { flex-direction: column; align-items: flex-start; padding: var(--esp-3); border-radius: var(--raio-md); gap: var(--esp-2); }
+.perfil-admin .numero-icone { width: 42px; height: 42px; border-radius: 12px; font-size: 1.2rem; }
+.perfil-admin .numero-valor { font-size: 1.6rem; }
+
+@media (max-width: 575.98px) {
+    .numeros { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--esp-3); }
+    .numero-card { flex-direction: column; align-items: flex-start; gap: var(--esp-2); padding: var(--esp-3); }
+    .numero-icone { width: 42px; height: 42px; border-radius: 12px; font-size: 1.2rem; }
+    .numero-valor { font-size: 1.6rem; }
+}
+
+:root[data-contraste="alto"] .numero-card { background: #fff; border: 2px solid var(--linha); }
+
+/* Tons reutilizáveis (cards, selos, chips). */
+.tom-menta { --tom-fundo: var(--menta-fundo); --tom-tinta: var(--menta-tinta); --tom-destaque: var(--menta); }
+.tom-coral { --tom-fundo: var(--coral-fundo); --tom-tinta: var(--coral-tinta); --tom-destaque: var(--coral); }
+.tom-sol { --tom-fundo: var(--sol-fundo); --tom-tinta: var(--sol-tinta); --tom-destaque: var(--sol); }
+.tom-ceu { --tom-fundo: var(--ceu-fundo); --tom-tinta: var(--ceu-tinta); --tom-destaque: var(--ceu); }
+.tom-lilas { --tom-fundo: var(--lilas-fundo); --tom-tinta: var(--lilas-tinta); --tom-destaque: var(--lilas); }
+.tom-laranja { --tom-fundo: var(--laranja-fundo); --tom-tinta: var(--laranja-tinta); --tom-destaque: var(--laranja); }
+.tom-neutro { --tom-fundo: var(--fundo-2); --tom-tinta: var(--tinta-2); --tom-destaque: var(--tinta-suave); }

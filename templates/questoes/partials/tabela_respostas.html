@@ -5,7 +5,7 @@
             <tbody>
                 {% for resposta in page_obj %}
                     <tr>
-                        <td class="celula-titulo">{{ resposta.questao.codigo }}</td>
+                        <td class="celula-titulo text-nowrap">{{ resposta.questao.codigo }}</td>
                         <td>{{ resposta.questao.materia.nome }}</td>
                         <td>{% for relacao in resposta.questao.questao_conteudos.all %}{{ relacao.conteudo.titulo }}{% if not forloop.last %}, {% endif %}{% endfor %}</td>
                         <td>{% if resposta.correta %}<span class="chip tom-menta"><i class="bi bi-check-lg" aria-hidden="true"></i> Acertou</span>{% else %}<span class="chip tom-coral"><i class="bi bi-x-lg" aria-hidden="true"></i> Errou</span>{% endif %}</td>

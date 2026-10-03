@@ -1,0 +1,11 @@
+/* Meu desempenho: trilha das últimas respostas (acerto/erro com ícone). */
+
+.trilha-respostas { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--esp-2); }
+.trilha-respostas li {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 36px; height: 36px; border-radius: 11px;
+    font-size: 1.05rem;
+}
+.trilha-respostas li.acerto { background: var(--verde-100); color: var(--verde-800); }
+.trilha-respostas li.erro { background: var(--vermelho-50); color: var(--vermelho-600); }
+:root[data-contraste="alto"] .trilha-respostas li { box-shadow: inset 0 0 0 2px currentColor; }

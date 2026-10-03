@@ -341,11 +341,27 @@ def desempenho(request):
 
     paginator = Paginator(respostas, 15)
     page_obj = paginator.get_page(request.GET.get("page"))
+    # Somente leitura, para a tela: aproveitamento por matéria e as últimas respostas.
+    desempenho_por_materia = list(
+        RespostaQuestao.objects.filter(usuario=request.user)
+        .values("questao__materia__nome", "questao__materia__slug")
+        .annotate(tentativas=Count("id"), acertos=Count("id", filter=Q(correta=True)))
+        .order_by("questao__materia__nome")
+    )
+    for item in desempenho_por_materia:
+        item["percentual"] = round(item["acertos"] / item["tentativas"] * 100)
+    ultimas_respostas = list(
+        RespostaQuestao.objects.filter(usuario=request.user)
+        .select_related("questao")
+        .order_by("-respondida_em")[:20]
+    )[::-1]
     return render(
         request,
         "questoes/desempenho.html",
         {
             "page_obj": page_obj,
+            "desempenho_por_materia": desempenho_por_materia,
+            "ultimas_respostas": ultimas_respostas,
             "conteudos_com_erros": _conteudos_com_erros(request.user),
             "total_respostas": total,
             "total_acertos": acertos,

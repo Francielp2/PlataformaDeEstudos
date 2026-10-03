@@ -1,36 +1,88 @@
 {% extends "usuarios/base_interno.html" %}
+{% load static %}
 
 {% block title %}Meu desempenho{% endblock %}
 
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/pages/questoes/desempenho.css' %}">{% endblock %}
+
 {% block content %}
-    <div class="page-heading">
-        <h1>Meu desempenho</h1>
-        <p>Resultados das questões individuais que você respondeu.</p>
+    <section class="faixa" aria-labelledby="titulo-pagina">
+        <div>
+            <h1 id="titulo-pagina">Meu desempenho</h1>
+            <p class="faixa-texto">Resultados das questões individuais que você respondeu. Veja onde você vai bem e o que vale revisar.</p>
+        </div>
+        <img class="faixa-ilustracao" src="{% static 'images/illustrations/alvo.svg' %}" alt="" width="220" height="165">
+    </section>
+
+    <h2 class="visually-hidden">Seus números</h2>
+    <div class="numeros">
+        {% include "components/numero.html" with valor=total_respostas rotulo="Respostas" detalhe="questões respondidas" icone="bi-pencil-square" tom="tom-ceu" %}
+        {% include "components/numero.html" with valor=total_acertos rotulo="Acertos" detalhe="respostas corretas" icone="bi-check-lg" tom="tom-menta" %}
+        {% include "components/numero.html" with valor=total_erros rotulo="Erros" detalhe="respostas incorretas" icone="bi-x-lg" tom="tom-coral" %}
+        {% with valor_percentual=percentual|stringformat:"s"|add:"%" %}
+            {% include "components/numero.html" with valor=valor_percentual rotulo="Aproveitamento" detalhe="de acertos" icone="bi-percent" tom="tom-sol" %}
+        {% endwith %}
     </div>
 
-    <div class="row g-3 mb-4">
-        <div class="col-md-3"><div class="metric"><div class="metric-icon"><i class="bi bi-pencil-square"></i></div><span>Respostas</span><strong>{{ total_respostas }}</strong><span>questões respondidas</span></div></div>
-        <div class="col-md-3"><div class="metric"><div class="metric-icon"><i class="bi bi-check-circle"></i></div><span>Acertos</span><strong>{{ total_acertos }}</strong><span>respostas corretas</span></div></div>
-        <div class="col-md-3"><div class="metric"><div class="metric-icon"><i class="bi bi-x-circle"></i></div><span>Erros</span><strong>{{ total_erros }}</strong><span>respostas incorretas</span></div></div>
-        <div class="col-md-3"><div class="metric"><div class="metric-icon"><i class="bi bi-percent"></i></div><span>Aproveitamento</span><strong>{{ percentual }}%</strong><span>de acertos</span></div></div>
-    </div>
+    {% if total_respostas %}
+        <div class="row g-4 mb-4">
+            <div class="col-xl-6">
+                <section class="painel h-100" aria-labelledby="titulo-ultimas">
+                    <div class="painel-cabeca mb-1">
+                        <span class="painel-icone" aria-hidden="true"><i class="bi bi-activity"></i></span>
+                        <h2 class="painel-titulo mb-0" id="titulo-ultimas">Suas últimas respostas</h2>
+                    </div>
+                    <p class="painel-descricao">Da mais antiga para a mais recente (até 20).</p>
+                    <ol class="trilha-respostas">
+                        {% for resposta in ultimas_respostas %}
+                            <li class="{% if resposta.correta %}acerto{% else %}erro{% endif %}" title="{{ resposta.questao.codigo }}: {% if resposta.correta %}acertou{% else %}errou{% endif %}">
+                                <i class="bi {% if resposta.correta %}bi-check-lg{% else %}bi-x-lg{% endif %}" aria-hidden="true"></i>
+                                <span class="visually-hidden">{{ resposta.questao.codigo }}: {% if resposta.correta %}acertou{% else %}errou{% endif %}</span>
+                            </li>
+                        {% endfor %}
+                    </ol>
+                    <p class="texto-suave small mb-0 mt-3"><i class="bi bi-check-lg" aria-hidden="true"></i> acerto <i class="bi bi-x-lg ms-3" aria-hidden="true"></i> erro</p>
+                </section>
+            </div>
+            <div class="col-xl-6">
+                <section class="painel h-100" aria-labelledby="titulo-materias">
+                    <div class="painel-cabeca mb-3">
+                        <span class="painel-icone" aria-hidden="true"><i class="bi bi-bar-chart"></i></span>
+                        <h2 class="painel-titulo mb-0" id="titulo-materias">Desempenho por matéria</h2>
+                    </div>
+                    <ul class="lista-progresso">
+                        {% for item in desempenho_por_materia %}
+                            <li class="linha-progresso{% if item.percentual < 60 %} tom-coral{% elif item.percentual < 80 %} tom-sol{% else %} tom-menta{% endif %}">
+                                <span class="linha-progresso-rotulo d-flex align-items-center gap-2">{% include "components/selo_materia.html" with materia=item.questao__materia__slug tamanho="sm" %} {{ item.questao__materia__nome }}</span>
+                                <span class="linha-progresso-valor">{{ item.acertos }} de {{ item.tentativas }} - {{ item.percentual }}%</span>
+                                <div class="barra" role="progressbar" aria-label="Aproveitamento em {{ item.questao__materia__nome }}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ item.percentual }}"><span style="width: {{ item.percentual }}%"></span></div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </section>
+            </div>
+        </div>
+    {% endif %}
 
-    <section class="section-box mb-4">
-        <h2 class="h5">Conteúdos com mais erros</h2>
-        <p class="text-muted small">Cada tentativa conta, inclusive quando a mesma questão foi respondida mais de uma vez. Conteúdos sem erros não aparecem.</p>
+    <section class="painel mb-4" aria-labelledby="titulo-erros">
+        <div class="painel-cabeca mb-1">
+            <span class="painel-icone painel-icone--coral" aria-hidden="true"><i class="bi bi-bullseye"></i></span>
+            <h2 class="painel-titulo mb-0" id="titulo-erros">Conteúdos com mais erros</h2>
+        </div>
+        <p class="painel-descricao">Cada tentativa conta, inclusive quando a mesma questão foi respondida mais de uma vez. Conteúdos sem erros não aparecem.</p>
         {% if conteudos_com_erros %}
             <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead><tr><th>Conteúdo</th><th>Matéria</th><th>Tentativas</th><th>Erros</th><th>Aproveitamento</th><th>Ações</th></tr></thead>
+                <table class="table table-hover align-middle">
+                    <thead><tr><th scope="col">Conteúdo</th><th scope="col">Matéria</th><th scope="col">Tentativas</th><th scope="col">Erros</th><th scope="col">Aproveitamento</th><th scope="col"><span class="visually-hidden">Ações</span></th></tr></thead>
                     <tbody>
                         {% for conteudo in conteudos_com_erros %}
                             <tr>
-                                <td>{{ conteudo.titulo }}</td>
+                                <td class="celula-titulo">{{ conteudo.titulo }}</td>
                                 <td>{{ conteudo.materia.nome }}</td>
                                 <td>{{ conteudo.tentativas }}</td>
-                                <td><span class="badge text-bg-secondary">{{ conteudo.erros }}</span></td>
+                                <td><span class="chip tom-coral"><i class="bi bi-x-lg" aria-hidden="true"></i> {{ conteudo.erros }}</span></td>
                                 <td>{{ conteudo.percentual }}%</td>
-                                <td>
+                                <td class="celula-acoes">
                                     {% if conteudo.materia.ativa and conteudo.status == "published" %}
                                         <a class="btn btn-sm btn-outline-primary" href="{% url 'curriculo:conteudo_detalhe' conteudo.materia.slug conteudo.slug %}">Revisar conteúdo</a>
                                     {% endif %}
@@ -41,13 +93,16 @@
                 </table>
             </div>
         {% elif total_respostas %}
-            <p class="text-muted mb-0">Você não errou nenhuma questão até agora. Parabéns!</p>
+            <div class="aviso tom-menta"><i class="bi bi-trophy" aria-hidden="true"></i><p>Você não errou nenhuma questão até agora. Parabéns!</p></div>
         {% else %}
-            <p class="text-muted mb-0">Responda algumas questões para ver quais conteúdos merecem mais atenção.</p>
+            <div class="aviso tom-neutro"><i class="bi bi-info-circle" aria-hidden="true"></i><p>Responda algumas questões para ver quais conteúdos merecem mais atenção.</p></div>
         {% endif %}
     </section>
 
-    <h2 class="h5">Respostas</h2>
+    <div class="secao-topo">
+        <h2 class="secao-titulo">Respostas</h2>
+        <a class="btn btn-sm btn-outline-secondary" href="{% url 'questoes:exercicios_lista' %}"><i class="bi bi-pencil-square" aria-hidden="true"></i> Praticar mais</a>
+    </div>
     {% include "questoes/partials/tabela_respostas.html" %}
     {% include "partials/paginacao.html" %}
 {% endblock %}

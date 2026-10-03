@@ -1,76 +1,79 @@
 {% extends "usuarios/base_interno.html" %}
-{% load videos_extras %}
+{% load static videos_extras %}
 
 {% block title %}Histórico de vídeos{% endblock %}
 
 {% block content %}
-    <div class="page-heading">
-        <h1>Histórico de vídeos</h1>
-        <p>Cada vez que você assistiu a um vídeo, com o trecho e o tempo assistido.</p>
-    </div>
+    <section class="faixa faixa--lilas" aria-labelledby="titulo-pagina">
+        <div>
+            <h1 id="titulo-pagina">Histórico de vídeos</h1>
+            <p class="faixa-texto">Cada vez que você assistiu a um vídeo, com o trecho e o tempo assistido.</p>
+        </div>
+        <img class="faixa-ilustracao" src="{% static 'images/illustrations/video.svg' %}" alt="" width="220" height="165">
+    </section>
 
     {% if materias %}
-        <form method="get" class="filters-box">
-            <div class="row g-2">
-                <div class="col-md-4">
-                    <select class="form-select" name="materia" aria-label="Filtrar por matéria">
-                        <option value="" {% if not materia_slug %}selected{% endif %}>Todas as matérias</option>
-                        {% for materia in materias %}
-                            <option value="{{ materia.slug }}" {% if materia_slug == materia.slug %}selected{% endif %}>{{ materia.nome }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="col-md-2 d-grid">
-                    <button class="btn btn-outline-primary" type="submit">Filtrar</button>
-                </div>
-            </div>
+        <form method="get" class="filtros" data-filtro-automatico aria-label="Filtrar histórico">
+            <label class="visually-hidden" for="filtro-materia">Filtrar por matéria</label>
+            <select class="form-select" id="filtro-materia" name="materia" style="max-width: 320px;">
+                <option value="" {% if not materia_slug %}selected{% endif %}>Todas as matérias</option>
+                {% for materia in materias %}
+                    <option value="{{ materia.slug }}" {% if materia_slug == materia.slug %}selected{% endif %}>{{ materia.nome }}</option>
+                {% endfor %}
+            </select>
+            <button class="btn btn-outline-primary botao-filtrar" type="submit"><i class="bi bi-funnel" aria-hidden="true"></i> Filtrar</button>
+            {% if materia_slug %}<a class="limpar-filtros ms-2" href="{% url 'videos:historico' %}">Limpar filtro</a>{% endif %}
         </form>
     {% endif %}
 
-    <div class="table-responsive section-box">
-        <table class="table table-hover align-middle mb-0">
-            <thead>
-                <tr>
-                    <th>Data</th>
-                    <th>Vídeo</th>
-                    <th>Conteúdo</th>
-                    <th>Trecho assistido</th>
-                    <th>Tempo assistido</th>
-                    <th>Ação</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for sessao in page_obj %}
-                    {% with video=sessao.video conteudo=sessao.video.conteudo %}
+    {% if page_obj.object_list %}
+        <div class="tabela-card">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead>
                         <tr>
-                            <td>{{ sessao.iniciado_em|date:"d/m/Y H:i" }}</td>
-                            <td>
-                                {{ video.titulo }}
-                                <div class="small"><a href="{{ video.canal_url }}" target="_blank" rel="noopener">{{ video.canal_nome }}</a></div>
-                            </td>
-                            <td>
-                                {% if conteudo.status == "published" and conteudo.materia.ativa %}
-                                    <a href="{% url 'curriculo:conteudo_detalhe' conteudo.materia.slug conteudo.slug %}">{{ conteudo.titulo }}</a>
-                                {% else %}
-                                    {{ conteudo.titulo }}
-                                {% endif %}
-                                <div class="small text-muted">{{ conteudo.materia.nome }}</div>
-                            </td>
-                            <td>{{ sessao.inicio_segundos|segundos_mmss }} – {{ sessao.fim_segundos|segundos_mmss }}</td>
-                            <td>{{ sessao.segundos_assistidos|segundos_mmss }}</td>
-                            <td>
-                                {% if video.ativo and conteudo.status == "published" and conteudo.materia.ativa %}
-                                    <a class="btn btn-sm btn-outline-primary" href="{% url 'curriculo:conteudo_detalhe' conteudo.materia.slug conteudo.slug %}?video={{ video.pk }}#video-{{ video.pk }}">Continuar</a>
-                                {% endif %}
-                            </td>
+                            <th scope="col">Data</th>
+                            <th scope="col">Vídeo</th>
+                            <th scope="col">Conteúdo</th>
+                            <th scope="col">Trecho assistido</th>
+                            <th scope="col">Tempo assistido</th>
+                            <th scope="col"><span class="visually-hidden">Ação</span></th>
                         </tr>
-                    {% endwith %}
-                {% empty %}
-                    <tr><td colspan="6">Você ainda não assistiu a nenhum vídeo.</td></tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-
-    {% include "partials/paginacao.html" %}
+                    </thead>
+                    <tbody>
+                        {% for sessao in page_obj %}
+                            {% with video=sessao.video conteudo=sessao.video.conteudo %}
+                                <tr>
+                                    <td class="celula-data">{{ sessao.iniciado_em|date:"d/m/Y H:i" }}</td>
+                                    <td>
+                                        <span class="celula-titulo">{{ video.titulo }}</span>
+                                        <span class="celula-sub"><a href="{{ video.canal_url }}" target="_blank" rel="noopener">{{ video.canal_nome }}</a></span>
+                                    </td>
+                                    <td>
+                                        {% if conteudo.status == "published" and conteudo.materia.ativa %}
+                                            <a href="{% url 'curriculo:conteudo_detalhe' conteudo.materia.slug conteudo.slug %}">{{ conteudo.titulo }}</a>
+                                        {% else %}
+                                            {{ conteudo.titulo }}
+                                        {% endif %}
+                                        <span class="celula-sub">{{ conteudo.materia.nome }}</span>
+                                    </td>
+                                    <td class="celula-data">{{ sessao.inicio_segundos|segundos_mmss }} – {{ sessao.fim_segundos|segundos_mmss }}</td>
+                                    <td class="celula-data"><i class="bi bi-clock texto-suave" aria-hidden="true"></i> {{ sessao.segundos_assistidos|segundos_mmss }}</td>
+                                    <td class="celula-acoes">
+                                        {% if video.ativo and conteudo.status == "published" and conteudo.materia.ativa %}
+                                            <a class="btn btn-sm btn-outline-primary" href="{% url 'curriculo:conteudo_detalhe' conteudo.materia.slug conteudo.slug %}?video={{ video.pk }}#video-{{ video.pk }}"><i class="bi bi-play-fill" aria-hidden="true"></i> Continuar</a>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endwith %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% include "partials/paginacao.html" %}
+    {% else %}
+        {% url 'curriculo:conteudos_lista' as url_conteudos %}
+        {% include "components/vazio.html" with titulo="Você ainda não assistiu a nenhum vídeo." texto="Os vídeos ficam na página de cada conteúdo, em Materiais de estudo." ilustracao="video" acao_url=url_conteudos acao_rotulo="Ver conteúdos" acao_icone="bi-book" %}
+    {% endif %}
 {% endblock %}

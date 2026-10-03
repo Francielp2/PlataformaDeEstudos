@@ -1,45 +1,66 @@
 {% extends "usuarios/base_interno.html" %}
+{% load static %}
 
 {% block title %}Revisão da tentativa{% endblock %}
 
 {% block voltar_url %}{% url 'simulados:resultado_tentativa' tentativa.pk %}{% endblock %}
 
-{% block content %}
-    <div class="page-heading">
-        <h1>Revisão da tentativa</h1>
-        <p>{{ tentativa.simulado.titulo }}</p>
-    </div>
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/pages/questoes/questao.css' %}">{% endblock %}
 
-    {% for questao in questoes %}
-        <div class="app-card mb-3">
-            <div class="d-flex justify-content-between gap-2 mb-2">
-                <strong>Questão {{ questao.ordem }}</strong>
-                {% if questao.respondida %}
-                    {% if questao.correta %}<span class="badge text-bg-success">Você acertou</span>{% else %}<span class="badge text-bg-warning">Você errou</span>{% endif %}
-                {% else %}
-                    <span class="badge text-bg-secondary">Não respondida</span>
-                {% endif %}
+{% block content %}
+    <div class="leitura leitura--centro">
+        <header class="cabecalho">
+            <div>
+                <h1>Revisão da tentativa</h1>
+                <p class="cabecalho-texto">{{ tentativa.simulado.titulo }}</p>
             </div>
-            <p>{{ questao.enunciado }}</p>
-            {% if questao.imagem_url %}
-                <div class="questao-imagem my-3">
-                    <img src="{{ questao.imagem_url }}" alt="{{ questao.imagem_alt_texto }}" class="img-fluid">
-                </div>
-            {% endif %}
-            <div class="list-group">
-                {% for alternativa in questao.alternativas %}
-                    <div class="list-group-item {% if alternativa.id == questao.resposta_id %}active{% endif %}">
-                        {{ alternativa.chave }}. {{ alternativa.texto }}
-                        {% if alternativa.id == questao.resposta_id %}<span class="ms-2">(sua resposta)</span>{% endif %}
-                        {% if alternativa.imagem_url %}
-                            <div class="alternativa-imagem mt-2">
-                                <img src="{{ alternativa.imagem_url }}" alt="{{ alternativa.imagem_alt_texto }}" class="img-fluid">
-                            </div>
-                        {% endif %}
-                    </div>
-                {% endfor %}
-            </div>
-            <p class="small text-muted mt-3 mb-0">A explicação completa não é exibida na revisão para preservar a reutilização do simulado.</p>
+        </header>
+
+        <nav class="indice" aria-label="Ir para a questão">
+            {% for questao in questoes %}
+                <a href="#questao-{{ questao.ordem }}">
+                    {% if questao.respondida %}{% if questao.correta %}<i class="bi bi-check-lg" aria-hidden="true"></i>{% else %}<i class="bi bi-x-lg" aria-hidden="true"></i>{% endif %}{% else %}<i class="bi bi-dash" aria-hidden="true"></i>{% endif %}
+                    {{ questao.ordem }}
+                </a>
+            {% endfor %}
+        </nav>
+
+        <div class="aviso tom-neutro mb-4">
+            <i class="bi bi-info-circle" aria-hidden="true"></i>
+            <p>A explicação completa não é exibida na revisão para preservar a reutilização do simulado.</p>
         </div>
-    {% endfor %}
+
+        {% for questao in questoes %}
+            <article class="questao-cartao mb-3" id="questao-{{ questao.ordem }}" aria-labelledby="titulo-questao-{{ questao.ordem }}">
+                <div class="questao-topo">
+                    <h2 class="questao-codigo" id="titulo-questao-{{ questao.ordem }}">Questão {{ questao.ordem }}</h2>
+                    {% if questao.respondida %}
+                        {% if questao.correta %}<span class="chip tom-menta"><i class="bi bi-check-lg" aria-hidden="true"></i> Você acertou</span>{% else %}<span class="chip tom-coral"><i class="bi bi-x-lg" aria-hidden="true"></i> Você errou</span>{% endif %}
+                    {% else %}
+                        <span class="chip tom-neutro"><i class="bi bi-dash-circle" aria-hidden="true"></i> Não respondida</span>
+                    {% endif %}
+                </div>
+                <div class="enunciado"><p>{{ questao.enunciado }}</p></div>
+                {% if questao.imagem_url %}
+                    <figure class="imagem-questao">
+                        <img src="{{ questao.imagem_url }}" alt="{{ questao.imagem_alt_texto }}" class="img-fluid" loading="lazy">
+                    </figure>
+                {% endif %}
+                <div class="opcoes-lista mt-3">
+                    {% for alternativa in questao.alternativas %}
+                        <div class="opcao opcao--leitura{% if alternativa.id == questao.resposta_id %} opcao--marcada{% endif %}">
+                            <span class="opcao-letra" aria-hidden="true">{{ alternativa.chave }}</span>
+                            <span class="opcao-texto">
+                                <span class="visually-hidden">Alternativa {{ alternativa.chave }}:</span> {{ alternativa.texto }}
+                                {% if alternativa.imagem_url %}
+                                    <span class="imagem-alternativa d-block"><img src="{{ alternativa.imagem_url }}" alt="{{ alternativa.imagem_alt_texto }}" class="img-fluid" loading="lazy"></span>
+                                {% endif %}
+                            </span>
+                            {% if alternativa.id == questao.resposta_id %}<span class="opcao-chips"><span class="chip tom-ceu"><i class="bi bi-hand-index" aria-hidden="true"></i> Sua resposta</span></span>{% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+            </article>
+        {% endfor %}
+    </div>
 {% endblock %}

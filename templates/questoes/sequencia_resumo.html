@@ -1,16 +1,30 @@
 {% extends "usuarios/base_interno.html" %}
+{% load static %}
 
 {% block title %}Resumo{% endblock %}
 
 {% block voltar_url %}{% url 'questoes:exercicios_lista' %}{% endblock %}
 
 {% block content %}
-    <div class="section-box">
-        <h1 class="h4">Resumo da sequência</h1>
-        <p>Questões respondidas: {{ respondidas }}</p>
-        <p>Acertos: {{ acertos }}</p>
-        <p>Erros: {{ erros }}</p>
-        <p>Percentual: {{ percentual }}%</p>
-        <a class="btn btn-primary" href="{% url 'questoes:historico' %}">Ver histórico</a>
+    <section class="faixa{% if percentual < 60 %} faixa--sol{% endif %}" aria-labelledby="titulo-pagina">
+        <div>
+            <h1 id="titulo-pagina">Resumo da sequência</h1>
+            <p class="faixa-texto">{% if percentual >= 60 %}Você está indo bem! Siga praticando para manter o ritmo.{% else %}Cada erro mostra o que revisar. Confira a correção no histórico.{% endif %}</p>
+            <div class="faixa-acoes">
+                <a class="btn btn-primary btn-lg" href="{% url 'questoes:historico' %}"><i class="bi bi-clock-history" aria-hidden="true"></i> Ver histórico</a>
+                <a class="btn btn-outline-secondary btn-lg" href="{% url 'questoes:exercicios_lista' %}">Voltar aos exercícios</a>
+            </div>
+        </div>
+        <img class="faixa-ilustracao" src="{% static 'images/illustrations/alvo.svg' %}" alt="" width="220" height="165">
+    </section>
+
+    <h2 class="visually-hidden">Números da sequência</h2>
+    <div class="numeros">
+        {% include "components/numero.html" with valor=respondidas rotulo="Questões respondidas" icone="bi-pencil-square" tom="tom-ceu" %}
+        {% include "components/numero.html" with valor=acertos rotulo="Acertos" icone="bi-check-lg" tom="tom-menta" %}
+        {% include "components/numero.html" with valor=erros rotulo="Erros" icone="bi-x-lg" tom="tom-coral" %}
+        {% with valor_percentual=percentual|stringformat:"s"|add:"%" %}
+            {% include "components/numero.html" with valor=valor_percentual rotulo="Percentual" detalhe="de acertos" icone="bi-percent" tom="tom-sol" %}
+        {% endwith %}
     </div>
 {% endblock %}

@@ -1,69 +1,72 @@
 {% extends "usuarios/base_interno.html" %}
+{% load static %}
 
 {% block title %}{{ tentativa.simulado.titulo }}{% endblock %}
 
 {% block voltar_url %}{% url 'simulados:meus_simulados' %}{% endblock %}
 {% block voltar_texto %}Sair do simulado{% endblock %}
 
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/pages/questoes/questao.css' %}">
+    <link rel="stylesheet" href="{% static 'css/pages/simulados/prova.css' %}">
+{% endblock %}
+
 {% block content %}
-    <div class="page-heading d-flex justify-content-between align-items-start">
+    <header class="prova-topo">
         <div>
             <h1>{{ tentativa.simulado.titulo }}</h1>
-            <p>Questão {{ ordem }} de {{ total }}</p>
+            <div class="linha-progresso">
+                <span class="linha-progresso-rotulo">Questão {{ ordem }} de {{ total }}</span>
+                <span class="linha-progresso-valor texto-suave small">{{ respondidas|length }} respondida{{ respondidas|length|pluralize }}</span>
+                <div class="barra" role="progressbar" aria-label="Questões respondidas" aria-valuemin="0" aria-valuemax="{{ total }}" aria-valuenow="{{ respondidas|length }}">
+                    <span style="width: {% widthratio respondidas|length total 100 %}%"></span>
+                </div>
+            </div>
         </div>
         {% if tempo_restante_segundos != None %}
-            <div class="badge text-bg-secondary fs-6" id="tempo-restante" data-restante="{{ tempo_restante_segundos }}"></div>
+            <div class="cronometro" id="tempo-restante" data-restante="{{ tempo_restante_segundos }}" role="timer" aria-label="Tempo restante">
+                <i class="bi bi-stopwatch" aria-hidden="true"></i> <span data-tempo></span>
+            </div>
         {% endif %}
+    </header>
+
+    <div class="prova-grade">
+        <form method="post" class="questao-cartao" novalidate>
+            {% csrf_token %}
+            {% if form.non_field_errors %}
+                <div class="aviso tom-coral mb-3" role="alert"><i class="bi bi-exclamation-octagon" aria-hidden="true"></i><div>{% for error in form.non_field_errors %}<p>{{ error }}</p>{% endfor %}</div></div>
+            {% endif %}
+            <div class="enunciado">
+                <p class="mb-0">{{ questao.enunciado }}</p>
+                {% include "questoes/partials/imagem_questao.html" %}
+            </div>
+
+            {% include "questoes/partials/opcoes_resposta.html" with alternativas=questao.alternativas.all nome=form.alternativa.html_name marcada=form.alternativa.value %}
+
+            <div class="prova-acoes">
+                <button class="btn btn-outline-secondary" name="acao" value="anterior" type="submit" {% if ordem == 1 %}disabled{% endif %}><i class="bi bi-arrow-left" aria-hidden="true"></i> Anterior</button>
+                <button class="btn btn-primary" name="acao" value="proxima" type="submit" {% if ordem == total %}disabled{% endif %}>Próxima <i class="bi bi-arrow-right" aria-hidden="true"></i></button>
+                <button class="btn btn-outline-danger finalizar" name="acao" value="finalizar" type="submit"><i class="bi bi-flag" aria-hidden="true"></i> Finalizar</button>
+            </div>
+            <p class="texto-suave small mt-3 mb-0">Sua resposta é salva ao avançar, voltar ou finalizar.</p>
+        </form>
+
+        <nav class="painel painel--compacto prova-navegador" aria-label="Questões do simulado">
+            <h2 class="painel-titulo mb-3">Questões</h2>
+            <div class="navegador-numeros">
+                {% for item in questoes %}
+                    <a href="{% url 'simulados:tentativa_questao' tentativa.pk item.ordem %}"{% if item.ordem == questao.ordem %} aria-current="step"{% endif %}{% if item.pk in respondidas %} class="respondida"{% endif %} aria-label="Questão {{ item.ordem }}{% if item.pk in respondidas %}, respondida{% endif %}{% if item.ordem == questao.ordem %}, atual{% endif %}">{{ item.ordem }}</a>
+                {% endfor %}
+            </div>
+            <ul class="navegador-legenda">
+                <li><span class="leg-atual" aria-hidden="true"></span> Questão atual</li>
+                <li><span class="leg-respondida" aria-hidden="true"></span> Respondida</li>
+                <li><span aria-hidden="true"></span> Sem resposta</li>
+            </ul>
+        </nav>
     </div>
+{% endblock %}
 
-    <div class="section-box mb-3">
-        <div class="d-flex flex-wrap gap-2">
-            {% for item in questoes %}
-                <a class="btn btn-sm {% if item.ordem == questao.ordem %}btn-primary{% elif item.pk in respondidas %}btn-outline-success{% else %}btn-outline-secondary{% endif %}" href="{% url 'simulados:tentativa_questao' tentativa.pk item.ordem %}">
-                    {{ item.ordem }}
-                </a>
-            {% endfor %}
-        </div>
-    </div>
-
-    <form method="post" class="app-card">
-        {% csrf_token %}
-        {% if form.non_field_errors %}
-            <div class="alert alert-danger">{% for error in form.non_field_errors %}<div>{{ error }}</div>{% endfor %}</div>
-        {% endif %}
-        <p class="lead">{{ questao.enunciado }}</p>
-        {% include "questoes/partials/imagem_questao.html" %}
-        <div class="list-group mb-4">
-            {% for alternativa in questao.alternativas.all %}
-                <label class="list-group-item">
-                    <input type="radio" name="{{ form.alternativa.html_name }}" value="{{ alternativa.pk }}">
-                    <span class="ms-2"><strong>{{ alternativa.chave }}.</strong> {{ alternativa.texto }}</span>
-                    {% include "questoes/partials/imagem_alternativa.html" %}
-                </label>
-            {% endfor %}
-        </div>
-        <div class="d-flex flex-wrap gap-2">
-            <button class="btn btn-outline-secondary" name="acao" value="anterior" type="submit" {% if ordem == 1 %}disabled{% endif %}>Anterior</button>
-            <button class="btn btn-primary" name="acao" value="proxima" type="submit" {% if ordem == total %}disabled{% endif %}>Próxima</button>
-            <button class="btn btn-success ms-auto" name="acao" value="finalizar" type="submit">Finalizar</button>
-        </div>
-    </form>
-
-    {% if tempo_restante_segundos != None %}
-        <script>
-            (function () {
-                const el = document.getElementById("tempo-restante");
-                if (!el) return;
-                let restante = Number(el.dataset.restante || 0);
-                function render() {
-                    const min = Math.floor(restante / 60);
-                    const seg = String(restante % 60).padStart(2, "0");
-                    el.textContent = min + ":" + seg;
-                    if (restante > 0) restante -= 1;
-                }
-                render();
-                setInterval(render, 1000);
-            })();
-        </script>
-    {% endif %}
+{% block extra_js %}
+    {% if tempo_restante_segundos != None %}<script type="module" src="{% static 'js/pages/simulados/cronometro.js' %}"></script>{% endif %}
 {% endblock %}

@@ -3,34 +3,55 @@
 {% block title %}Meus simulados{% endblock %}
 
 {% block content %}
-    <div class="page-heading">
-        <h1>Meus simulados</h1>
-        <p>Histórico das suas tentativas finalizadas e em andamento.</p>
-    </div>
+    <header class="cabecalho">
+        <div>
+            <h1>Meus simulados</h1>
+            <p class="cabecalho-texto">Histórico das suas tentativas finalizadas e em andamento.</p>
+        </div>
+        <div class="cabecalho-acoes">
+            <a class="btn btn-primary" href="{% url 'simulados:simulados_lista' %}"><i class="bi bi-plus-lg" aria-hidden="true"></i> Fazer um simulado</a>
+        </div>
+    </header>
 
-    <div class="table-responsive section-box">
-        <table class="table table-hover align-middle mb-0">
-            <thead><tr><th>Simulado</th><th>Data</th><th>Status</th><th>Resultado</th><th>Ações</th></tr></thead>
-            <tbody>
-                {% for tentativa in page_obj %}
-                    <tr>
-                        <td>{{ tentativa.simulado.titulo }}</td>
-                        <td>{{ tentativa.iniciada_em|date:"d/m/Y H:i" }}</td>
-                        <td>{{ tentativa.get_status_display }}</td>
-                        <td>{% if tentativa.finalizada %}{{ tentativa.total_acertos }} / {{ tentativa.total_questoes }} - {{ tentativa.percentual }}%{% else %}-{% endif %}</td>
-                        <td>
-                            {% if tentativa.finalizada %}
-                                <a class="btn btn-sm btn-outline-primary" href="{% url 'simulados:resultado_tentativa' tentativa.pk %}">Ver resultado</a>
-                            {% else %}
-                                <a class="btn btn-sm btn-primary" href="{% url 'simulados:tentativa_questao' tentativa.pk 1 %}">Continuar</a>
-                            {% endif %}
-                        </td>
-                    </tr>
-                {% empty %}
-                    <tr><td colspan="5">Nenhum simulado realizado.</td></tr>
-                {% endfor %}
-            </tbody>
-        </table>
+    <div class="tabela-card">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead><tr><th scope="col">Simulado</th><th scope="col">Data</th><th scope="col">Status</th><th scope="col">Resultado</th><th scope="col"><span class="visually-hidden">Ações</span></th></tr></thead>
+                <tbody>
+                    {% for tentativa in page_obj %}
+                        <tr>
+                            <td class="celula-titulo">{{ tentativa.simulado.titulo }}</td>
+                            <td class="celula-data">{{ tentativa.iniciada_em|date:"d/m/Y H:i" }}</td>
+                            <td>
+                                {% if tentativa.finalizada %}
+                                    <span class="chip tom-menta"><i class="bi bi-check2-all" aria-hidden="true"></i> {{ tentativa.get_status_display }}</span>
+                                {% else %}
+                                    <span class="chip tom-sol"><i class="bi bi-hourglass-split" aria-hidden="true"></i> {{ tentativa.get_status_display }}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if tentativa.finalizada %}
+                                    <div class="linha-progresso" style="min-width: 160px;">
+                                        <span class="linha-progresso-rotulo small">{{ tentativa.total_acertos }} / {{ tentativa.total_questoes }} - {{ tentativa.percentual }}%</span>
+                                        <span></span>
+                                        <div class="barra barra--fina" aria-hidden="true"><span style="width: {% widthratio tentativa.total_acertos tentativa.total_questoes 100 %}%"></span></div>
+                                    </div>
+                                {% else %}-{% endif %}
+                            </td>
+                            <td class="celula-acoes">
+                                {% if tentativa.finalizada %}
+                                    <a class="btn btn-sm btn-outline-primary" href="{% url 'simulados:resultado_tentativa' tentativa.pk %}">Ver resultado</a>
+                                {% else %}
+                                    <a class="btn btn-sm btn-primary" href="{% url 'simulados:tentativa_questao' tentativa.pk 1 %}">Continuar</a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr><td colspan="5" class="tabela-vazia">Nenhum simulado realizado.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
     {% include "partials/paginacao.html" %}
 {% endblock %}

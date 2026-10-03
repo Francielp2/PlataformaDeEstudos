@@ -1,0 +1,20 @@
+{% comment %}
+Alternativas clicáveis (rádio real, acessível por teclado). Parâmetros: alternativas, nome (html_name do campo),
+marcada (valor já escolhido, opcional), erros (opcional), simulado (bool: alternativas do simulado).
+{% endcomment %}
+<fieldset class="opcoes"{% if erros %} aria-describedby="erro-alternativa"{% endif %}>
+    <legend>Escolha uma alternativa</legend>
+    <div class="opcoes-lista">
+        {% for alternativa in alternativas %}
+            <label class="opcao" for="alternativa-{{ alternativa.pk }}">
+                <input type="radio" name="{{ nome }}" id="alternativa-{{ alternativa.pk }}" value="{{ alternativa.pk }}"{% if marcada|stringformat:"s" == alternativa.pk|stringformat:"s" %} checked{% endif %}>
+                <span class="opcao-letra" aria-hidden="true">{{ alternativa.chave }}</span>
+                <span class="opcao-texto">
+                    <span class="visually-hidden">Alternativa {{ alternativa.chave }}:</span> {{ alternativa.texto }}
+                    {% include "questoes/partials/imagem_alternativa.html" %}
+                </span>
+            </label>
+        {% endfor %}
+    </div>
+    {% if erros %}<div class="campo-erro" id="erro-alternativa"><i class="bi bi-exclamation-circle" aria-hidden="true"></i><span>{{ erros|join:" " }}</span></div>{% endif %}
+</fieldset>

@@ -1,18 +1,44 @@
 {% extends "usuarios/base_interno.html" %}
+{% load static %}
 
 {% block title %}Resultado{% endblock %}
 
 {% block voltar_url %}{% url 'questoes:exercicios_lista' %}{% endblock %}
 
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/pages/questoes/questao.css' %}">{% endblock %}
+
 {% block content %}
-    <div class="section-box">
-        <h1 class="h4">{% if resposta.correta %}Você acertou.{% else %}Você errou.{% endif %}</h1>
-        <p class="mb-3">{{ questao.codigo }}</p>
-        <div class="mb-3">
-            <p>{{ questao.enunciado|linebreaksbr }}</p>
-            {% include "questoes/partials/imagem_questao.html" %}
-        </div>
-        <a class="btn btn-primary" href="{% url 'questoes:resposta_detalhe' resposta.pk %}">Ver correção detalhada</a>
-        <a class="btn btn-outline-secondary" href="{% url 'questoes:exercicios_lista' %}">Voltar aos exercícios</a>
+    <div class="leitura leitura--centro">
+        {% if resposta.correta %}
+            <section class="resultado-faixa tom-menta" aria-labelledby="resultado-titulo">
+                <span class="resultado-icone" aria-hidden="true"><i class="bi bi-check-lg"></i></span>
+                <div>
+                    <h1 id="resultado-titulo">Você acertou.</h1>
+                    <p>Mandou bem! Continue praticando para fixar o conteúdo.</p>
+                </div>
+            </section>
+        {% else %}
+            <section class="resultado-faixa tom-coral" aria-labelledby="resultado-titulo">
+                <span class="resultado-icone" aria-hidden="true"><i class="bi bi-x-lg"></i></span>
+                <div>
+                    <h1 id="resultado-titulo">Você errou.</h1>
+                    <p>Faz parte do caminho. Veja a correção detalhada para entender o porquê.</p>
+                </div>
+            </section>
+        {% endif %}
+
+        <section class="questao-cartao" aria-labelledby="questao-titulo">
+            <div class="questao-topo">
+                <h2 class="questao-codigo" id="questao-titulo">{{ questao.codigo }}</h2>
+            </div>
+            <div class="enunciado">
+                <p>{{ questao.enunciado|linebreaksbr }}</p>
+                {% include "questoes/partials/imagem_questao.html" %}
+            </div>
+            <div class="acoes-questao">
+                <a class="btn btn-primary" href="{% url 'questoes:resposta_detalhe' resposta.pk %}"><i class="bi bi-journal-check" aria-hidden="true"></i> Ver correção detalhada</a>
+                <a class="btn btn-outline-secondary" href="{% url 'questoes:exercicios_lista' %}">Voltar aos exercícios</a>
+            </div>
+        </section>
     </div>
 {% endblock %}

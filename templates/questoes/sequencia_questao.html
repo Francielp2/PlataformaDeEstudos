@@ -4,28 +4,15 @@
 
 {% block voltar_url %}{% url 'questoes:exercicios_lista' %}{% endblock %}
 
-{% block content %}
-    <div class="page-heading">
-        <h1>Questão {{ posicao }} de {{ total }}</h1>
-        <p>{{ questao.codigo }} | {{ questao.materia.nome }} | {{ questao.get_dificuldade_display }}</p>
-    </div>
-
-    <section class="section-box mb-4">
-        <p>{{ questao.enunciado|linebreaksbr }}</p>
-        {% include "questoes/partials/imagem_questao.html" %}
-    </section>
-
-    <form method="post" class="section-box">
-        {% csrf_token %}
-        {% for alternativa in questao.alternativas.all %}
-            <div class="form-check mb-3">
-                <input class="form-check-input" type="radio" name="{{ form.alternativa.html_name }}" id="alternativa-{{ alternativa.pk }}" value="{{ alternativa.pk }}">
-                <label class="form-check-label" for="alternativa-{{ alternativa.pk }}">
-                    <strong>{{ alternativa.chave }}.</strong> {{ alternativa.texto }}
-                    {% include "questoes/partials/imagem_alternativa.html" %}
-                </label>
+{% block cabecalho_questao %}
+    <div class="progresso-sequencia">
+        <div class="linha-progresso">
+            <h1 class="linha-progresso-rotulo mb-0">Questão {{ posicao }} de {{ total }}</h1>
+            <span class="linha-progresso-valor texto-suave">{{ questao.codigo }}</span>
+            <div class="barra" role="progressbar" aria-label="Progresso da sequência" aria-valuemin="1" aria-valuemax="{{ total }}" aria-valuenow="{{ posicao }}">
+                <span style="width: {% widthratio posicao total 100 %}%"></span>
             </div>
-        {% endfor %}
-        <button class="btn btn-primary mt-3" type="submit">Responder</button>
-    </form>
+        </div>
+        <p class="texto-suave small mb-0">{{ questao.codigo }} | {{ questao.materia.nome }} | {{ questao.get_dificuldade_display }}</p>
+    </div>
 {% endblock %}

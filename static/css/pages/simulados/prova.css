@@ -1,0 +1,61 @@
+/* Tentativa de simulado com "sensação de prova": cronômetro, progresso e
+   navegação entre questões. */
+
+.prova-topo {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: var(--esp-3) var(--esp-5);
+    margin-bottom: var(--esp-4);
+}
+.prova-topo h1 { font-size: var(--titulo-md); margin-bottom: var(--esp-1); }
+.cronometro {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--esp-2);
+    min-height: 52px;
+    padding: 0.4rem 1rem;
+    border-radius: var(--raio-pilula);
+    background: var(--tinta);
+    color: #fff;
+    font-family: var(--fonte-titulo);
+    font-weight: 600;
+    font-size: 1.375rem;
+    font-variant-numeric: tabular-nums;
+}
+.cronometro.acabando { background: var(--vermelho-600); }
+
+.prova-grade { display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: var(--esp-5); align-items: start; }
+.prova-navegador { position: sticky; top: calc(var(--altura-topbar) + var(--esp-4)); }
+.navegador-numeros { display: grid; grid-template-columns: repeat(auto-fill, minmax(44px, 1fr)); gap: var(--esp-2); }
+.navegador-numeros a {
+    position: relative;
+    display: inline-flex; align-items: center; justify-content: center;
+    height: 44px; border-radius: 12px;
+    border: 2px solid var(--linha); background: var(--superficie);
+    color: var(--tinta-2); font-weight: 700; text-decoration: none;
+}
+.navegador-numeros a:hover { border-color: var(--verde-300); background: var(--verde-50); color: var(--verde-900); }
+.navegador-numeros a.respondida { background: var(--verde-100); border-color: var(--verde-300); color: var(--verde-900); }
+.navegador-numeros a.respondida::after {
+    content: "\F26E"; font-family: "bootstrap-icons"; position: absolute; top: -6px; right: -6px;
+    width: 18px; height: 18px; border-radius: 50%; background: var(--verde-700); color: #fff;
+    font-size: 11px; display: inline-flex; align-items: center; justify-content: center;
+}
+.navegador-numeros a[aria-current="step"] { border-color: var(--tinta); background: var(--tinta); color: #fff; }
+.navegador-legenda { list-style: none; padding: 0; margin: var(--esp-3) 0 0; display: grid; gap: var(--esp-1); font-size: var(--texto-sm); color: var(--tinta-suave); }
+.navegador-legenda span { display: inline-block; width: 14px; height: 14px; border-radius: 4px; vertical-align: -2px; margin-right: var(--esp-1); border: 2px solid var(--linha); }
+.navegador-legenda .leg-atual { background: var(--tinta); border-color: var(--tinta); }
+.navegador-legenda .leg-respondida { background: var(--verde-100); border-color: var(--verde-300); }
+
+.prova-acoes { display: flex; flex-wrap: wrap; gap: var(--esp-2); align-items: center; margin-top: var(--esp-5); }
+.prova-acoes .finalizar { margin-left: auto; }
+
+@media (max-width: 991.98px) {
+    .prova-grade { grid-template-columns: minmax(0, 1fr); }
+    .prova-navegador { position: static; order: -1; }
+}
+@media (max-width: 575.98px) {
+    .prova-topo { grid-template-columns: minmax(0, 1fr); }
+    .prova-acoes .finalizar { margin-left: 0; width: 100%; }
+}

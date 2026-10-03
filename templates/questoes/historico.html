@@ -5,10 +5,15 @@
 {% block voltar_url %}{% url 'questoes:exercicios_lista' %}{% endblock %}
 
 {% block content %}
-    <div class="page-heading">
-        <h1>Histórico de exercícios</h1>
-        <p>Tentativas registradas nas questões individuais.</p>
-    </div>
+    <header class="cabecalho">
+        <div>
+            <h1>Histórico de exercícios</h1>
+            <p class="cabecalho-texto">Tentativas registradas nas questões individuais.</p>
+        </div>
+        <div class="cabecalho-acoes">
+            <a class="btn btn-outline-secondary" href="{% url 'questoes:desempenho' %}"><i class="bi bi-graph-up" aria-hidden="true"></i> Meu desempenho</a>
+        </div>
+    </header>
 
     {% include "questoes/partials/tabela_respostas.html" %}
     {% include "partials/paginacao.html" %}

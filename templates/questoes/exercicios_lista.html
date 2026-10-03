@@ -1,79 +1,115 @@
 {% extends "usuarios/base_interno.html" %}
+{% load static ui %}
 
 {% block title %}Exercícios{% endblock %}
 
-{% block content %}
-    <div class="page-heading d-flex justify-content-between align-items-start">
-        <div>
-            <h1>Exercícios</h1>
-            <p>Questões individuais publicadas para estudo.</p>
-        </div>
-        <div>
-            <a class="btn btn-outline-secondary" href="{% url 'questoes:historico' %}"><i class="bi bi-clock-history"></i> Histórico</a>
-            <a class="btn btn-primary" href="{% url 'questoes:iniciar_sequencia' %}{% if querystring %}?{{ querystring }}{% endif %}"><i class="bi bi-play-circle"></i> Iniciar sequência</a>
-        </div>
-    </div>
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/pages/questoes/exercicios.css' %}">{% endblock %}
 
-    <form method="get" class="filters-box">
-        <h2 class="h6 mb-3">Filtros</h2>
-        <div class="row g-2">
-        <div class="col-md-3"><input class="form-control" type="search" name="q" value="{{ busca }}" placeholder="Buscar por código ou enunciado"></div>
-        <div class="col-md-3">
-            <select class="form-select" name="materia">
-                <option value="" {% if not materia_slug %}selected{% endif %}>Todas as matérias</option>
-                {% for materia in materias %}
-                    <option value="{{ materia.slug }}" {% if materia_slug == materia.slug %}selected{% endif %}>{{ materia.nome }}</option>
-                {% endfor %}
-            </select>
+{% block content %}
+    <section class="faixa" aria-labelledby="titulo-pagina">
+        <div>
+            <h1 id="titulo-pagina">Exercícios</h1>
+            <p class="faixa-texto">Questões individuais publicadas para estudo. Pratique e evolua para o ENEM.</p>
+            <div class="faixa-acoes">
+                <a class="btn btn-primary btn-lg" href="{% url 'questoes:iniciar_sequencia' %}{% if querystring %}?{{ querystring }}{% endif %}"><i class="bi bi-play-circle" aria-hidden="true"></i> Iniciar sequência</a>
+                <a class="btn btn-outline-secondary btn-lg" href="{% url 'questoes:historico' %}"><i class="bi bi-clock-history" aria-hidden="true"></i> Histórico</a>
+            </div>
         </div>
-        <div class="col-md-3">
-            <select class="form-select" name="conteudo">
-                <option value="" {% if not conteudo_id %}selected{% endif %}>Todos os conteúdos</option>
-                {% for conteudo in conteudos %}
-                    <option value="{{ conteudo.pk }}" {% if conteudo_id == conteudo.pk|stringformat:"s" %}selected{% endif %}>{{ conteudo.materia.nome }} - {{ conteudo.titulo }}</option>
-                {% endfor %}
-            </select>
+        <img class="faixa-ilustracao" src="{% static 'images/illustrations/alvo.svg' %}" alt="" width="220" height="165">
+    </section>
+
+    <form method="get" class="filtros" data-filtro-automatico role="search" aria-label="Filtrar questões">
+        <div class="filtro-busca">
+            <i class="bi bi-search" aria-hidden="true"></i>
+            <input class="form-control" type="search" name="q" value="{{ busca }}" placeholder="Buscar por código ou enunciado" aria-label="Buscar por código ou enunciado">
         </div>
-        <div class="col-md-2">
-            <select class="form-select" name="dificuldade">
-                <option value="" {% if not dificuldade %}selected{% endif %}>Todas</option>
-                {% for item in dificuldades %}
-                    <option value="{{ item.value }}" {% if dificuldade == item.value %}selected{% endif %}>{{ item.label }}</option>
-                {% endfor %}
-            </select>
-        </div>
-        <div class="col-md-1 d-grid"><button class="btn btn-outline-primary" type="submit">Filtrar</button></div>
-        </div>
+        <select class="form-select" name="materia" aria-label="Filtrar por matéria">
+            <option value="" {% if not materia_slug %}selected{% endif %}>Todas as matérias</option>
+            {% for materia in materias %}
+                <option value="{{ materia.slug }}" {% if materia_slug == materia.slug %}selected{% endif %}>{{ materia.nome }}</option>
+            {% endfor %}
+        </select>
+        <select class="form-select" name="conteudo" aria-label="Filtrar por conteúdo">
+            <option value="" {% if not conteudo_id %}selected{% endif %}>Todos os conteúdos</option>
+            {% for conteudo in conteudos %}
+                <option value="{{ conteudo.pk }}" {% if conteudo_id == conteudo.pk|stringformat:"s" %}selected{% endif %}>{{ conteudo.materia.nome }} - {{ conteudo.titulo }}</option>
+            {% endfor %}
+        </select>
+        <select class="form-select" name="dificuldade" aria-label="Filtrar por dificuldade">
+            <option value="" {% if not dificuldade %}selected{% endif %}>Todas as dificuldades</option>
+            {% for item in dificuldades %}
+                <option value="{{ item.value }}" {% if dificuldade == item.value %}selected{% endif %}>{{ item.label }}</option>
+            {% endfor %}
+        </select>
+        <button class="btn btn-outline-primary botao-filtrar" type="submit"><i class="bi bi-funnel" aria-hidden="true"></i> Filtrar</button>
     </form>
 
-    <p class="text-muted small mb-3">{{ total_encontrado }} {% if total_encontrado == 1 %}questão encontrada{% else %}questões encontradas{% endif %}</p>
-
-    <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-3">
-        {% for questao in page_obj %}
-            <div class="col">
-                <div class="app-card h-100 d-flex flex-column">
-                    <div class="d-flex justify-content-between gap-2 mb-2">
-                        <strong>{{ questao.codigo }}</strong>
-                        <span class="badge text-bg-secondary">{{ questao.get_dificuldade_display }}</span>
-                    </div>
-                    <p class="small text-muted mb-2">{{ questao.materia.nome }}</p>
-                    <p>{{ questao.enunciado|truncatewords:28 }}</p>
-                    <strong class="small">Conteúdos</strong>
-                    <p class="small text-muted">
-                        {% for relacao in questao.questao_conteudos.all %}
-                            {{ relacao.conteudo.titulo }}{% if not forloop.last %}, {% endif %}
-                        {% endfor %}
-                    </p>
-                    <div class="card-actions">
-                        <a class="btn btn-sm btn-primary" href="{% url 'questoes:questao_detalhe' questao.pk %}">Resolver questão</a>
-                        {% include "estudos/partials/botao_minha_lista_questao.html" %}
-                    </div>
-                </div>
-            </div>
-        {% empty %}
-            <div class="col-12"><div class="empty-state"><i class="bi bi-question-circle"></i><strong>Nenhuma questão publicada encontrada.</strong><p class="mb-0">Tente alterar os filtros ou volte mais tarde.</p></div></div>
-        {% endfor %}
+    <div class="filtros-resumo" aria-live="polite">
+        <span><strong>{{ total_encontrado }}</strong> {% if total_encontrado == 1 %}questão encontrada{% else %}questões encontradas{% endif %}</span>
+        {% if busca %}<a class="filtro-ativo" href="{% query_sem 'q' %}" aria-label="Remover filtro: busca {{ busca }}">“{{ busca }}” <i class="bi bi-x" aria-hidden="true"></i></a>{% endif %}
+        {% if materia_slug %}{% for materia in materias %}{% if materia.slug == materia_slug %}<a class="filtro-ativo" href="{% query_sem 'materia' %}" aria-label="Remover filtro: {{ materia.nome }}">{{ materia.nome }} <i class="bi bi-x" aria-hidden="true"></i></a>{% endif %}{% endfor %}{% endif %}
+        {% if conteudo_id %}{% for conteudo in conteudos %}{% if conteudo_id == conteudo.pk|stringformat:"s" %}<a class="filtro-ativo" href="{% query_sem 'conteudo' %}" aria-label="Remover filtro: {{ conteudo.titulo }}">{{ conteudo.titulo }} <i class="bi bi-x" aria-hidden="true"></i></a>{% endif %}{% endfor %}{% endif %}
+        {% if dificuldade %}{% for item in dificuldades %}{% if item.value == dificuldade %}<a class="filtro-ativo" href="{% query_sem 'dificuldade' %}" aria-label="Remover filtro: {{ item.label }}">{{ item.label }} <i class="bi bi-x" aria-hidden="true"></i></a>{% endif %}{% endfor %}{% endif %}
+        {% if busca or materia_slug or conteudo_id or dificuldade %}<a class="limpar-filtros" href="{% url 'questoes:exercicios_lista' %}">Limpar filtros</a>{% endif %}
     </div>
 
-    {% include "partials/paginacao.html" %}
+    <div class="com-lateral">
+        <div>
+            {% if page_obj.object_list %}
+                <h2 class="visually-hidden">Questões</h2>
+                <div class="lista-questoes">
+                    {% for questao in page_obj %}
+                        <article class="item questao-item" data-paleta-item data-paleta-titulo="{{ questao.codigo }}" data-paleta-grupo="Questões nesta página" data-paleta-detalhe="{{ questao.materia.nome }}" data-paleta-icone="bi bi-pencil-square" data-paleta-url="{% url 'questoes:questao_detalhe' questao.pk %}">
+                            <div class="questao-item-corpo">
+                                <div class="item-topo">
+                                    {% include "components/selo_materia.html" with materia=questao.materia %}
+                                    <div class="item-cabeca">
+                                        <span class="item-materia">{{ questao.materia.nome }}</span>
+                                        <h3 class="item-titulo"><a href="{% url 'questoes:questao_detalhe' questao.pk %}">{{ questao.codigo }}</a></h3>
+                                    </div>
+                                    {% include "components/chip_dificuldade.html" with valor=questao.dificuldade rotulo=questao.get_dificuldade_display %}
+                                </div>
+                                <p class="item-texto">{{ questao.enunciado|truncatewords:32 }}</p>
+                                {% with relacoes=questao.questao_conteudos.all %}
+                                    {% if relacoes %}
+                                        <div class="item-meta" aria-label="Conteúdos">
+                                            <span class="visually-hidden">Conteúdos:</span>
+                                            {% for relacao in relacoes %}<span class="chip chip--contorno"><i class="bi bi-book" aria-hidden="true"></i> {{ relacao.conteudo.titulo }}</span>{% endfor %}
+                                        </div>
+                                    {% endif %}
+                                {% endwith %}
+                                <div class="item-acoes">
+                                    <a class="btn btn-primary acao-principal" href="{% url 'questoes:questao_detalhe' questao.pk %}"><i class="bi bi-play-fill" aria-hidden="true"></i> Resolver questão</a>
+                                    {% include "estudos/partials/botao_minha_lista_questao.html" %}
+                                </div>
+                            </div>
+                            {% if questao.imagem_url %}
+                                <div class="questao-item-imagem"><img src="{{ questao.imagem_url }}" alt="" loading="lazy"></div>
+                            {% endif %}
+                        </article>
+                    {% endfor %}
+                </div>
+                {% include "partials/paginacao.html" %}
+            {% else %}
+                {% url 'questoes:exercicios_lista' as url_limpar %}
+                {% include "components/vazio.html" with titulo="Nenhuma questão publicada encontrada." texto="Tente alterar os filtros ou volte mais tarde." ilustracao="vazio" acao_url=url_limpar acao_rotulo="Ver todas as questões" %}
+            {% endif %}
+        </div>
+
+        <aside aria-label="Dicas">
+            <div class="painel painel--suave">
+                <span class="painel-icone mb-3" aria-hidden="true"><i class="bi bi-lightning-charge"></i></span>
+                <h2 class="painel-titulo">Modo sequência</h2>
+                <p class="painel-descricao">Responda as questões filtradas uma depois da outra e veja o resumo no final.</p>
+                <a class="btn btn-primary w-100" href="{% url 'questoes:iniciar_sequencia' %}{% if querystring %}?{{ querystring }}{% endif %}"><i class="bi bi-play-circle" aria-hidden="true"></i> Iniciar sequência</a>
+            </div>
+            <div class="dica">
+                <i class="bi bi-lightbulb" aria-hidden="true"></i>
+                <div>
+                    <strong>Dica</strong>
+                    <p>Comece pelas questões de dificuldade média: elas ajudam a fixar o conteúdo e aumentam a confiança.</p>
+                </div>
+            </div>
+        </aside>
+    </div>
 {% endblock %}

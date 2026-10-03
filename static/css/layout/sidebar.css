@@ -12,6 +12,8 @@
     padding: var(--esp-5) var(--esp-4) var(--esp-4);
     background: var(--superficie);
     border-right: 1px solid var(--linha);
+    scrollbar-width: thin;
+    scrollbar-color: var(--linha) transparent;
 }
 
 .marca {

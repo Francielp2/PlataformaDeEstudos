@@ -1,41 +1,46 @@
 {% extends "usuarios/base_interno.html" %}
+{% load static %}
 
 {% block title %}{{ questao.codigo }}{% endblock %}
 
 {% block voltar_url %}{% url 'questoes:exercicios_lista' %}{% endblock %}
 
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/pages/questoes/questao.css' %}">{% endblock %}
+
 {% block content %}
-    <div class="page-heading">
-        <h1>{{ questao.codigo }}</h1>
-        <p>{{ questao.materia.nome }} | {{ questao.get_dificuldade_display }}</p>
-    </div>
+    <div class="leitura leitura--centro">
+        {% block cabecalho_questao %}
+            <header class="cabecalho">
+                <div class="cabecalho-selo">
+                    {% include "components/selo_materia.html" with materia=questao.materia %}
+                    <div>
+                        <h1>{{ questao.codigo }}</h1>
+                        <p class="cabecalho-texto">{{ questao.materia.nome }}</p>
+                    </div>
+                </div>
+                <div class="cabecalho-acoes">
+                    {% include "estudos/partials/botao_minha_lista_questao.html" %}
+                </div>
+            </header>
+        {% endblock %}
 
-    <section class="section-box mb-4">
-        <p>{{ questao.enunciado|linebreaksbr }}</p>
-        {% include "questoes/partials/imagem_questao.html" %}
-        <p class="small text-muted">
-            Conteúdos:
-            {% for relacao in questao.questao_conteudos.all %}
-                {{ relacao.conteudo.titulo }}{% if not forloop.last %}, {% endif %}
-            {% endfor %}
-        </p>
-        <div class="mt-3">
-            {% include "estudos/partials/botao_minha_lista_questao.html" %}
-        </div>
-    </section>
-
-    <form method="post" class="section-box">
-        {% csrf_token %}
-        {% for alternativa in questao.alternativas.all %}
-            <div class="form-check mb-3">
-                <input class="form-check-input" type="radio" name="{{ form.alternativa.html_name }}" id="alternativa-{{ alternativa.pk }}" value="{{ alternativa.pk }}">
-                <label class="form-check-label" for="alternativa-{{ alternativa.pk }}">
-                    <strong>{{ alternativa.chave }}.</strong> {{ alternativa.texto }}
-                    {% include "questoes/partials/imagem_alternativa.html" %}
-                </label>
+        <form method="post" class="questao-cartao" novalidate>
+            {% csrf_token %}
+            <div class="questao-topo">
+                {% include "components/chip_dificuldade.html" with valor=questao.dificuldade rotulo=questao.get_dificuldade_display %}
+                {% for relacao in questao.questao_conteudos.all %}<span class="chip chip--contorno"><i class="bi bi-book" aria-hidden="true"></i> {{ relacao.conteudo.titulo }}</span>{% endfor %}
             </div>
-        {% endfor %}
-        {% for error in form.alternativa.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
-        <button class="btn btn-primary mt-3" type="submit">Responder</button>
-    </form>
+            <div class="enunciado">
+                <p>{{ questao.enunciado|linebreaksbr }}</p>
+                {% include "questoes/partials/imagem_questao.html" %}
+            </div>
+
+            {% include "questoes/partials/opcoes_resposta.html" with alternativas=questao.alternativas.all nome=form.alternativa.html_name marcada=form.alternativa.value erros=form.alternativa.errors %}
+
+            <div class="acoes-questao">
+                <button class="btn btn-primary btn-lg" type="submit"><i class="bi bi-send-check" aria-hidden="true"></i> Responder</button>
+                <span class="texto-suave small">Você verá se acertou logo depois de responder.</span>
+            </div>
+        </form>
+    </div>
 {% endblock %}

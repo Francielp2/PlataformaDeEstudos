@@ -1,17 +1,51 @@
 {% extends "usuarios/base_interno.html" %}
+{% load static %}
 
 {% block title %}Resultado da sequência{% endblock %}
 
 {% block voltar_url %}{% url 'questoes:exercicios_lista' %}{% endblock %}
 
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/pages/questoes/questao.css' %}">{% endblock %}
+
 {% block content %}
-    <div class="section-box">
-        <h1 class="h4">{% if resposta.correta %}Você acertou.{% else %}Você errou.{% endif %}</h1>
-        <div class="mb-3">
-            <p>{{ questao.enunciado|linebreaksbr }}</p>
-            {% include "questoes/partials/imagem_questao.html" %}
+    <div class="leitura leitura--centro">
+        <div class="progresso-sequencia">
+            <div class="linha-progresso">
+                <span class="linha-progresso-rotulo">Sequência</span>
+                <span class="linha-progresso-valor texto-suave">{% if proxima_posicao > total %}Última questão respondida{% else %}Próxima: {{ proxima_posicao }} de {{ total }}{% endif %}</span>
+                <div class="barra" role="progressbar" aria-label="Progresso da sequência" aria-valuemin="0" aria-valuemax="{{ total }}" aria-valuenow="{{ proxima_posicao|add:'-1' }}">
+                    <span style="width: {% widthratio proxima_posicao|add:'-1' total 100 %}%"></span>
+                </div>
+            </div>
         </div>
-        <p class="text-muted">A correção detalhada ficará disponível no histórico.</p>
-        <a class="btn btn-primary" href="{% url 'questoes:sequencia' %}">Próxima</a>
+
+        {% if resposta.correta %}
+            <section class="resultado-faixa tom-menta" aria-labelledby="resultado-titulo">
+                <span class="resultado-icone" aria-hidden="true"><i class="bi bi-check-lg"></i></span>
+                <div>
+                    <h1 id="resultado-titulo">Você acertou.</h1>
+                    <p>Boa! Bora para a próxima.</p>
+                </div>
+            </section>
+        {% else %}
+            <section class="resultado-faixa tom-coral" aria-labelledby="resultado-titulo">
+                <span class="resultado-icone" aria-hidden="true"><i class="bi bi-x-lg"></i></span>
+                <div>
+                    <h1 id="resultado-titulo">Você errou.</h1>
+                    <p>Sem problema: a correção fica no seu histórico para revisar depois.</p>
+                </div>
+            </section>
+        {% endif %}
+
+        <section class="questao-cartao" aria-label="Enunciado da questão">
+            <div class="enunciado">
+                <p>{{ questao.enunciado|linebreaksbr }}</p>
+                {% include "questoes/partials/imagem_questao.html" %}
+            </div>
+            <p class="texto-suave mt-3 mb-0">A correção detalhada ficará disponível no histórico.</p>
+            <div class="acoes-questao">
+                <a class="btn btn-primary btn-lg" href="{% url 'questoes:sequencia' %}">Próxima <i class="bi bi-arrow-right" aria-hidden="true"></i></a>
+            </div>
+        </section>
     </div>
 {% endblock %}

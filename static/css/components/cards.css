@@ -114,6 +114,7 @@
 .atividade > .btn, .atividade > .chip { flex: 0 0 auto; }
 @media (max-width: 575.98px) {
     .atividade { flex-wrap: wrap; }
+    .atividade-corpo { flex: 1 1 calc(100% - 36px - var(--esp-3)); }
     .atividade > .btn { margin-left: calc(36px + var(--esp-3)); }
 }
 .atividade-corpo { flex: 1; min-width: 0; }

@@ -527,6 +527,52 @@ class PaginaConteudoVideosTests(VideosTestMixin, TestCase):
         self.assertNotContains(response, 'class="progress')
         self.assertNotContains(response, "Concluído")
 
+    def test_um_video_nao_mostra_lista(self):
+        self.criar_video()
+        response = self.client.get(self.url)
+        self.assertNotContains(response, "Vídeos deste conteúdo")
+        self.assertNotContains(response, 'class="list-group lista-videos"')
+        self.assertNotContains(response, "<template>")
+
+    def test_varios_videos_mostram_um_player_e_a_lista(self):
+        primeiro = self.criar_video(ordem=1)
+        segundo = self.criar_video(OUTRO_ID, ordem=2)
+        ProgressoVideo.objects.create(usuario=self.usuario, video=segundo, ultima_posicao_segundos=70)
+        response = self.client.get(self.url)
+        self.assertContains(response, "Vídeos deste conteúdo")
+        self.assertContains(response, f'data-selecionar-video="{primeiro.pk}"', count=1)
+        self.assertContains(response, f'data-selecionar-video="{segundo.pk}"', count=1)
+        self.assertContains(response, f'href="?video={segundo.pk}#video-{segundo.pk}"')
+        conteudo_html = response.content.decode()
+        # Só o primeiro iframe é carregado; o segundo fica em <template> até ser escolhido.
+        self.assertEqual(conteudo_html.count("<template>"), 1)
+        self.assertLess(
+            conteudo_html.index(f'id="yt-player-{primeiro.pk}"'),
+            conteudo_html.index("<template>"),
+        )
+        self.assertGreater(conteudo_html.index(f'id="yt-player-{segundo.pk}"'), conteudo_html.index("<template>"))
+        self.assertContains(response, "Você parou em <span>01:10</span>")
+        self.assertEqual(
+            [item["selecionado"] for item in response.context["videos_conteudo"]],
+            [True, False],
+        )
+
+    def test_parametro_video_escolhe_o_player_principal(self):
+        self.criar_video(ordem=1)
+        segundo = self.criar_video(OUTRO_ID, ordem=2)
+        response = self.client.get(self.url + f"?video={segundo.pk}")
+        self.assertEqual(
+            [item["selecionado"] for item in response.context["videos_conteudo"]],
+            [False, True],
+        )
+        self.assertContains(response, f'data-selecionar-video="{segundo.pk}"\n                               aria-current="true"')
+        for valor in ("lixo", str(uuid.uuid4())):
+            response = self.client.get(self.url + f"?video={valor}")
+            self.assertEqual(
+                [item["selecionado"] for item in response.context["videos_conteudo"]],
+                [True, False],
+            )
+
     def test_video_inativo_nao_aparece(self):
         self.criar_video(ativo=False)
         response = self.client.get(self.url)
@@ -771,7 +817,7 @@ class HistoricoVideosTests(VideosTestMixin, TestCase):
         self.assertTrue(all(sessao.usuario == self.usuario for sessao in sessoes))
         self.assertContains(response, "01:05 – 1:02:05")
         self.assertContains(response, "01:30")
-        self.assertContains(response, f"#video-{self.video.pk}")
+        self.assertContains(response, f"?video={self.video.pk}#video-{self.video.pk}")
 
     def test_filtro_por_materia(self):
         response = self.client.get(reverse("videos:historico") + "?materia=fisica")

@@ -5,44 +5,60 @@
 {% block voltar_url %}{% url 'simulados_admin:admin_simulados_lista' %}{% endblock %}
 
 {% block content %}
-    <div class="page-heading d-flex justify-content-between align-items-start">
-        <div>
-            <h1>{{ simulado.titulo }}</h1>
-            <p>{{ simulado.get_tipo_display }}{% if simulado.materia %} - {{ simulado.materia.nome }}{% endif %}</p>
+    <header class="cabecalho">
+        <div class="cabecalho-selo">
+            {% if simulado.materia %}{% include "components/selo_materia.html" with materia=simulado.materia tamanho="lg" %}{% else %}<span class="selo selo--lg tom-lilas" aria-hidden="true"><i class="bi bi-clipboard-check"></i></span>{% endif %}
+            <div>
+                <h1>{{ simulado.titulo }}</h1>
+                <p class="cabecalho-texto">{{ simulado.get_tipo_display }}{% if simulado.materia %} - {{ simulado.materia.nome }}{% endif %}</p>
+                <div class="cabecalho-meta">
+                    {% include "components/chip_status.html" with valor=simulado.status rotulo=simulado.get_status_display %}
+                    <span class="chip chip--contorno"><i class="bi bi-stopwatch" aria-hidden="true"></i> {% if simulado.tempo_limite %}{{ simulado.tempo_limite }} minutos{% else %}Sem limite de tempo{% endif %}</span>
+                </div>
+            </div>
         </div>
-        <div class="d-flex flex-wrap gap-2">
-            <a class="btn btn-outline-primary" href="{% url 'simulados_admin:admin_simulado_editar' simulado.pk %}">Editar dados</a>
-            <a class="btn btn-outline-secondary" href="{% url 'simulados_admin:admin_simulado_questoes' simulado.pk %}">Gerenciar questões</a>
-            <form method="post" action="{% url 'simulados_admin:admin_simulado_publicar' simulado.pk %}">{% csrf_token %}<button class="btn btn-success" type="submit" {% if simulado.status == "published" %}disabled title="Este simulado já está publicado."{% endif %}>Publicar</button></form>
-            <form method="post" action="{% url 'simulados_admin:admin_simulado_duplicar' simulado.pk %}">{% csrf_token %}<button class="btn btn-outline-secondary" type="submit">Duplicar</button></form>
-            <form method="post" action="{% url 'simulados_admin:admin_simulado_arquivar' simulado.pk %}">{% csrf_token %}<button class="btn btn-outline-secondary" type="submit" {% if simulado.status == "archived" %}disabled title="Este simulado já está arquivado."{% endif %}>Arquivar</button></form>
+        <div class="cabecalho-acoes">
+            <a class="btn btn-primary" href="{% url 'simulados_admin:admin_simulado_questoes' simulado.pk %}"><i class="bi bi-list-ol" aria-hidden="true"></i> Gerenciar questões</a>
+            <a class="btn btn-outline-secondary" href="{% url 'simulados_admin:admin_simulado_editar' simulado.pk %}"><i class="bi bi-pencil" aria-hidden="true"></i> Editar dados</a>
+            <form method="post" action="{% url 'simulados_admin:admin_simulado_publicar' simulado.pk %}" data-confirmar="Publicar este simulado? Ele passa a aparecer para os estudantes." data-confirmar-acao="Publicar">{% csrf_token %}<button class="btn btn-outline-success" type="submit" {% if simulado.status == "published" %}disabled title="Este simulado já está publicado."{% endif %}><i class="bi bi-broadcast" aria-hidden="true"></i> Publicar</button></form>
+            <form method="post" action="{% url 'simulados_admin:admin_simulado_duplicar' simulado.pk %}">{% csrf_token %}<button class="btn btn-outline-secondary" type="submit"><i class="bi bi-copy" aria-hidden="true"></i> Duplicar</button></form>
+            <form method="post" action="{% url 'simulados_admin:admin_simulado_arquivar' simulado.pk %}" data-confirmar="Arquivar este simulado? Ele deixa de aparecer para os estudantes." data-confirmar-acao="Arquivar">{% csrf_token %}<button class="btn btn-outline-secondary" type="submit" {% if simulado.status == "archived" %}disabled title="Este simulado já está arquivado."{% endif %}><i class="bi bi-archive" aria-hidden="true"></i> Arquivar</button></form>
         </div>
-    </div>
+    </header>
 
-    <div class="row g-3 mb-4">
-        <div class="col-md-3"><div class="metric"><div class="metric-icon"><i class="bi bi-question-circle"></i></div><span>Questões</span><strong>{{ simulado.questoes.count }}</strong><span>no simulado</span></div></div>
-        <div class="col-md-3"><div class="metric"><div class="metric-icon"><i class="bi bi-clock-history"></i></div><span>Realizações</span><strong>{{ total_tentativas }}</strong><span>tentativas</span></div></div>
-        <div class="col-md-3"><div class="metric"><div class="metric-icon"><i class="bi bi-flag"></i></div><span>Status</span><strong>{{ simulado.get_status_display }}</strong><span>atual</span></div></div>
-        <div class="col-md-3"><div class="metric"><div class="metric-icon"><i class="bi bi-person"></i></div><span>Criador</span><strong>{{ simulado.criado_por|default:"-" }}</strong><span>responsável</span></div></div>
+    <div class="numeros">
+        {% include "components/numero.html" with valor=simulado.questoes.count rotulo="Questões" detalhe="no simulado" icone="bi-question-circle" tom="tom-ceu" %}
+        {% url 'simulados_admin:admin_resultados_simulado' simulado.pk as url_resultados %}
+        {% include "components/numero.html" with valor=total_tentativas rotulo="Realizações" detalhe="tentativas" icone="bi-clock-history" tom="tom-menta" url=url_resultados %}
+        {% include "components/numero.html" with valor=simulado.get_status_display rotulo="Status" detalhe="atual" icone="bi-flag" tom="tom-sol" %}
+        {% with criador=simulado.criado_por|default:"-" %}{% include "components/numero.html" with valor=criador rotulo="Criador" detalhe="responsável" icone="bi-person" tom="tom-lilas" %}{% endwith %}
     </div>
 
     {% if not pode_editar_estrutura %}
-        <div class="alert alert-warning">Este simulado já possui tentativas. Alterações estruturais estão bloqueadas; duplique para criar uma nova versão.</div>
+        <div class="aviso tom-sol mb-4"><i class="bi bi-lock" aria-hidden="true"></i><p>Este simulado já possui tentativas. Alterações estruturais estão bloqueadas; duplique para criar uma nova versão.</p></div>
     {% endif %}
 
-    <section class="section-box">
-        <h2 class="h5">Questões</h2>
-        <ol class="mb-0">
-            {% for questao in simulado.questoes.all %}
-                <li class="mb-2">
-                    <strong>{{ questao.codigo_origem|default:"Sem código" }}</strong>
-                    <span class="badge text-bg-secondary">{{ questao.get_origem_display }}</span>
-                    {{ questao.enunciado|truncatewords:18 }}
-                    {% include "questoes/partials/imagem_questao.html" %}
-                </li>
-            {% empty %}
-                <li>Nenhuma questão adicionada.</li>
-            {% endfor %}
-        </ol>
+    <section class="painel" aria-labelledby="titulo-questoes">
+        <div class="painel-topo">
+            <h2 class="painel-titulo" id="titulo-questoes">Questões</h2>
+            <a class="btn btn-sm btn-outline-secondary" href="{% url 'simulados_admin:admin_simulado_questoes' simulado.pk %}">Gerenciar</a>
+        </div>
+        {% if simulado.questoes.all %}
+            <ol class="atividades">
+                {% for questao in simulado.questoes.all %}
+                    <li class="atividade align-items-start">
+                        <span class="selo selo--sm tom-neutro numero" aria-hidden="true">{{ forloop.counter }}</span>
+                        <span class="atividade-corpo">
+                            <span class="atividade-titulo">{{ questao.codigo_origem|default:"Sem código" }} <span class="chip chip--contorno ms-1">{{ questao.get_origem_display }}</span></span>
+                            <span class="atividade-meta">{{ questao.enunciado|truncatewords:18 }}</span>
+                            {% include "questoes/partials/imagem_questao.html" %}
+                        </span>
+                    </li>
+                {% endfor %}
+            </ol>
+        {% else %}
+            {% url 'simulados_admin:admin_simulado_questoes' simulado.pk as url_questoes %}
+            {% include "components/vazio.html" with titulo="Nenhuma questão adicionada." texto="Adicione questões do banco, crie novas ou importe por JSON." icone="bi-list-ol" acao_url=url_questoes acao_rotulo="Gerenciar questões" compacto=True nivel="h3" %}
+        {% endif %}
     </section>
 {% endblock %}

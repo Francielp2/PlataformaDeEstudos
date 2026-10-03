@@ -24,3 +24,7 @@
 @container (max-width: 760px) {
     #videos-conteudo .row > [class*="col-lg"] { flex: 0 0 auto; width: 100%; }
 }
+
+/* Prévia do vídeo no cadastro (admin). */
+.previa-video { display: flex; gap: var(--esp-3); align-items: center; padding: var(--esp-3); border: 1px solid var(--linha); border-radius: var(--raio-md); background: var(--superficie); }
+.previa-video img { border-radius: var(--raio-sm); object-fit: cover; }

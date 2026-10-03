@@ -1,34 +1,53 @@
 {% extends "usuarios/base_interno.html" %}
+{% load static %}
 
 {% block title %}Adicionar questões do banco{% endblock %}
 
 {% block voltar_url %}{% url 'simulados_admin:admin_simulado_questoes' simulado.pk %}{% endblock %}
 
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/pages/questoes/form-questao.css' %}">{% endblock %}
+
 {% block content %}
-    <div class="page-heading">
-        <h1>Adicionar questões do banco</h1>
-        <p>{{ simulado.titulo }}</p>
-    </div>
-    <form method="get" class="filters-box">
-        <div class="row g-2">
-            <div class="col-md-3"><input class="form-control" type="search" name="q" value="{{ busca }}" placeholder="Buscar"></div>
-            <div class="col-md-3"><select class="form-select" name="materia"><option value="">Todas as matérias</option>{% for materia in materias %}<option value="{{ materia.slug }}" {% if materia_slug == materia.slug %}selected{% endif %}>{{ materia.nome }}</option>{% endfor %}</select></div>
-            <div class="col-md-3"><select class="form-select" name="conteudo"><option value="">Todos os conteúdos</option>{% for conteudo in conteudos %}<option value="{{ conteudo.pk }}" {% if conteudo_id == conteudo.pk|stringformat:"s" %}selected{% endif %}>{{ conteudo.materia.nome }} - {{ conteudo.titulo }}</option>{% endfor %}</select></div>
-            <div class="col-md-2"><select class="form-select" name="dificuldade"><option value="">Todas</option>{% for item in dificuldades %}<option value="{{ item.value }}" {% if dificuldade == item.value %}selected{% endif %}>{{ item.label }}</option>{% endfor %}</select></div>
-            <div class="col-md-1 d-grid"><button class="btn btn-outline-primary" type="submit">Filtrar</button></div>
+    <header class="cabecalho">
+        <div>
+            <h1>Adicionar questões do banco</h1>
+            <p class="cabecalho-texto">{{ simulado.titulo }}</p>
         </div>
+    </header>
+    <form method="get" class="filtros" data-filtro-automatico role="search" aria-label="Filtrar questões do banco">
+        <div class="filtro-busca">
+            <i class="bi bi-search" aria-hidden="true"></i>
+            <input class="form-control" type="search" name="q" value="{{ busca }}" placeholder="Buscar por código ou enunciado" aria-label="Buscar">
+        </div>
+        <select class="form-select" name="materia" aria-label="Filtrar por matéria"><option value="">Todas as matérias</option>{% for materia in materias %}<option value="{{ materia.slug }}" {% if materia_slug == materia.slug %}selected{% endif %}>{{ materia.nome }}</option>{% endfor %}</select>
+        <select class="form-select" name="conteudo" aria-label="Filtrar por conteúdo"><option value="">Todos os conteúdos</option>{% for conteudo in conteudos %}<option value="{{ conteudo.pk }}" {% if conteudo_id == conteudo.pk|stringformat:"s" %}selected{% endif %}>{{ conteudo.materia.nome }} - {{ conteudo.titulo }}</option>{% endfor %}</select>
+        <select class="form-select" name="dificuldade" aria-label="Filtrar por dificuldade"><option value="">Todas as dificuldades</option>{% for item in dificuldades %}<option value="{{ item.value }}" {% if dificuldade == item.value %}selected{% endif %}>{{ item.label }}</option>{% endfor %}</select>
+        <button class="btn btn-outline-primary botao-filtrar" type="submit"><i class="bi bi-funnel" aria-hidden="true"></i> Filtrar</button>
     </form>
-    <form method="post" class="section-box">
+    <form method="post" class="formulario" novalidate>
         {% csrf_token %}
-        {% if form.non_field_errors %}<div class="alert alert-danger">{% for error in form.non_field_errors %}<div>{{ error }}</div>{% endfor %}</div>{% endif %}
-        {% for questao in questoes %}
-            <div class="form-check border-bottom py-2">
-                <input class="form-check-input" type="checkbox" name="questoes" value="{{ questao.pk }}" id="questao-{{ questao.pk }}">
-                <label class="form-check-label" for="questao-{{ questao.pk }}"><strong>{{ questao.codigo }}</strong> - {{ questao.enunciado|truncatewords:20 }}</label>
-            </div>
-        {% empty %}
-            <p class="text-muted">Nenhuma questão encontrada.</p>
-        {% endfor %}
-        <button class="btn btn-primary mt-3" type="submit">Adicionar selecionadas</button>
+        {% include "components/resumo_erros.html" with form=form %}
+        <fieldset class="secao-form">
+            <legend>Questões encontradas</legend>
+            <p class="secao-form-descricao">Marque as que entram no simulado. Elas vão para o final da lista, na ordem marcada.</p>
+            {% if questoes %}
+                <div class="lista-escolha">
+                    <div class="lista-escolha-itens" style="max-height: 520px;">
+                        {% for questao in questoes %}
+                            <label class="lista-escolha-item" for="questao-{{ questao.pk }}">
+                                <input type="checkbox" name="questoes" value="{{ questao.pk }}" id="questao-{{ questao.pk }}">
+                                <span><strong>{{ questao.codigo }}</strong> - {{ questao.enunciado|truncatewords:20 }}</span>
+                            </label>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% else %}
+                {% include "components/vazio.html" with titulo="Nenhuma questão encontrada." texto="Ajuste os filtros acima ou cadastre questões no banco." icone="bi-search" compacto=True nivel="h3" %}
+            {% endif %}
+        </fieldset>
+        <div class="barra-acoes barra-acoes--fixa">
+            <button class="btn btn-primary" type="submit"><i class="bi bi-plus-lg" aria-hidden="true"></i> Adicionar selecionadas</button>
+            <a class="btn btn-outline-secondary" href="{% url 'simulados_admin:admin_simulado_questoes' simulado.pk %}">Cancelar</a>
+        </div>
     </form>
 {% endblock %}

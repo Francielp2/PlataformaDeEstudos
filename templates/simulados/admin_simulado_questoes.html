@@ -5,39 +5,44 @@
 {% block voltar_url %}{% url 'simulados_admin:admin_simulado_detalhe' simulado.pk %}{% endblock %}
 
 {% block content %}
-    <div class="page-heading d-flex justify-content-between align-items-start">
+    <header class="cabecalho">
         <div>
             <h1>Questões do simulado</h1>
-            <p>{{ simulado.titulo }}</p>
+            <p class="cabecalho-texto">{{ simulado.titulo }}</p>
         </div>
-        <div class="d-flex flex-wrap gap-2">
-            <a class="btn btn-outline-secondary" href="{% url 'simulados_admin:admin_adicionar_questoes_banco' simulado.pk %}">Adicionar do banco</a>
-            <a class="btn btn-outline-secondary" href="{% url 'simulados_admin:admin_nova_questao_simulado' simulado.pk %}">Nova questão</a>
-            <a class="btn btn-outline-secondary" href="{% url 'simulados_admin:admin_importar_json' simulado.pk %}">Importar JSON</a>
+        <div class="cabecalho-acoes">
+            <a class="btn btn-primary" href="{% url 'simulados_admin:admin_adicionar_questoes_banco' simulado.pk %}"><i class="bi bi-database-add" aria-hidden="true"></i> Adicionar do banco</a>
+            <a class="btn btn-outline-secondary" href="{% url 'simulados_admin:admin_nova_questao_simulado' simulado.pk %}"><i class="bi bi-plus-lg" aria-hidden="true"></i> Nova questão</a>
+            <a class="btn btn-outline-secondary" href="{% url 'simulados_admin:admin_importar_json' simulado.pk %}"><i class="bi bi-filetype-json" aria-hidden="true"></i> Importar JSON</a>
+        </div>
+    </header>
+    {% if not pode_editar_estrutura %}<div class="aviso tom-sol mb-4"><i class="bi bi-lock" aria-hidden="true"></i><p>Alterações estruturais bloqueadas porque já existem tentativas.</p></div>{% endif %}
+    <div class="tabela-card">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead><tr><th scope="col">Ordem</th><th scope="col">Código</th><th scope="col">Origem</th><th scope="col">Enunciado</th><th scope="col">Conteúdos</th><th scope="col" class="text-end">Ações</th></tr></thead>
+                <tbody>
+                    {% for questao in simulado.questoes.all %}
+                        <tr>
+                            <td><span class="selo selo--sm tom-neutro numero">{{ questao.ordem }}</span></td>
+                            <td class="celula-titulo text-nowrap">{{ questao.codigo_origem|default:"-" }}</td>
+                            <td><span class="chip chip--contorno">{{ questao.get_origem_display }}</span></td>
+                            <td style="min-width: 220px;">{{ questao.enunciado|truncatewords:16 }}</td>
+                            <td><span class="celula-sub">{% for relacao in questao.conteudos.all %}{{ relacao.conteudo_titulo }}{% if relacao.principal %} *{% endif %}{% if not forloop.last %}, {% endif %}{% endfor %}</span></td>
+                            <td class="celula-acoes">
+                                <div class="acoes-linha">
+                                    <form method="post" action="{% url 'simulados_admin:admin_mover_questao_simulado' simulado.pk questao.pk 'subir' %}">{% csrf_token %}<button class="btn btn-sm btn-outline-secondary" type="submit" {% if not pode_editar_estrutura %}disabled{% endif %} aria-label="Subir questão {{ questao.ordem }}"><i class="bi bi-arrow-up" aria-hidden="true"></i> Subir</button></form>
+                                    <form method="post" action="{% url 'simulados_admin:admin_mover_questao_simulado' simulado.pk questao.pk 'descer' %}">{% csrf_token %}<button class="btn btn-sm btn-outline-secondary" type="submit" {% if not pode_editar_estrutura %}disabled{% endif %} aria-label="Descer questão {{ questao.ordem }}"><i class="bi bi-arrow-down" aria-hidden="true"></i> Descer</button></form>
+                                    <form method="post" action="{% url 'simulados_admin:admin_remover_questao_simulado' simulado.pk questao.pk %}" data-confirmar="Remover a questão {{ questao.ordem }} deste simulado?" data-confirmar-acao="Remover" data-confirmar-tom="perigo">{% csrf_token %}<button class="btn btn-sm btn-outline-danger" type="submit" {% if not pode_editar_estrutura %}disabled{% endif %}><i class="bi bi-trash3" aria-hidden="true"></i> Remover</button></form>
+                                </div>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr><td colspan="6" class="tabela-vazia">Nenhuma questão adicionada.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
     </div>
-    {% if not pode_editar_estrutura %}<div class="alert alert-warning">Alterações estruturais bloqueadas porque já existem tentativas.</div>{% endif %}
-    <div class="table-responsive section-box">
-        <table class="table table-hover align-middle mb-0">
-            <thead><tr><th>Ordem</th><th>Código</th><th>Origem</th><th>Enunciado</th><th>Conteúdos</th><th>Ações</th></tr></thead>
-            <tbody>
-                {% for questao in simulado.questoes.all %}
-                    <tr>
-                        <td>{{ questao.ordem }}</td>
-                        <td>{{ questao.codigo_origem|default:"-" }}</td>
-                        <td>{{ questao.get_origem_display }}</td>
-                        <td>{{ questao.enunciado|truncatewords:16 }}</td>
-                        <td>{% for relacao in questao.conteudos.all %}{{ relacao.conteudo_titulo }}{% if relacao.principal %} *{% endif %}{% if not forloop.last %}, {% endif %}{% endfor %}</td>
-                        <td class="actions">
-                            <form method="post" action="{% url 'simulados_admin:admin_mover_questao_simulado' simulado.pk questao.pk 'subir' %}" class="d-inline">{% csrf_token %}<button class="btn btn-sm btn-outline-secondary" type="submit" {% if not pode_editar_estrutura %}disabled{% endif %}>Subir</button></form>
-                            <form method="post" action="{% url 'simulados_admin:admin_mover_questao_simulado' simulado.pk questao.pk 'descer' %}" class="d-inline">{% csrf_token %}<button class="btn btn-sm btn-outline-secondary" type="submit" {% if not pode_editar_estrutura %}disabled{% endif %}>Descer</button></form>
-                            <form method="post" action="{% url 'simulados_admin:admin_remover_questao_simulado' simulado.pk questao.pk %}" class="d-inline">{% csrf_token %}<button class="btn btn-sm btn-outline-danger" type="submit" {% if not pode_editar_estrutura %}disabled{% endif %}>Remover</button></form>
-                        </td>
-                    </tr>
-                {% empty %}
-                    <tr><td colspan="6">Nenhuma questão adicionada.</td></tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+    <p class="texto-suave small mt-2">* conteúdo principal da questão</p>
 {% endblock %}

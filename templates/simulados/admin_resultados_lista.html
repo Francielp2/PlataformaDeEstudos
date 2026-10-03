@@ -5,28 +5,32 @@
 {% block voltar_url %}{% url 'simulados_admin:admin_simulado_detalhe' simulado.pk %}{% endblock %}
 
 {% block content %}
-    <div class="page-heading">
-        <h1>Resultados</h1>
-        <p>{{ simulado.titulo }}</p>
-    </div>
-    <div class="table-responsive section-box">
-        <table class="table table-hover align-middle mb-0">
-            <thead><tr><th>Estudante</th><th>Data</th><th>Status</th><th>Acertos</th><th>Percentual</th><th>Ações</th></tr></thead>
-            <tbody>
-                {% for tentativa in page_obj %}
-                    <tr>
-                        <td>{{ tentativa.usuario.email }}</td>
-                        <td>{{ tentativa.iniciada_em|date:"d/m/Y H:i" }}</td>
-                        <td>{{ tentativa.get_status_display }}</td>
-                        <td>{{ tentativa.total_acertos }} / {{ tentativa.total_questoes }}</td>
-                        <td>{{ tentativa.percentual }}%</td>
-                        <td><a class="btn btn-sm btn-outline-primary" href="{% url 'simulados_admin:admin_resultado_detalhe' tentativa.pk %}">Ver</a></td>
-                    </tr>
-                {% empty %}
-                    <tr><td colspan="6">Nenhuma tentativa registrada.</td></tr>
-                {% endfor %}
-            </tbody>
-        </table>
+    <header class="cabecalho">
+        <div>
+            <h1>Resultados</h1>
+            <p class="cabecalho-texto">{{ simulado.titulo }}</p>
+        </div>
+    </header>
+    <div class="tabela-card">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead><tr><th scope="col">Estudante</th><th scope="col">Data</th><th scope="col">Status</th><th scope="col">Acertos</th><th scope="col">Percentual</th><th scope="col"><span class="visually-hidden">Ações</span></th></tr></thead>
+                <tbody>
+                    {% for tentativa in page_obj %}
+                        <tr>
+                            <td class="celula-titulo">{{ tentativa.usuario.email }}</td>
+                            <td class="celula-data">{{ tentativa.iniciada_em|date:"d/m/Y H:i" }}</td>
+                            <td>{% if tentativa.finalizada %}<span class="chip tom-menta"><i class="bi bi-check2-all" aria-hidden="true"></i> {{ tentativa.get_status_display }}</span>{% else %}<span class="chip tom-sol"><i class="bi bi-hourglass-split" aria-hidden="true"></i> {{ tentativa.get_status_display }}</span>{% endif %}</td>
+                            <td>{{ tentativa.total_acertos }} / {{ tentativa.total_questoes }}</td>
+                            <td>{{ tentativa.percentual }}%</td>
+                            <td class="celula-acoes"><a class="btn btn-sm btn-outline-primary" href="{% url 'simulados_admin:admin_resultado_detalhe' tentativa.pk %}">Ver<span class="visually-hidden"> resultado de {{ tentativa.usuario.email }}</span></a></td>
+                        </tr>
+                    {% empty %}
+                        <tr><td colspan="6" class="tabela-vazia">Nenhuma tentativa registrada.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
     {% include "partials/paginacao.html" %}
 {% endblock %}

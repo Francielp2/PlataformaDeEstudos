@@ -1248,3 +1248,18 @@ class NavegacaoVoltarQuestaoTests(QuestaoTestMixin, TestCase):
             response,
             f'id="appBackButton" href="{reverse("questoes:exercicios_lista")}"',
         )
+
+
+class BotoesStatusQuestaoTests(QuestaoTestMixin, TestCase):
+    def test_publicar_questao_ja_publicada_nao_altera_registro(self):
+        questao = self.criar_questao("MAT-STATUS-1")
+        self.assertEqual(questao.status, Questao.StatusQuestao.PUBLICADA)
+        atualizado_em = questao.atualizado_em
+        self.client.force_login(self.staff)
+        response = self.client.post(
+            reverse("questoes_admin:admin_questao_alterar_status", args=[questao.pk, "published"]),
+            follow=True,
+        )
+        self.assertContains(response, "A questão já está com o status publicada.")
+        questao.refresh_from_db()
+        self.assertEqual(questao.atualizado_em, atualizado_em)

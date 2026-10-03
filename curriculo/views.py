@@ -648,6 +648,9 @@ def admin_conteudo_alterar_status(request, pk, status):
         return redirect("curriculo_admin:admin_conteudos_lista")
 
     conteudo = get_object_or_404(Conteudo, pk=pk)
+    if conteudo.status == status:
+        messages.info(request, f"O conteúdo já está com o status {conteudo.get_status_display().lower()}.")
+        return redirect("curriculo_admin:admin_conteudos_lista")
     try:
         if status == Conteudo.StatusConteudo.PUBLICADO:
             conteudo.publicar()

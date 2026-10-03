@@ -479,6 +479,9 @@ def admin_simulado_detalhe(request, pk):
 @staff_required
 def admin_simulado_publicar(request, pk):
     simulado = get_object_or_404(Simulado, pk=pk)
+    if simulado.status == Simulado.StatusSimulado.PUBLICADO:
+        messages.info(request, "Este simulado já está publicado.")
+        return redirect("simulados_admin:admin_simulado_detalhe", pk=simulado.pk)
     try:
         simulado.publicar()
         messages.success(request, "Simulado publicado com sucesso.")
@@ -491,6 +494,9 @@ def admin_simulado_publicar(request, pk):
 @staff_required
 def admin_simulado_arquivar(request, pk):
     simulado = get_object_or_404(Simulado, pk=pk)
+    if simulado.status == Simulado.StatusSimulado.ARQUIVADO:
+        messages.info(request, "Este simulado já está arquivado.")
+        return redirect("simulados_admin:admin_simulado_detalhe", pk=simulado.pk)
     simulado.status = Simulado.StatusSimulado.ARQUIVADO
     simulado.save(update_fields=["status", "atualizado_em"])
     messages.success(request, "Simulado arquivado com sucesso.")

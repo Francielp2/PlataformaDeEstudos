@@ -487,3 +487,54 @@ class NavegacaoVoltarSimuladoTests(SimuladoTestMixin, TestCase):
         )
         finalizar = self.client.get(reverse("simulados:finalizar_tentativa", args=[tentativa.pk]))
         self.assertRedirects(finalizar, reverse("simulados:resultado_tentativa", args=[tentativa.pk]))
+
+
+class BotoesStatusSimuladoTests(SimuladoTestMixin, TestCase):
+    def setUp(self):
+        super().setUp()
+        self.client.force_login(self.staff)
+
+    def criar_simulado_arquivado(self):
+        simulado = self.criar_simulado()
+        simulado.status = Simulado.StatusSimulado.ARQUIVADO
+        simulado.save(update_fields=["status", "atualizado_em"])
+        return simulado
+
+    def test_publicar_desabilitado_quando_simulado_ja_publicado(self):
+        simulado = self.criar_simulado(status=Simulado.StatusSimulado.PUBLICADO)
+        response = self.client.get(reverse("simulados_admin:admin_simulado_detalhe", args=[simulado.pk]))
+        self.assertContains(response, 'disabled title="Este simulado já está publicado."')
+        self.assertNotContains(response, 'disabled title="Este simulado já está arquivado."')
+
+    def test_arquivar_desabilitado_quando_simulado_ja_arquivado(self):
+        simulado = self.criar_simulado_arquivado()
+        response = self.client.get(reverse("simulados_admin:admin_simulado_detalhe", args=[simulado.pk]))
+        self.assertContains(response, 'disabled title="Este simulado já está arquivado."')
+        self.assertNotContains(response, 'disabled title="Este simulado já está publicado."')
+
+    def test_rascunho_tem_publicar_e_arquivar_habilitados(self):
+        simulado = self.criar_simulado()
+        response = self.client.get(reverse("simulados_admin:admin_simulado_detalhe", args=[simulado.pk]))
+        self.assertNotContains(response, "disabled title=")
+
+    def test_publicar_novamente_nao_altera_simulado(self):
+        simulado = self.criar_simulado(status=Simulado.StatusSimulado.PUBLICADO)
+        atualizado_em = simulado.atualizado_em
+        response = self.client.post(
+            reverse("simulados_admin:admin_simulado_publicar", args=[simulado.pk]),
+            follow=True,
+        )
+        self.assertContains(response, "Este simulado já está publicado.")
+        simulado.refresh_from_db()
+        self.assertEqual(simulado.atualizado_em, atualizado_em)
+
+    def test_arquivar_novamente_nao_altera_simulado(self):
+        simulado = self.criar_simulado_arquivado()
+        atualizado_em = simulado.atualizado_em
+        response = self.client.post(
+            reverse("simulados_admin:admin_simulado_arquivar", args=[simulado.pk]),
+            follow=True,
+        )
+        self.assertContains(response, "Este simulado já está arquivado.")
+        simulado.refresh_from_db()
+        self.assertEqual(simulado.atualizado_em, atualizado_em)

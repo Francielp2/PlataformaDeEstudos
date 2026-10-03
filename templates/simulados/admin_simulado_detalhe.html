@@ -13,9 +13,9 @@
         <div class="d-flex flex-wrap gap-2">
             <a class="btn btn-outline-primary" href="{% url 'simulados_admin:admin_simulado_editar' simulado.pk %}">Editar dados</a>
             <a class="btn btn-outline-secondary" href="{% url 'simulados_admin:admin_simulado_questoes' simulado.pk %}">Gerenciar questões</a>
-            <form method="post" action="{% url 'simulados_admin:admin_simulado_publicar' simulado.pk %}">{% csrf_token %}<button class="btn btn-success" type="submit">Publicar</button></form>
+            <form method="post" action="{% url 'simulados_admin:admin_simulado_publicar' simulado.pk %}">{% csrf_token %}<button class="btn btn-success" type="submit" {% if simulado.status == "published" %}disabled title="Este simulado já está publicado."{% endif %}>Publicar</button></form>
             <form method="post" action="{% url 'simulados_admin:admin_simulado_duplicar' simulado.pk %}">{% csrf_token %}<button class="btn btn-outline-secondary" type="submit">Duplicar</button></form>
-            <form method="post" action="{% url 'simulados_admin:admin_simulado_arquivar' simulado.pk %}">{% csrf_token %}<button class="btn btn-outline-secondary" type="submit">Arquivar</button></form>
+            <form method="post" action="{% url 'simulados_admin:admin_simulado_arquivar' simulado.pk %}">{% csrf_token %}<button class="btn btn-outline-secondary" type="submit" {% if simulado.status == "archived" %}disabled title="Este simulado já está arquivado."{% endif %}>Arquivar</button></form>
         </div>
     </div>
 

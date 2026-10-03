@@ -615,6 +615,9 @@ def admin_questao_alterar_status(request, pk, status):
         messages.error(request, "Status de questão inválido.")
         return redirect("questoes_admin:admin_questoes_lista")
     questao = get_object_or_404(Questao, pk=pk)
+    if questao.status == status:
+        messages.info(request, f"A questão já está com o status {questao.get_status_display().lower()}.")
+        return redirect("questoes_admin:admin_questoes_lista")
     try:
         if status == Questao.StatusQuestao.PUBLICADA:
             questao.publicar()

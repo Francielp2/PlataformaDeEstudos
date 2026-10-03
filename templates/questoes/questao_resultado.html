@@ -2,6 +2,8 @@
 
 {% block title %}Resultado{% endblock %}
 
+{% block voltar_url %}{% url 'questoes:exercicios_lista' %}{% endblock %}
+
 {% block content %}
     <div class="section-box">
         <h1 class="h4">{% if resposta.correta %}Você acertou.{% else %}Você errou.{% endif %}</h1>

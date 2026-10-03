@@ -7,6 +7,7 @@ from django.db.models import Case, Count, Prefetch, Q, Value, When
 from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
+from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_POST
 
 from curriculo.models import Conteudo, Materia
@@ -138,6 +139,7 @@ def exercicios_lista(request):
     )
 
 
+@never_cache
 @login_required(login_url="usuarios:login")
 def questao_detalhe(request, pk):
     questao = get_object_or_404(
@@ -151,11 +153,7 @@ def questao_detalhe(request, pk):
             questao,
             form.cleaned_data["alternativa"],
         )
-        return render(
-            request,
-            "questoes/questao_resultado.html",
-            {"questao": questao, "resposta": resposta, "active": "exercicios"},
-        )
+        return redirect("questoes:questao_resultado", pk=resposta.pk)
 
     return render(
         request,
@@ -166,6 +164,20 @@ def questao_detalhe(request, pk):
             "active": "exercicios",
             **ids_organizacao_usuario(request.user),
         },
+    )
+
+
+@login_required(login_url="usuarios:login")
+def questao_resultado(request, pk):
+    resposta = get_object_or_404(
+        RespostaQuestao.objects.select_related("questao"),
+        pk=pk,
+        usuario=request.user,
+    )
+    return render(
+        request,
+        "questoes/questao_resultado.html",
+        {"questao": resposta.questao, "resposta": resposta, "active": "exercicios"},
     )
 
 
@@ -184,6 +196,7 @@ def iniciar_sequencia(request):
     return redirect("questoes:sequencia")
 
 
+@never_cache
 @login_required(login_url="usuarios:login")
 def sequencia(request):
     dados = request.session.get(SESSAO_SEQUENCIA)
@@ -211,18 +224,9 @@ def sequencia(request):
             dados["acertos"] += 1
         else:
             dados["erros"] += 1
+        dados["ultima_resposta"] = str(resposta.pk)
         request.session[SESSAO_SEQUENCIA] = dados
-        return render(
-            request,
-            "questoes/sequencia_resultado.html",
-            {
-                "questao": questao,
-                "resposta": resposta,
-                "proxima_posicao": dados["indice"] + 1,
-                "total": dados["total"],
-                "active": "exercicios",
-            },
-        )
+        return redirect("questoes:sequencia_resultado")
 
     return render(
         request,
@@ -237,6 +241,32 @@ def sequencia(request):
     )
 
 
+@never_cache
+@login_required(login_url="usuarios:login")
+def sequencia_resultado(request):
+    dados = request.session.get(SESSAO_SEQUENCIA)
+    if not dados or not dados.get("ultima_resposta"):
+        return redirect("questoes:sequencia")
+    resposta = RespostaQuestao.objects.select_related("questao").filter(
+        pk=dados["ultima_resposta"],
+        usuario=request.user,
+    ).first()
+    if resposta is None:
+        return redirect("questoes:sequencia")
+    return render(
+        request,
+        "questoes/sequencia_resultado.html",
+        {
+            "questao": resposta.questao,
+            "resposta": resposta,
+            "proxima_posicao": dados["indice"] + 1,
+            "total": dados["total"],
+            "active": "exercicios",
+        },
+    )
+
+
+@never_cache
 @login_required(login_url="usuarios:login")
 def sequencia_resumo(request):
     dados = request.session.get(SESSAO_SEQUENCIA)
@@ -512,6 +542,7 @@ def admin_questao_criar(request):
             "formset": formset,
             "titulo": "Criar questão",
             "active": "admin_questoes",
+            "voltar_url": reverse("questoes_admin:admin_questoes_lista"),
         },
     )
 
@@ -572,6 +603,7 @@ def admin_questao_editar(request, pk):
             "formset": formset,
             "titulo": "Editar questão",
             "active": "admin_questoes",
+            "voltar_url": reverse("questoes_admin:admin_questao_detalhe", args=[pk]),
         },
     )
 

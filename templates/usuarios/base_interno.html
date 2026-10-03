@@ -57,9 +57,16 @@
                 </div>
                 <div class="topbar-actions">
                     {% if request.resolver_match.url_name != "painel_estudante" and request.resolver_match.url_name != "admin_painel" %}
-                        <button class="btn btn-outline-secondary btn-sm" type="button" id="appBackButton" data-login-url="{% url 'usuarios:login' %}" data-fallback="{% if request.user.is_staff %}{% url 'usuarios:admin_painel' %}{% else %}{% url 'usuarios:painel_estudante' %}{% endif %}">
-                            <i class="bi bi-arrow-left"></i> Voltar
-                        </button>
+                        {% comment %}
+                            O botão leva à página-pai da tela atual, nunca ao histórico do navegador.
+                            Cada template define o destino no bloco "voltar_url" (ou a view envia
+                            "voltar_url" no contexto); sem isso, volta ao painel do usuário.
+                        {% endcomment %}
+                        {% block voltar %}
+                            <a class="btn btn-outline-secondary btn-sm" id="appBackButton" href="{% block voltar_url %}{% if voltar_url %}{{ voltar_url }}{% elif request.user.is_staff %}{% url 'usuarios:admin_painel' %}{% else %}{% url 'usuarios:painel_estudante' %}{% endif %}{% endblock %}">
+                                <i class="bi bi-arrow-left"></i> {% block voltar_texto %}Voltar{% endblock %}
+                            </a>
+                        {% endblock %}
                     {% endif %}
                 </div>
             </header>
@@ -85,25 +92,6 @@
                     });
                 });
             }
-
-            const backButton = document.getElementById("appBackButton");
-            if (!backButton) {
-                return;
-            }
-            backButton.addEventListener("click", function () {
-                const fallback = backButton.dataset.fallback || "/";
-                const loginUrl = backButton.dataset.loginUrl || "/usuarios/login/";
-                if (document.referrer) {
-                    const referrer = new URL(document.referrer);
-                    const isSameOrigin = referrer.origin === window.location.origin;
-                    const isLogin = referrer.pathname === loginUrl || referrer.pathname.startsWith(loginUrl);
-                    if (isSameOrigin && !isLogin && window.history.length > 1) {
-                        window.history.back();
-                        return;
-                    }
-                }
-                window.location.href = fallback;
-            });
         });
     </script>
 {% endblock %}

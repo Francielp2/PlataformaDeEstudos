@@ -2,6 +2,8 @@
 
 {% block title %}Importar JSON{% endblock %}
 
+{% block voltar_url %}{% url 'simulados_admin:admin_simulado_questoes' simulado.pk %}{% endblock %}
+
 {% block content %}
     <div class="page-heading d-flex justify-content-between align-items-start">
         <div>

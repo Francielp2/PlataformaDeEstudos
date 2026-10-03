@@ -2,6 +2,8 @@
 
 {% block title %}Confirmar status{% endblock %}
 
+{% block voltar_url %}{% url 'usuarios:admin_usuario_detalhe' usuario_obj.pk %}{% endblock %}
+
 {% block content %}
     <div class="section-box">
         <h1 class="h4">Confirmar alteração de status</h1>

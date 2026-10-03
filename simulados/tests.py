@@ -451,3 +451,39 @@ class SimuladoViewTests(SimuladoTestMixin, TestCase):
         self.assertNotContains(response, "correta=True")
         self.assertNotContains(response, "alternativa-correta")
         self.assertNotContains(response, "data-correta")
+
+
+class NavegacaoVoltarSimuladoTests(SimuladoTestMixin, TestCase):
+    def test_paginas_da_tentativa_nao_ficam_em_cache(self):
+        simulado = self.criar_simulado(status=Simulado.StatusSimulado.PUBLICADO)
+        self.client.force_login(self.estudante)
+        self.client.post(reverse("simulados:iniciar_simulado", args=[simulado.slug]))
+        tentativa = TentativaSimulado.objects.get(usuario=self.estudante, simulado=simulado)
+        for url in (
+            reverse("simulados:tentativa_questao", args=[tentativa.pk, 1]),
+            reverse("simulados:finalizar_tentativa", args=[tentativa.pk]),
+        ):
+            self.assertIn("no-store", self.client.get(url)["Cache-Control"])
+
+    def test_voltar_da_tentativa_sai_para_meus_simulados(self):
+        simulado = self.criar_simulado(status=Simulado.StatusSimulado.PUBLICADO)
+        self.client.force_login(self.estudante)
+        self.client.post(reverse("simulados:iniciar_simulado", args=[simulado.slug]))
+        tentativa = TentativaSimulado.objects.get(usuario=self.estudante, simulado=simulado)
+        response = self.client.get(reverse("simulados:tentativa_questao", args=[tentativa.pk, 1]))
+        self.assertContains(
+            response,
+            f'id="appBackButton" href="{reverse("simulados:meus_simulados")}"',
+        )
+        self.assertContains(response, "Sair do simulado")
+
+    def test_voltar_do_resultado_nao_reabre_tentativa_finalizada(self):
+        tentativa = self.finalizar_com_resposta(correta=True)
+        self.client.force_login(self.estudante)
+        resultado = self.client.get(reverse("simulados:resultado_tentativa", args=[tentativa.pk]))
+        self.assertContains(
+            resultado,
+            f'id="appBackButton" href="{reverse("simulados:meus_simulados")}"',
+        )
+        finalizar = self.client.get(reverse("simulados:finalizar_tentativa", args=[tentativa.pk]))
+        self.assertRedirects(finalizar, reverse("simulados:resultado_tentativa", args=[tentativa.pk]))

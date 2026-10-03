@@ -2,6 +2,8 @@
 
 {% block title %}Finalizar simulado{% endblock %}
 
+{% block voltar_url %}{% url 'simulados:tentativa_questao' tentativa.pk 1 %}{% endblock %}
+
 {% block content %}
     <div class="page-heading">
         <h1>Finalizar simulado</h1>

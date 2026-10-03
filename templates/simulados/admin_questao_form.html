@@ -2,6 +2,8 @@
 
 {% block title %}Nova questão do simulado{% endblock %}
 
+{% block voltar_url %}{% url 'simulados_admin:admin_simulado_questoes' simulado.pk %}{% endblock %}
+
 {% block content %}
     <div class="page-heading">
         <h1>Nova questão do simulado</h1>

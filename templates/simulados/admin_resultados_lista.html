@@ -2,6 +2,8 @@
 
 {% block title %}Resultados do simulado{% endblock %}
 
+{% block voltar_url %}{% url 'simulados_admin:admin_simulado_detalhe' simulado.pk %}{% endblock %}
+
 {% block content %}
     <div class="page-heading">
         <h1>Resultados</h1>

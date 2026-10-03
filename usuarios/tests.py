@@ -794,3 +794,47 @@ class UsuariosFluxoTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertNotIn("_auth_user_id", self.client.session)
+
+
+class NavegacaoVoltarAdminTests(TestCase):
+    def setUp(self):
+        User = get_user_model()
+        self.admin = User.objects.create_user(
+            email="admin@example.com",
+            password="SenhaForte123",
+            first_name="Admin",
+            is_staff=True,
+        )
+        self.alvo = User.objects.create_user(
+            email="alvo@example.com",
+            password="SenhaForte123",
+            first_name="Alvo",
+        )
+        PerfilEstudante.objects.create(usuario=self.alvo)
+        self.client.force_login(self.admin)
+
+    def test_confirmacoes_voltam_para_detalhe_e_nao_ficam_em_cache(self):
+        detalhe = reverse("usuarios:admin_usuario_detalhe", args=[self.alvo.pk])
+        for nome in ("usuarios:admin_usuario_excluir", "usuarios:admin_usuario_ativar"):
+            response = self.client.get(reverse(nome, args=[self.alvo.pk]))
+            self.assertContains(response, f'id="appBackButton" href="{detalhe}"')
+            self.assertIn("no-store", response["Cache-Control"])
+
+    def test_paginas_de_usuario_excluido_redirecionam_para_lista(self):
+        pk = self.alvo.pk
+        self.client.post(reverse("usuarios:admin_usuario_excluir", args=[pk]))
+        for nome in (
+            "usuarios:admin_usuario_excluir",
+            "usuarios:admin_usuario_ativar",
+            "usuarios:admin_usuario_detalhe",
+            "usuarios:admin_usuario_editar",
+        ):
+            response = self.client.get(reverse(nome, args=[pk]), follow=True)
+            self.assertEqual(response.redirect_chain[-1][0], reverse("usuarios:admin_usuarios_lista"))
+            self.assertContains(response, "Usuário não encontrado")
+
+    def test_formulario_de_edicao_volta_para_detalhe(self):
+        response = self.client.get(reverse("usuarios:admin_usuario_editar", args=[self.alvo.pk]))
+        detalhe = reverse("usuarios:admin_usuario_detalhe", args=[self.alvo.pk])
+        self.assertContains(response, f'id="appBackButton" href="{detalhe}"')
+        self.assertNotContains(response, "history.back")

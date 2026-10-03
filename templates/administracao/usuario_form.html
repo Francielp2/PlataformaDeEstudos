@@ -13,7 +13,7 @@
             {% csrf_token %}
             {% include "usuarios/partials/form_campos.html" with form=form %}
             <button class="btn btn-primary" type="submit"><i class="bi bi-check2"></i> Salvar</button>
-            <a class="btn btn-outline-secondary" href="{% url 'usuarios:admin_usuarios_lista' %}">Cancelar</a>
+            <a class="btn btn-outline-secondary" href="{{ voltar_url }}">Cancelar</a>
         </form>
     </div>
 {% endblock %}

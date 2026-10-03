@@ -2,6 +2,8 @@
 
 {% block title %}Adicionar questões do banco{% endblock %}
 
+{% block voltar_url %}{% url 'simulados_admin:admin_simulado_questoes' simulado.pk %}{% endblock %}
+
 {% block content %}
     <div class="page-heading">
         <h1>Adicionar questões do banco</h1>

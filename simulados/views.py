@@ -10,6 +10,7 @@ from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
+from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_POST
 
 from curriculo.models import Conteudo, Materia
@@ -211,6 +212,7 @@ def iniciar_simulado(request, slug):
     return redirect("simulados:tentativa_questao", pk=tentativa.pk, ordem=1)
 
 
+@never_cache
 @login_required(login_url="usuarios:login")
 def tentativa_questao(request, pk, ordem):
     tentativa = get_object_or_404(
@@ -260,6 +262,7 @@ def tentativa_questao(request, pk, ordem):
     )
 
 
+@never_cache
 @login_required(login_url="usuarios:login")
 def finalizar_tentativa(request, pk):
     tentativa = get_object_or_404(
@@ -428,7 +431,7 @@ def admin_simulado_criar(request):
             return redirect("simulados_admin:admin_simulado_detalhe", pk=simulado.pk)
         except ValidationError as exc:
             form.add_error(None, exc)
-    return render(request, "simulados/admin_simulado_form.html", {"form": form, "titulo": "Criar simulado", "active": "admin_simulados"})
+    return render(request, "simulados/admin_simulado_form.html", {"form": form, "titulo": "Criar simulado", "active": "admin_simulados", "voltar_url": reverse("simulados_admin:admin_simulados_lista")})
 
 
 @staff_required
@@ -448,7 +451,7 @@ def admin_simulado_editar(request, pk):
             return redirect("simulados_admin:admin_simulado_detalhe", pk=simulado.pk)
         except ValidationError as exc:
             form.add_error(None, exc)
-    return render(request, "simulados/admin_simulado_form.html", {"form": form, "titulo": "Editar simulado", "active": "admin_simulados"})
+    return render(request, "simulados/admin_simulado_form.html", {"form": form, "titulo": "Editar simulado", "active": "admin_simulados", "voltar_url": reverse("simulados_admin:admin_simulado_detalhe", args=[pk])})
 
 
 @staff_required

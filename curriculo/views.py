@@ -1,3 +1,5 @@
+import uuid
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
@@ -329,6 +331,24 @@ def admin_materias_lista(request):
     )
 
 
+VOLTAR_PADROES_IMPORTACAO = {
+    "materias": "curriculo_admin:admin_materias_importar_json",
+    "conteudos": "curriculo_admin:admin_conteudos_importar_json",
+    "questoes": "questoes_admin:admin_questoes_importar_json",
+}
+
+
+def _voltar_url_padroes_importacao(request):
+    simulado_pk = request.GET.get("simulado")
+    if simulado_pk:
+        try:
+            return reverse("simulados_admin:admin_importar_json", args=[uuid.UUID(simulado_pk)])
+        except ValueError:
+            pass
+    origem = VOLTAR_PADROES_IMPORTACAO.get(request.GET.get("origem"))
+    return reverse(origem or "usuarios:admin_painel")
+
+
 @staff_required
 def admin_padroes_importacao_json(request):
     dados = _padroes_importacao_json(request.GET.get("simulado"))
@@ -342,7 +362,11 @@ def admin_padroes_importacao_json(request):
     return render(
         request,
         "curriculo/admin_padroes_importacao_json.html",
-        {"dados": dados, "active": "admin_materias"},
+        {
+            "dados": dados,
+            "active": "admin_materias",
+            "voltar_url": _voltar_url_padroes_importacao(request),
+        },
     )
 
 
@@ -359,7 +383,12 @@ def admin_materia_criar(request):
     return render(
         request,
         "curriculo/admin_materia_form.html",
-        {"form": form, "titulo": "Criar matéria", "active": "admin_materias"},
+        {
+            "form": form,
+            "titulo": "Criar matéria",
+            "active": "admin_materias",
+            "voltar_url": reverse("curriculo_admin:admin_materias_lista"),
+        },
     )
 
 
@@ -411,7 +440,12 @@ def admin_materia_editar(request, slug):
     return render(
         request,
         "curriculo/admin_materia_form.html",
-        {"form": form, "titulo": "Editar matéria", "active": "admin_materias"},
+        {
+            "form": form,
+            "titulo": "Editar matéria",
+            "active": "admin_materias",
+            "voltar_url": reverse("curriculo_admin:admin_materia_detalhe", args=[slug]),
+        },
     )
 
 
@@ -557,7 +591,12 @@ def admin_conteudo_criar(request):
     return render(
         request,
         "curriculo/admin_conteudo_form.html",
-        {"form": form, "titulo": "Criar conteúdo", "active": "admin_conteudos"},
+        {
+            "form": form,
+            "titulo": "Criar conteúdo",
+            "active": "admin_conteudos",
+            "voltar_url": reverse("curriculo_admin:admin_conteudos_lista"),
+        },
     )
 
 
@@ -592,7 +631,12 @@ def admin_conteudo_editar(request, pk):
     return render(
         request,
         "curriculo/admin_conteudo_form.html",
-        {"form": form, "titulo": "Editar conteúdo", "active": "admin_conteudos"},
+        {
+            "form": form,
+            "titulo": "Editar conteúdo",
+            "active": "admin_conteudos",
+            "voltar_url": reverse("curriculo_admin:admin_conteudo_detalhe", args=[pk]),
+        },
     )
 
 

@@ -2,6 +2,8 @@
 
 {% block title %}Revisão da tentativa{% endblock %}
 
+{% block voltar_url %}{% url 'simulados:resultado_tentativa' tentativa.pk %}{% endblock %}
+
 {% block content %}
     <div class="page-heading">
         <h1>Revisão da tentativa</h1>

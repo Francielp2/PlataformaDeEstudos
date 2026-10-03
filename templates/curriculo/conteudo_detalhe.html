@@ -2,6 +2,8 @@
 
 {% block title %}{{ conteudo.titulo }}{% endblock %}
 
+{% block voltar_url %}{% url 'curriculo:materia_detalhe' materia.slug %}{% endblock %}
+
 {% block content %}
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">

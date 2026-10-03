@@ -443,6 +443,7 @@ class EstudanteQuestaoViewTests(QuestaoTestMixin, TestCase):
         response = self.client.post(
             reverse("questoes:questao_detalhe", args=[questao.pk]),
             {"alternativa": self.alternativa(questao, correta=True).pk},
+            follow=True,
         )
 
         self.assertContains(response, "Você acertou")
@@ -527,6 +528,7 @@ class EstudanteQuestaoViewTests(QuestaoTestMixin, TestCase):
         resultado = self.client.post(
             reverse("questoes:questao_detalhe", args=[questao.pk]),
             {"alternativa": alternativa_imagem.pk},
+            follow=True,
         )
         self.assertContains(resultado, f'src="{url_questao}"')
         resposta = RespostaQuestao.objects.get(usuario=self.estudante, questao=questao)
@@ -541,6 +543,7 @@ class EstudanteQuestaoViewTests(QuestaoTestMixin, TestCase):
         sequencia_resultado = self.client.post(
             reverse("questoes:sequencia"),
             {"alternativa": alternativa_imagem.pk},
+            follow=True,
         )
         self.assertContains(sequencia_resultado, f'src="{url_questao}"')
 
@@ -606,6 +609,7 @@ class EstudanteQuestaoViewTests(QuestaoTestMixin, TestCase):
         response = self.client.post(
             reverse("questoes:sequencia"),
             {"alternativa": self.alternativa(questao, correta=True).pk},
+            follow=True,
         )
         self.assertContains(response, "Você acertou")
         self.assertNotContains(response, "Correta")
@@ -1179,3 +1183,68 @@ class AdminQuestaoViewTests(QuestaoTestMixin, TestCase):
                 {"chave": "C", "texto": "Alternativa C", "correta": True, "ordem": 3},
             ],
         }
+
+
+class NavegacaoVoltarQuestaoTests(QuestaoTestMixin, TestCase):
+    def test_responder_questao_redireciona_e_atualizar_nao_duplica_resposta(self):
+        questao = self.criar_questao("MAT-VOLTAR-1")
+        self.client.force_login(self.estudante)
+        response = self.client.post(
+            reverse("questoes:questao_detalhe", args=[questao.pk]),
+            {"alternativa": self.alternativa(questao, correta=True).pk},
+        )
+        resposta = RespostaQuestao.objects.get(usuario=self.estudante, questao=questao)
+        url_resultado = reverse("questoes:questao_resultado", args=[resposta.pk])
+        self.assertRedirects(response, url_resultado)
+
+        resultado = self.client.get(url_resultado)
+        self.client.get(url_resultado)
+        self.assertContains(resultado, "Você acertou")
+        self.assertContains(resultado, f'href="{reverse("questoes:exercicios_lista")}"')
+        self.assertEqual(RespostaQuestao.objects.filter(usuario=self.estudante).count(), 1)
+
+    def test_resultado_de_questao_de_outro_usuario_nao_e_acessivel(self):
+        questao = self.criar_questao("MAT-VOLTAR-2")
+        resposta = RespostaQuestao.objects.create(
+            usuario=self.staff,
+            questao=questao,
+            alternativa_escolhida=self.alternativa(questao, correta=True),
+            correta=True,
+        )
+        self.client.force_login(self.estudante)
+        response = self.client.get(reverse("questoes:questao_resultado", args=[resposta.pk]))
+        self.assertEqual(response.status_code, 404)
+
+    def test_resultado_da_sequencia_pode_ser_recarregado_sem_avancar(self):
+        self.criar_questao("MAT-VOLTAR-3")
+        self.criar_questao("MAT-VOLTAR-4")
+        self.client.force_login(self.estudante)
+        self.client.get(reverse("questoes:iniciar_sequencia"))
+        atual = self.client.get(reverse("questoes:sequencia")).context["questao"]
+        response = self.client.post(
+            reverse("questoes:sequencia"),
+            {"alternativa": self.alternativa(atual, correta=True).pk},
+        )
+        self.assertRedirects(response, reverse("questoes:sequencia_resultado"))
+
+        self.client.get(reverse("questoes:sequencia_resultado"))
+        recarregado = self.client.get(reverse("questoes:sequencia_resultado"))
+        self.assertEqual(recarregado.status_code, 200)
+        self.assertIn("no-store", recarregado["Cache-Control"])
+        self.assertEqual(self.client.session["questoes_sequencia"]["indice"], 1)
+        self.assertEqual(RespostaQuestao.objects.filter(usuario=self.estudante).count(), 1)
+
+    def test_resultado_da_sequencia_sem_sessao_volta_para_exercicios(self):
+        self.client.force_login(self.estudante)
+        response = self.client.get(reverse("questoes:sequencia_resultado"), follow=True)
+        self.assertEqual(response.redirect_chain[-1][0], reverse("questoes:exercicios_lista"))
+
+    def test_botao_voltar_nao_usa_historico_do_navegador(self):
+        questao = self.criar_questao("MAT-VOLTAR-5")
+        self.client.force_login(self.estudante)
+        response = self.client.get(reverse("questoes:questao_detalhe", args=[questao.pk]))
+        self.assertNotContains(response, "history.back")
+        self.assertContains(
+            response,
+            f'id="appBackButton" href="{reverse("questoes:exercicios_lista")}"',
+        )

@@ -2,6 +2,8 @@
 
 {% block title %}Resultado administrativo{% endblock %}
 
+{% block voltar_url %}{% url 'simulados_admin:admin_resultados_simulado' tentativa.simulado.pk %}{% endblock %}
+
 {% block content %}
     <div class="page-heading">
         <h1>Resultado administrativo</h1>

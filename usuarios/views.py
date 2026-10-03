@@ -6,9 +6,10 @@ from django.db import transaction
 from django.db.models import Q
 from django.db.models.deletion import ProtectedError
 from django.http import Http404, HttpResponseForbidden
-from django.shortcuts import get_object_or_404, redirect, render
+from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.http import url_has_allowed_host_and_scheme
+from django.views.decorators.cache import never_cache
 
 from .forms import (
     CadastroEstudanteForm,
@@ -331,7 +332,10 @@ def admin_usuario_detalhe(request, pk):
     if bloqueio:
         return bloqueio
 
-    usuario = get_object_or_404(get_user_model(), pk=pk)
+    usuario = get_user_model().objects.filter(pk=pk).first()
+    if usuario is None:
+        messages.warning(request, "Usuário não encontrado. Ele pode ter sido excluído.")
+        return redirect("usuarios:admin_usuarios_lista")
     perfil_obj = getattr(usuario, "perfil_estudante", None)
     return render(
         request,
@@ -381,7 +385,12 @@ def admin_usuario_criar(request):
     return render(
         request,
         "administracao/usuario_form.html",
-        {"form": form, "titulo": "Criar usuário", "active": "admin_usuarios"},
+        {
+            "form": form,
+            "titulo": "Criar usuário",
+            "active": "admin_usuarios",
+            "voltar_url": reverse("usuarios:admin_usuarios_lista"),
+        },
     )
 
 
@@ -390,7 +399,10 @@ def admin_usuario_editar(request, pk):
     if bloqueio:
         return bloqueio
 
-    usuario = get_object_or_404(get_user_model(), pk=pk)
+    usuario = get_user_model().objects.filter(pk=pk).first()
+    if usuario is None:
+        messages.warning(request, "Usuário não encontrado. Ele pode ter sido excluído.")
+        return redirect("usuarios:admin_usuarios_lista")
     form = UsuarioAdminForm(
         request.POST or None,
         initial=_dados_iniciais_admin(usuario),
@@ -430,16 +442,25 @@ def admin_usuario_editar(request, pk):
     return render(
         request,
         "administracao/usuario_form.html",
-        {"form": form, "titulo": "Editar usuário", "active": "admin_usuarios"},
+        {
+            "form": form,
+            "titulo": "Editar usuário",
+            "active": "admin_usuarios",
+            "voltar_url": reverse("usuarios:admin_usuario_detalhe", args=[usuario.pk]),
+        },
     )
 
 
+@never_cache
 def admin_usuario_ativar(request, pk):
     bloqueio = _staff_required(request)
     if bloqueio:
         return bloqueio
 
-    usuario = get_object_or_404(get_user_model(), pk=pk)
+    usuario = get_user_model().objects.filter(pk=pk).first()
+    if usuario is None:
+        messages.warning(request, "Usuário não encontrado. Ele pode ter sido excluído.")
+        return redirect("usuarios:admin_usuarios_lista")
     if request.method == "POST":
         if usuario == request.user:
             messages.error(request, "Você não pode alterar o status da própria conta.")
@@ -460,12 +481,16 @@ def admin_usuario_ativar(request, pk):
     )
 
 
+@never_cache
 def admin_usuario_excluir(request, pk):
     bloqueio = _staff_required(request)
     if bloqueio:
         return bloqueio
 
-    usuario = get_object_or_404(get_user_model(), pk=pk)
+    usuario = get_user_model().objects.filter(pk=pk).first()
+    if usuario is None:
+        messages.warning(request, "Usuário não encontrado. Ele pode ter sido excluído.")
+        return redirect("usuarios:admin_usuarios_lista")
     if request.method == "POST":
         if usuario == request.user:
             messages.error(request, "Você não pode excluir a própria conta.")

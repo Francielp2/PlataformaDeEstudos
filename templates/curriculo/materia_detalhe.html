@@ -2,6 +2,8 @@
 
 {% block title %}{{ materia.nome }}{% endblock %}
 
+{% block voltar_url %}{% url 'curriculo:materias_lista' %}{% endblock %}
+
 {% block content %}
     <div class="page-heading">
         <h1>{{ materia.nome }}</h1>

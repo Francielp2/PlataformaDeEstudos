@@ -2,13 +2,15 @@
 
 {% block title %}Importar questões por JSON{% endblock %}
 
+{% block voltar_url %}{% url 'questoes_admin:admin_questoes_lista' %}{% endblock %}
+
 {% block content %}
     <div class="page-heading d-flex justify-content-between align-items-start">
         <div>
             <h1>Importar questões por JSON</h1>
             <p>Cole um JSON com várias questões para cadastrá-las no banco de questões individuais.</p>
         </div>
-        <a class="btn btn-outline-secondary" href="{% url 'curriculo_admin:admin_padroes_importacao_json' %}">
+        <a class="btn btn-outline-secondary" href="{% url 'curriculo_admin:admin_padroes_importacao_json' %}?origem=questoes">
             <i class="bi bi-braces"></i> Ver padrões
         </a>
     </div>

@@ -2,6 +2,8 @@
 
 {% block title %}{{ materia.nome }}{% endblock %}
 
+{% block voltar_url %}{% url 'curriculo_admin:admin_materias_lista' %}{% endblock %}
+
 {% block content %}
     <div class="page-heading d-flex justify-content-between align-items-start">
         <div>

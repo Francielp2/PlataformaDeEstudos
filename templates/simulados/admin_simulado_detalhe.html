@@ -2,6 +2,8 @@
 
 {% block title %}{{ simulado.titulo }}{% endblock %}
 
+{% block voltar_url %}{% url 'simulados_admin:admin_simulados_lista' %}{% endblock %}
+
 {% block content %}
     <div class="page-heading d-flex justify-content-between align-items-start">
         <div>

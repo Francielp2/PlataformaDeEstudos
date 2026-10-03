@@ -21,7 +21,7 @@
         </div>
         <div class="d-flex gap-2 mt-4">
             <button class="btn btn-primary" type="submit">Salvar</button>
-            <a class="btn btn-outline-secondary" href="{% url 'simulados_admin:admin_simulados_lista' %}">Cancelar</a>
+            <a class="btn btn-outline-secondary" href="{{ voltar_url }}">Cancelar</a>
         </div>
     </form>
 {% endblock %}

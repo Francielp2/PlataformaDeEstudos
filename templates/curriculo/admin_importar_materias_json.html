@@ -2,13 +2,15 @@
 
 {% block title %}Importar matérias por JSON{% endblock %}
 
+{% block voltar_url %}{% url 'curriculo_admin:admin_materias_lista' %}{% endblock %}
+
 {% block content %}
     <div class="page-heading d-flex justify-content-between align-items-start">
         <div>
             <h1>Importar matérias por JSON</h1>
             <p>Cole um JSON com matérias para cadastrá-las. Registros existentes não são atualizados.</p>
         </div>
-        <a class="btn btn-outline-secondary" href="{% url 'curriculo_admin:admin_padroes_importacao_json' %}">
+        <a class="btn btn-outline-secondary" href="{% url 'curriculo_admin:admin_padroes_importacao_json' %}?origem=materias">
             <i class="bi bi-braces"></i> Ver padrões
         </a>
     </div>

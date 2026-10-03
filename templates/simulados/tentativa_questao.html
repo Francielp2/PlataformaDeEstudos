@@ -2,6 +2,9 @@
 
 {% block title %}{{ tentativa.simulado.titulo }}{% endblock %}
 
+{% block voltar_url %}{% url 'simulados:meus_simulados' %}{% endblock %}
+{% block voltar_texto %}Sair do simulado{% endblock %}
+
 {% block content %}
     <div class="page-heading d-flex justify-content-between align-items-start">
         <div>

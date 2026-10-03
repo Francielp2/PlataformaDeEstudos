@@ -114,6 +114,8 @@
     --altura-topbar: 68px;
     --largura-conteudo: 1240px;
     --alvo-toque: 44px;
+    /* Respiro entre a sidebar e o conteúdo (e o fim da tela). */
+    --respiro-lateral: 1.25rem;
 }
 
 /* Alto contraste: escolhido no controle de acessibilidade (salvo no navegador). */

@@ -11,9 +11,9 @@
 .app-conteudo {
     flex: 1;
     width: 100%;
-    max-width: calc(var(--largura-conteudo) + 2 * var(--esp-6));
+    max-width: calc(var(--largura-conteudo) + 2 * var(--respiro-lateral));
     margin: 0 auto;
-    padding: var(--esp-5) var(--esp-6) var(--esp-7);
+    padding: var(--esp-5) var(--respiro-lateral) var(--esp-7);
 }
 
 /* A área administrativa é mais densa: menos respiro, mesma identidade. */

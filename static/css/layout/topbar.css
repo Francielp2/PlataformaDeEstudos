@@ -8,7 +8,7 @@
     align-items: center;
     gap: var(--esp-3);
     min-height: var(--altura-topbar);
-    padding: var(--esp-3) var(--esp-6);
+    padding: var(--esp-3) var(--respiro-lateral);
     background: rgb(245 248 243 / 0.92);
     backdrop-filter: blur(8px);
     border-bottom: 1px solid var(--linha-suave);

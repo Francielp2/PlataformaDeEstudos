@@ -1,0 +1,24 @@
+{% load ui %}{% comment %}Cartão de uma alternativa do formset. Parâmetro: af (form da alternativa).{% endcomment %}
+<fieldset class="alternativa-card">
+    <legend class="visually-hidden">Alternativa {{ af.chave.value|default:"nova" }}</legend>
+    {% for hidden in af.hidden_fields %}{{ hidden }}{% endfor %}
+    {% if af.non_field_errors %}
+        <div class="aviso tom-coral mb-3" role="alert"><i class="bi bi-exclamation-octagon" aria-hidden="true"></i><div>{% for error in af.non_field_errors %}<p>{{ error }}</p>{% endfor %}</div></div>
+    {% endif %}
+    <div class="grade-form">
+        {% include "components/campo.html" with field=af.chave col="col-quarto" %}
+        {% include "components/campo.html" with field=af.ordem col="col-quarto" %}
+        <div class="col-meio campo alternativa-correta-campo">
+            <span class="form-label d-block" aria-hidden="true">&nbsp;</span>
+            <label class="campo-check alternativa-marca" for="{{ af.correta.id_for_label }}">
+                {% widget af.correta %}
+                <span><i class="bi bi-check-circle-fill" aria-hidden="true"></i> {{ af.correta.label|default:"Correta" }}</span>
+            </label>
+        </div>
+        {% include "components/campo.html" with field=af.texto col="" %}
+    </div>
+    <details class="alternativa-imagem-bloco"{% if af.instance.imagem_public_id or af.imagem_arquivo.errors or af.imagem_url.errors or af.imagem_alt.errors %} open{% endif %}>
+        <summary><i class="bi bi-image" aria-hidden="true"></i> Imagem da alternativa (opcional)</summary>
+        <div class="pt-3">{% include "questoes/partials/form_imagem.html" with form=af %}</div>
+    </details>
+</fieldset>

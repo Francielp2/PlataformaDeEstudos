@@ -13,8 +13,8 @@
 }
 .perfil-admin .secao-form { padding: var(--esp-4) var(--esp-5); border-radius: var(--raio-md); }
 .secao-form > legend, .secao-form-titulo {
-    float: none;
-    width: auto;
+    float: left;
+    width: 100%;
     margin: 0 0 0.15rem;
     padding: 0;
     font-family: var(--fonte-titulo);
@@ -22,6 +22,7 @@
     font-size: var(--texto-lg);
     color: var(--tinta);
 }
+.secao-form > legend + * { clear: left; }
 .secao-form-descricao { color: var(--tinta-suave); font-size: var(--texto-sm); margin-bottom: var(--esp-4); }
 
 .grade-form {

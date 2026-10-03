@@ -3,86 +3,86 @@
 {% block title %}Gerenciar questões{% endblock %}
 
 {% block content %}
-    <div class="page-heading d-flex justify-content-between align-items-start">
+    <header class="cabecalho">
         <div>
             <h1>Gerenciar questões</h1>
-            <p>Banco de questões individuais.</p>
+            <p class="cabecalho-texto">Banco de questões individuais.</p>
         </div>
-        <div class="d-flex gap-2">
-            <form method="post" action="{% url 'questoes_admin:admin_questoes_publicar_rascunhos' %}" onsubmit="return confirm('Publicar todas as questões válidas que estão em rascunho?');">
+        <div class="cabecalho-acoes">
+            <form method="post" action="{% url 'questoes_admin:admin_questoes_publicar_rascunhos' %}" data-confirmar="Publicar todas as questões válidas que estão em rascunho?" data-confirmar-acao="Publicar">
                 {% csrf_token %}
-                <button class="btn btn-success" type="submit" {% if not total_rascunhos %}disabled{% endif %}>
-                    <i class="bi bi-upload"></i> Publicar rascunhos válidos ({{ total_rascunhos }})
+                <button class="btn btn-outline-primary" type="submit" {% if not total_rascunhos %}disabled{% endif %}>
+                    <i class="bi bi-broadcast" aria-hidden="true"></i> Publicar rascunhos válidos ({{ total_rascunhos }})
                 </button>
             </form>
-            <a class="btn btn-outline-secondary" href="{% url 'questoes_admin:admin_respostas_lista' %}"><i class="bi bi-clock-history"></i> Respostas</a>
-            <a class="btn btn-outline-secondary" href="{% url 'questoes_admin:admin_questoes_importar_json' %}"><i class="bi bi-download"></i> Importar JSON</a>
-            <a class="btn btn-primary" href="{% url 'questoes_admin:admin_questao_criar' %}"><i class="bi bi-plus-circle"></i> Criar questão</a>
+            <a class="btn btn-outline-secondary" href="{% url 'questoes_admin:admin_respostas_lista' %}"><i class="bi bi-clock-history" aria-hidden="true"></i> Respostas</a>
+            <a class="btn btn-outline-secondary" href="{% url 'questoes_admin:admin_questoes_importar_json' %}"><i class="bi bi-filetype-json" aria-hidden="true"></i> Importar JSON</a>
+            <a class="btn btn-primary" href="{% url 'questoes_admin:admin_questao_criar' %}"><i class="bi bi-plus-lg" aria-hidden="true"></i> Criar questão</a>
         </div>
-    </div>
+    </header>
 
-    <form method="get" class="filters-box">
-        <div class="row g-2">
-        <div class="col-md-2"><input class="form-control" type="search" name="q" value="{{ busca }}" placeholder="Buscar"></div>
-        <div class="col-md-2">
-            <select class="form-select" name="materia">
-                <option value="" {% if not materia_slug %}selected{% endif %}>Todas as matérias</option>
-                {% for materia in materias %}<option value="{{ materia.slug }}" {% if materia_slug == materia.slug %}selected{% endif %}>{{ materia.nome }}</option>{% endfor %}
-            </select>
+    <form method="get" class="filtros" data-filtro-automatico role="search" aria-label="Filtrar questões">
+        <div class="filtro-busca">
+            <i class="bi bi-search" aria-hidden="true"></i>
+            <input class="form-control" type="search" name="q" value="{{ busca }}" placeholder="Buscar por código ou enunciado" aria-label="Buscar">
         </div>
-        <div class="col-md-3">
-            <select class="form-select" name="conteudo">
-                <option value="" {% if not conteudo_id %}selected{% endif %}>Todos os conteúdos</option>
-                {% for conteudo in conteudos %}<option value="{{ conteudo.pk }}" {% if conteudo_id == conteudo.pk|stringformat:"s" %}selected{% endif %}>{{ conteudo.materia.nome }} - {{ conteudo.titulo }}</option>{% endfor %}
-            </select>
-        </div>
-        <div class="col-md-2">
-            <select class="form-select" name="dificuldade">
-                <option value="" {% if not dificuldade %}selected{% endif %}>Todas</option>
-                {% for item in dificuldades %}<option value="{{ item.value }}" {% if dificuldade == item.value %}selected{% endif %}>{{ item.label }}</option>{% endfor %}
-            </select>
-        </div>
-        <div class="col-md-2">
-            <select class="form-select" name="status">
-                <option value="" {% if not status %}selected{% endif %}>Todos</option>
-                {% for item in status_choices %}<option value="{{ item.value }}" {% if status == item.value %}selected{% endif %}>{{ item.label }}</option>{% endfor %}
-            </select>
-        </div>
-        <div class="col-md-1 d-grid"><button class="btn btn-outline-primary" type="submit">Filtrar</button></div>
-        </div>
+        <select class="form-select" name="materia" aria-label="Filtrar por matéria">
+            <option value="" {% if not materia_slug %}selected{% endif %}>Todas as matérias</option>
+            {% for materia in materias %}<option value="{{ materia.slug }}" {% if materia_slug == materia.slug %}selected{% endif %}>{{ materia.nome }}</option>{% endfor %}
+        </select>
+        <select class="form-select" name="conteudo" aria-label="Filtrar por conteúdo">
+            <option value="" {% if not conteudo_id %}selected{% endif %}>Todos os conteúdos</option>
+            {% for conteudo in conteudos %}<option value="{{ conteudo.pk }}" {% if conteudo_id == conteudo.pk|stringformat:"s" %}selected{% endif %}>{{ conteudo.materia.nome }} - {{ conteudo.titulo }}</option>{% endfor %}
+        </select>
+        <select class="form-select" name="dificuldade" aria-label="Filtrar por dificuldade">
+            <option value="" {% if not dificuldade %}selected{% endif %}>Todas as dificuldades</option>
+            {% for item in dificuldades %}<option value="{{ item.value }}" {% if dificuldade == item.value %}selected{% endif %}>{{ item.label }}</option>{% endfor %}
+        </select>
+        <select class="form-select" name="status" aria-label="Filtrar por status">
+            <option value="" {% if not status %}selected{% endif %}>Todos os status</option>
+            {% for item in status_choices %}<option value="{{ item.value }}" {% if status == item.value %}selected{% endif %}>{{ item.label }}</option>{% endfor %}
+        </select>
+        <button class="btn btn-outline-primary botao-filtrar" type="submit"><i class="bi bi-funnel" aria-hidden="true"></i> Filtrar</button>
     </form>
 
-    <p class="text-muted small">{{ total_encontrado }} {% if total_encontrado == 1 %}questão encontrada{% else %}questões encontradas{% endif %}</p>
+    <div class="filtros-resumo" aria-live="polite">
+        <span><strong>{{ total_encontrado }}</strong> {% if total_encontrado == 1 %}questão encontrada{% else %}questões encontradas{% endif %}</span>
+        {% if busca or materia_slug or conteudo_id or dificuldade or status %}<a class="limpar-filtros" href="{% url 'questoes_admin:admin_questoes_lista' %}">Limpar filtros</a>{% endif %}
+    </div>
 
-    <div class="table-responsive section-box">
-        <table class="table table-hover align-middle mb-0">
-            <thead><tr><th>Código</th><th>Questão</th><th>Matéria</th><th>Dificuldade</th><th>Conteúdos</th><th>Status</th><th>Atualizado em</th><th>Ações</th></tr></thead>
-            <tbody>
-                {% for questao in page_obj %}
-                    <tr>
-                        <td>{{ questao.codigo }}</td>
-                        <td>{{ questao.enunciado|truncatewords:14 }}</td>
-                        <td>{{ questao.materia.nome }}</td>
-                        <td><span class="badge text-bg-secondary">{{ questao.get_dificuldade_display }}</span></td>
-                        <td>{% for relacao in questao.questao_conteudos.all %}{{ relacao.conteudo.titulo }}{% if not forloop.last %}, {% endif %}{% endfor %}</td>
-                        <td>{{ questao.get_status_display }}</td>
-                        <td>{{ questao.atualizado_em|date:"d/m/Y H:i" }}</td>
-                        <td class="actions">
-                            <a class="btn btn-sm btn-outline-secondary" href="{% url 'questoes_admin:admin_questao_detalhe' questao.pk %}"><i class="bi bi-eye"></i> Ver</a>
-                            <a class="btn btn-sm btn-outline-primary" href="{% url 'questoes_admin:admin_questao_editar' questao.pk %}"><i class="bi bi-pencil"></i> Editar</a>
-                            {% if questao.status != "published" %}
-                                <form method="post" action="{% url 'questoes_admin:admin_questao_alterar_status' questao.pk 'published' %}" class="d-inline">{% csrf_token %}<button class="btn btn-sm btn-outline-secondary" type="submit"><i class="bi bi-upload"></i> Publicar</button></form>
-                            {% endif %}
-                            {% if questao.status != "archived" %}
-                                <form method="post" action="{% url 'questoes_admin:admin_questao_alterar_status' questao.pk 'archived' %}" class="d-inline">{% csrf_token %}<button class="btn btn-sm btn-outline-secondary" type="submit"><i class="bi bi-archive"></i> Arquivar</button></form>
-                            {% endif %}
-                        </td>
-                    </tr>
-                {% empty %}
-                    <tr><td colspan="8">Nenhuma questão encontrada.</td></tr>
-                {% endfor %}
-            </tbody>
-        </table>
+    <div class="tabela-card">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead><tr><th scope="col">Código</th><th scope="col">Questão</th><th scope="col">Matéria</th><th scope="col">Dificuldade</th><th scope="col">Conteúdos</th><th scope="col">Status</th><th scope="col">Atualizado em</th><th scope="col" class="text-end">Ações</th></tr></thead>
+                <tbody>
+                    {% for questao in page_obj %}
+                        <tr>
+                            <td class="text-nowrap"><a class="celula-titulo" href="{% url 'questoes_admin:admin_questao_detalhe' questao.pk %}">{{ questao.codigo }}</a></td>
+                            <td style="min-width: 220px;">{{ questao.enunciado|truncatewords:14 }}</td>
+                            <td>{{ questao.materia.nome }}</td>
+                            <td>{% include "components/chip_dificuldade.html" with valor=questao.dificuldade rotulo=questao.get_dificuldade_display %}</td>
+                            <td><span class="celula-sub">{% for relacao in questao.questao_conteudos.all %}{{ relacao.conteudo.titulo }}{% if not forloop.last %}, {% endif %}{% endfor %}</span></td>
+                            <td>{% include "components/chip_status.html" with valor=questao.status rotulo=questao.get_status_display %}</td>
+                            <td class="celula-data">{{ questao.atualizado_em|date:"d/m/Y H:i" }}</td>
+                            <td class="celula-acoes">
+                                <div class="acoes-linha">
+                                    <a class="btn btn-sm btn-outline-secondary" href="{% url 'questoes_admin:admin_questao_detalhe' questao.pk %}" title="Ver"><i class="bi bi-eye" aria-hidden="true"></i><span class="visually-hidden">Ver {{ questao.codigo }}</span></a>
+                                    <a class="btn btn-sm btn-outline-secondary" href="{% url 'questoes_admin:admin_questao_editar' questao.pk %}"><i class="bi bi-pencil" aria-hidden="true"></i> Editar</a>
+                                    {% if questao.status != "published" %}
+                                        <form method="post" action="{% url 'questoes_admin:admin_questao_alterar_status' questao.pk 'published' %}" data-confirmar="Publicar a questão {{ questao.codigo }}? Ela passa a aparecer para os estudantes." data-confirmar-acao="Publicar">{% csrf_token %}<button class="btn btn-sm btn-outline-primary" type="submit"><i class="bi bi-broadcast" aria-hidden="true"></i> Publicar</button></form>
+                                    {% endif %}
+                                    {% if questao.status != "archived" %}
+                                        <form method="post" action="{% url 'questoes_admin:admin_questao_alterar_status' questao.pk 'archived' %}" data-confirmar="Arquivar a questão {{ questao.codigo }}? Ela deixa de aparecer para os estudantes." data-confirmar-acao="Arquivar">{% csrf_token %}<button class="btn btn-sm btn-outline-secondary" type="submit"><i class="bi bi-archive" aria-hidden="true"></i> Arquivar</button></form>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr><td colspan="8" class="tabela-vazia">Nenhuma questão encontrada.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 
     {% include "partials/paginacao.html" %}

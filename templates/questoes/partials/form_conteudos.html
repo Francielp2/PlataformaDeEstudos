@@ -1,0 +1,19 @@
+{% comment %}Conteúdos relacionados (marcar vários) com filtro de busca + conteúdo principal. Parâmetro: form.{% endcomment %}
+<div class="grade-form">
+    <div class="col-dois-tercos campo{% if form.conteudos.errors %} campo-com-erro{% endif %}">
+        <span class="form-label d-flex" id="rotulo-conteudos">{{ form.conteudos.label }} <span class="opcional ms-1">marque um ou mais</span></span>
+        <div class="lista-escolha" role="group" aria-labelledby="rotulo-conteudos" data-lista-filtravel>
+            <label class="visually-hidden" for="filtrar-conteudos">Filtrar conteúdos</label>
+            <input class="form-control form-control-sm lista-escolha-filtro" id="filtrar-conteudos" type="search" placeholder="Filtrar conteúdos" hidden>
+            <div class="lista-escolha-itens">
+                {% for checkbox in form.conteudos %}
+                    <label class="lista-escolha-item" for="{{ checkbox.id_for_label }}">{{ checkbox.tag }} <span>{{ checkbox.choice_label }}</span></label>
+                {% empty %}
+                    <p class="texto-suave mb-0">Nenhum conteúdo cadastrado.</p>
+                {% endfor %}
+            </div>
+        </div>
+        {% if form.conteudos.errors %}<div class="campo-erro"><i class="bi bi-exclamation-circle" aria-hidden="true"></i><span>{{ form.conteudos.errors|join:" " }}</span></div>{% endif %}
+    </div>
+    {% include "components/campo.html" with field=form.conteudo_principal col="col-terco" %}
+</div>

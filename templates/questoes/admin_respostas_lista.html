@@ -1,26 +1,56 @@
 {% extends "usuarios/base_interno.html" %}
+{% load ui %}
 
 {% block title %}Respostas{% endblock %}
 
 {% block voltar_url %}{% url 'questoes_admin:admin_questoes_lista' %}{% endblock %}
 
 {% block content %}
-    <div class="page-heading d-flex justify-content-between align-items-start">
+    <header class="cabecalho">
         <div>
             <h1>Respostas</h1>
-            <p>Histórico de respostas dos estudantes.</p>
+            <p class="cabecalho-texto">Histórico de respostas dos estudantes.</p>
         </div>
-        <a class="btn btn-outline-secondary" href="{% url 'questoes_admin:admin_questoes_lista' %}">Voltar para questões</a>
-    </div>
-    <form method="get" class="row g-2 mb-3">
-        <div class="col-md-8"><input class="form-control" type="search" name="q" value="{{ busca }}" placeholder="Buscar por usuário ou questão"></div>
-        <div class="col-md-2"><select class="form-select" name="resultado"><option value="">Todos</option><option value="acertos" {% if resultado == "acertos" %}selected{% endif %}>Acertos</option><option value="erros" {% if resultado == "erros" %}selected{% endif %}>Erros</option></select></div>
-        <div class="col-md-2 d-grid"><button class="btn btn-outline-primary" type="submit">Filtrar</button></div>
+        <div class="cabecalho-acoes">
+            <a class="btn btn-outline-secondary" href="{% url 'questoes_admin:admin_questoes_lista' %}">Voltar para questões</a>
+        </div>
+    </header>
+
+    <form method="get" class="filtros" data-filtro-automatico role="search" aria-label="Filtrar respostas">
+        <div class="filtro-busca">
+            <i class="bi bi-search" aria-hidden="true"></i>
+            <input class="form-control" type="search" name="q" value="{{ busca }}" placeholder="Buscar por usuário ou questão" aria-label="Buscar por usuário ou questão">
+        </div>
+        <select class="form-select" name="resultado" aria-label="Filtrar por resultado">
+            <option value="">Todos os resultados</option>
+            <option value="acertos" {% if resultado == "acertos" %}selected{% endif %}>Acertos</option>
+            <option value="erros" {% if resultado == "erros" %}selected{% endif %}>Erros</option>
+        </select>
+        <button class="btn btn-outline-primary botao-filtrar" type="submit"><i class="bi bi-funnel" aria-hidden="true"></i> Filtrar</button>
     </form>
-    <div class="table-responsive section-box">
-        <table class="table table-hover align-middle mb-0">
-            <thead><tr><th>Usuário</th><th>Questão</th><th>Matéria</th><th>Resultado</th><th>Data</th><th>Ações</th></tr></thead>
-            <tbody>{% for resposta in page_obj %}<tr><td>{{ resposta.usuario.email }}</td><td>{{ resposta.questao.codigo }}</td><td>{{ resposta.questao.materia.nome }}</td><td>{% if resposta.correta %}Acertou{% else %}Errou{% endif %}</td><td>{{ resposta.respondida_em|date:"d/m/Y H:i" }}</td><td><a href="{% url 'questoes_admin:admin_resposta_detalhe' resposta.pk %}">ver</a></td></tr>{% empty %}<tr><td colspan="6">Nenhuma resposta encontrada.</td></tr>{% endfor %}</tbody>
-        </table>
+    {% if busca or resultado %}<div class="filtros-resumo"><a class="limpar-filtros" href="{% url 'questoes_admin:admin_respostas_lista' %}">Limpar filtros</a></div>{% endif %}
+
+    <div class="tabela-card">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead><tr><th scope="col">Usuário</th><th scope="col">Questão</th><th scope="col">Matéria</th><th scope="col">Resultado</th><th scope="col">Data</th><th scope="col"><span class="visually-hidden">Ações</span></th></tr></thead>
+                <tbody>
+                    {% for resposta in page_obj %}
+                        <tr>
+                            <td>{{ resposta.usuario.email }}</td>
+                            <td class="celula-titulo text-nowrap">{{ resposta.questao.codigo }}</td>
+                            <td>{{ resposta.questao.materia.nome }}</td>
+                            <td>{% if resposta.correta %}<span class="chip tom-menta"><i class="bi bi-check-lg" aria-hidden="true"></i> Acertou</span>{% else %}<span class="chip tom-coral"><i class="bi bi-x-lg" aria-hidden="true"></i> Errou</span>{% endif %}</td>
+                            <td class="celula-data">{{ resposta.respondida_em|date:"d/m/Y H:i" }}</td>
+                            <td class="celula-acoes"><a class="btn btn-sm btn-outline-secondary" href="{% url 'questoes_admin:admin_resposta_detalhe' resposta.pk %}">Ver<span class="visually-hidden"> resposta de {{ resposta.usuario.email }}</span></a></td>
+                        </tr>
+                    {% empty %}
+                        <tr><td colspan="6" class="tabela-vazia">Nenhuma resposta encontrada.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
+    {% querystring_atual as querystring %}
+    {% include "partials/paginacao.html" %}
 {% endblock %}

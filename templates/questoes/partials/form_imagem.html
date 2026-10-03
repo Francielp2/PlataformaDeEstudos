@@ -1,0 +1,15 @@
+{% load ui %}{% comment %}Campos de imagem (arquivo, URL, texto alternativo e remover). Parâmetros: form, rotulo_secao (opcional).{% endcomment %}
+<div class="grade-form">
+    {% if form.instance.imagem_public_id %}
+        <div class="col-terco">
+            <span class="form-label d-block">Imagem atual</span>
+            <img src="{{ form.instance.imagem_url }}" alt="{{ form.instance.imagem_alt_texto }}" class="img-fluid rounded border" style="max-height: 180px;">
+        </div>
+    {% endif %}
+    {% include "components/campo.html" with field=form.imagem_arquivo col="col-terco" rotulo="Enviar arquivo" %}
+    {% include "components/campo.html" with field=form.imagem_url col="col-terco" %}
+    {% include "components/campo.html" with field=form.imagem_alt col="col-terco" rotulo="Texto alternativo (descrição da imagem)" %}
+    {% if form.instance.imagem_public_id and form.remover_imagem %}
+        {% include "components/campo.html" with field=form.remover_imagem col="col-meio" %}
+    {% endif %}
+</div>

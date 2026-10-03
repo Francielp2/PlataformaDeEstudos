@@ -9,7 +9,6 @@ import zlib
 
 from django import template
 from django.forms import CheckboxInput, CheckboxSelectMultiple, PasswordInput, RadioSelect, Textarea
-from django.utils.html import format_html_join
 
 
 register = template.Library()
@@ -124,6 +123,9 @@ def query_sem(context, *nomes):
     return f"?{texto}" if texto else "?"
 
 
-@register.simple_tag
-def atributos(**attrs):
-    return format_html_join(" ", '{}="{}"', attrs.items())
+@register.simple_tag(takes_context=True)
+def querystring_atual(context):
+    """Querystring atual sem 'page', para a paginação manter os filtros."""
+    params = context["request"].GET.copy()
+    params.pop("page", None)
+    return params.urlencode()

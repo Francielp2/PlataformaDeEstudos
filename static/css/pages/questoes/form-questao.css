@@ -1,0 +1,31 @@
+/* Formulários de questão (banco e simulado): lista de conteúdos com filtro e
+   cartões de alternativa com a marcação de correta em destaque. */
+
+.lista-escolha { border: 1.5px solid var(--linha); border-radius: var(--raio-sm); background: var(--superficie); }
+.lista-escolha-filtro { margin: var(--esp-2); width: calc(100% - 2 * var(--esp-2)); }
+.lista-escolha-itens { max-height: 260px; overflow-y: auto; padding: var(--esp-1) var(--esp-2) var(--esp-2); }
+.lista-escolha-item {
+    display: flex; align-items: center; gap: var(--esp-2);
+    min-height: 40px; padding: 0.3rem var(--esp-2); border-radius: 8px; cursor: pointer;
+}
+.lista-escolha-item:hover { background: var(--verde-50); }
+.lista-escolha-item input { width: 1.2rem; height: 1.2rem; flex: 0 0 auto; accent-color: var(--verde-700); }
+.lista-escolha-item:has(input:checked) { background: var(--verde-50); font-weight: 700; }
+
+.alternativas-lista { display: grid; gap: var(--esp-3); counter-reset: alternativa; }
+.alternativa-card {
+    position: relative;
+    margin: 0;
+    padding: var(--esp-4);
+    border: 1.5px solid var(--linha);
+    border-radius: var(--raio-md);
+    background: var(--fundo);
+    min-width: 0;
+}
+.alternativa-card:has(.alternativa-marca input:checked) { border-color: var(--verde-500); background: var(--verde-50); }
+.alternativa-marca { cursor: pointer; background: var(--superficie); }
+.alternativa-marca i { color: var(--tinta-suave); }
+.alternativa-marca:has(input:checked) { border-color: var(--verde-700); color: var(--verde-900); }
+.alternativa-marca:has(input:checked) i { color: var(--verde-700); }
+.alternativa-imagem-bloco { margin-top: var(--esp-3); }
+.alternativa-imagem-bloco > summary { cursor: pointer; font-weight: 700; color: var(--tinta-2); min-height: 32px; display: flex; align-items: center; gap: var(--esp-2); }

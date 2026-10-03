@@ -33,8 +33,12 @@ def posicao_para_retomar(progresso):
     return None
 
 
-def videos_do_conteudo_para_usuario(conteudo, usuario):
-    """Vídeos ativos do conteúdo com o progresso do usuário (uma query para cada)."""
+def videos_do_conteudo_para_usuario(conteudo, usuario, selecionado=None):
+    """Vídeos ativos do conteúdo com o progresso do usuário (uma query para cada).
+
+    `selecionado` é o id do vídeo que abre no player principal; se não for um
+    dos vídeos do conteúdo, abre o primeiro.
+    """
     videos = list(VideoConteudo.objects.filter(conteudo=conteudo, ativo=True).order_by("ordem", "criado_em"))
     progressos = {}
     if videos and usuario.is_authenticated:
@@ -50,8 +54,12 @@ def videos_do_conteudo_para_usuario(conteudo, usuario):
                 "video": video,
                 "progresso": progresso,
                 "inicio": posicao_para_retomar(progresso),
+                "selecionado": False,
             }
         )
+    if itens:
+        escolhido = next((item for item in itens if str(item["video"].pk) == str(selecionado)), itens[0])
+        escolhido["selecionado"] = True
     return itens
 
 

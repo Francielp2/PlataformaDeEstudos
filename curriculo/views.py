@@ -317,7 +317,11 @@ def conteudo_detalhe(request, materia_slug, conteudo_slug):
             "materia": materia,
             "conteudo": conteudo,
             "subconteudos": subconteudos,
-            "videos_conteudo": videos_do_conteudo_para_usuario(conteudo, request.user),
+            "videos_conteudo": videos_do_conteudo_para_usuario(
+                conteudo,
+                request.user,
+                selecionado=request.GET.get("video"),
+            ),
             "active": "conteudos",
             **ids_organizacao_usuario(request.user),
         },

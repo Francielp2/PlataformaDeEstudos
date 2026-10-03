@@ -60,7 +60,7 @@
                             <td>{{ sessao.segundos_assistidos|segundos_mmss }}</td>
                             <td>
                                 {% if video.ativo and conteudo.status == "published" and conteudo.materia.ativa %}
-                                    <a class="btn btn-sm btn-outline-primary" href="{% url 'curriculo:conteudo_detalhe' conteudo.materia.slug conteudo.slug %}#video-{{ video.pk }}">Continuar</a>
+                                    <a class="btn btn-sm btn-outline-primary" href="{% url 'curriculo:conteudo_detalhe' conteudo.materia.slug conteudo.slug %}?video={{ video.pk }}#video-{{ video.pk }}">Continuar</a>
                                 {% endif %}
                             </td>
                         </tr>

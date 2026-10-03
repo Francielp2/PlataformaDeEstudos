@@ -1,32 +1,71 @@
 {% load videos_extras %}
-<div id="videos-conteudo" class="d-flex flex-column gap-4" data-csrf="{{ csrf_token }}">
-    {% for item in videos_conteudo %}
-        {% with video=item.video progresso=item.progresso inicio=item.inicio %}
-            <article id="video-{{ video.pk }}" class="video-conteudo"
-                     data-video-id="{{ video.pk }}"
-                     data-url-progresso="{% url 'videos:registrar_progresso' video.pk %}">
-                {% include "videos/partials/iframe_player.html" %}
-
-                <div class="mt-2">
-                    <h3 class="h6 mb-1">{{ video.titulo }}</h3>
-                    <p class="small mb-2">
-                        Canal: <a href="{{ video.canal_url }}" target="_blank" rel="noopener">{{ video.canal_nome }}</a>
-                    </p>
-                    <a class="btn btn-sm btn-outline-danger mb-2" href="{{ video.url_youtube }}" target="_blank" rel="noopener">
-                        <i class="bi bi-youtube"></i> Assistir no YouTube
-                    </a>
-                    {% if video.nota_curador %}
-                        <div class="small border-start border-3 ps-2 mb-2">
-                            <strong>Nota do curador:</strong> {{ video.nota_curador|linebreaksbr }}
+<div id="videos-conteudo" data-csrf="{{ csrf_token }}">
+    <div class="row g-3">
+        <div class="{% if videos_conteudo|length > 1 %}col-lg-8{% else %}col-12{% endif %}" id="palco-videos">
+            {% for item in videos_conteudo %}
+                {% with video=item.video inicio=item.inicio %}
+                    <article id="video-{{ video.pk }}" class="video-conteudo"
+                             data-video-id="{{ video.pk }}"
+                             data-url-progresso="{% url 'videos:registrar_progresso' video.pk %}"
+                             {% if not item.selecionado %}hidden{% endif %}>
+                        <div data-espaco-player>
+                            {% if item.selecionado %}
+                                {% include "videos/partials/iframe_player.html" %}
+                            {% else %}
+                                {# Carregado só quando o aluno escolhe este vídeo na lista. #}
+                                <template>{% include "videos/partials/iframe_player.html" %}</template>
+                            {% endif %}
                         </div>
-                    {% endif %}
-                    <p class="small text-muted mb-0{% if not inicio %} d-none{% endif %}" data-parou-em>
-                        Você parou em <span>{{ inicio|default:0|segundos_mmss }}</span>
-                    </p>
+
+                        <div class="mt-2">
+                            <h3 class="h6 mb-1">{{ video.titulo }}</h3>
+                            <p class="small mb-2">
+                                Canal: <a href="{{ video.canal_url }}" target="_blank" rel="noopener">{{ video.canal_nome }}</a>
+                            </p>
+                            <a class="btn btn-sm btn-outline-danger mb-2" href="{{ video.url_youtube }}" target="_blank" rel="noopener">
+                                <i class="bi bi-youtube"></i> Assistir no YouTube
+                            </a>
+                            {% if video.nota_curador %}
+                                <div class="small border-start border-3 ps-2 mb-2">
+                                    <strong>Nota do curador:</strong> {{ video.nota_curador|linebreaksbr }}
+                                </div>
+                            {% endif %}
+                            <p class="small text-muted mb-0{% if not inicio %} d-none{% endif %}" data-parou-em>
+                                Você parou em <span>{{ inicio|default:0|segundos_mmss }}</span>
+                            </p>
+                        </div>
+                    </article>
+                {% endwith %}
+            {% endfor %}
+        </div>
+
+        {% if videos_conteudo|length > 1 %}
+            <div class="col-lg-4">
+                <h3 class="h6 mb-2">Vídeos deste conteúdo <span class="badge text-bg-secondary">{{ videos_conteudo|length }}</span></h3>
+                <div class="list-group lista-videos" style="--bs-list-group-active-bg: var(--app-primary); --bs-list-group-active-border-color: var(--app-primary);">
+                    {% for item in videos_conteudo %}
+                        {% with video=item.video %}
+                            <a class="list-group-item list-group-item-action d-flex gap-2 align-items-start{% if item.selecionado %} active{% endif %}"
+                               href="?video={{ video.pk }}#video-{{ video.pk }}"
+                               data-selecionar-video="{{ video.pk }}"
+                               {% if item.selecionado %}aria-current="true"{% endif %}>
+                                {% if video.thumbnail_url %}
+                                    <img src="{{ video.thumbnail_url }}" alt="" width="96" height="54" class="rounded flex-shrink-0 object-fit-cover" loading="lazy">
+                                {% endif %}
+                                <span class="small lh-sm">
+                                    <span class="d-block fw-semibold">{{ forloop.counter }}. {{ video.titulo|truncatechars:70 }}</span>
+                                    <span class="d-block opacity-75">{{ video.canal_nome }}</span>
+                                    <span class="d-block opacity-75{% if not item.inicio %} d-none{% endif %}" data-parou-em-lista>
+                                        Você parou em <span>{{ item.inicio|default:0|segundos_mmss }}</span>
+                                    </span>
+                                </span>
+                            </a>
+                        {% endwith %}
+                    {% endfor %}
                 </div>
-            </article>
-        {% endwith %}
-    {% endfor %}
+            </div>
+        {% endif %}
+    </div>
 </div>
 
 <script>
@@ -76,6 +115,8 @@
 
         function criarRastreador(elemento) {
             const r = {
+                elemento: elemento,
+                videoId: elemento.dataset.videoId,
                 url: elemento.dataset.urlProgresso,
                 sessaoId: gerarUuid(),
                 player: null,
@@ -128,13 +169,15 @@
             }
 
             function atualizarTela(dados) {
-                const parouEm = elemento.querySelector("[data-parou-em]");
-                if (!parouEm) {
-                    return;
-                }
                 const posicao = Number(dados.ultima_posicao) || 0;
-                parouEm.querySelector("span").textContent = formatarTempo(posicao);
-                parouEm.classList.toggle("d-none", posicao <= MARGEM_INICIO_RETOMADA);
+                const itemLista = container.querySelector('[data-selecionar-video="' + r.videoId + '"]');
+                [elemento.querySelector("[data-parou-em]"), itemLista && itemLista.querySelector("[data-parou-em-lista]")]
+                    .forEach(function (parouEm) {
+                        if (parouEm) {
+                            parouEm.querySelector("span").textContent = formatarTempo(posicao);
+                            parouEm.classList.toggle("d-none", posicao <= MARGEM_INICIO_RETOMADA);
+                        }
+                    });
             }
 
             // opcoes.keepalive: envio ao sair da página.
@@ -219,9 +262,17 @@
             }
 
             r.iniciar = function () {
-                r.player = new window.YT.Player("yt-player-" + elemento.dataset.videoId, {
+                if (r.player || !document.getElementById("yt-player-" + r.videoId)) {
+                    return;
+                }
+                r.player = new window.YT.Player("yt-player-" + r.videoId, {
                     events: {onStateChange: aoMudarEstado},
                 });
+            };
+            r.pausar = function () {
+                if (r.player && typeof r.player.pauseVideo === "function") {
+                    r.player.pauseVideo();
+                }
             };
             r.enviar = enviar;
             r.lerSeTocando = function () {
@@ -233,10 +284,69 @@
         }
 
         container.querySelectorAll(".video-conteudo").forEach(function (elemento) {
-            if (document.getElementById("yt-player-" + elemento.dataset.videoId)) {
-                rastreadores.push(criarRastreador(elemento));
-            }
+            rastreadores.push(criarRastreador(elemento));
         });
+
+        let apiPronta = false;
+
+        // Troca o vídeo do player principal sem recarregar a página.
+        function selecionarVideo(videoId, rolar) {
+            const escolhido = rastreadores.find(function (r) { return r.videoId === videoId; });
+            if (!escolhido) {
+                return;
+            }
+            rastreadores.forEach(function (r) {
+                if (r !== escolhido) {
+                    r.pausar();
+                    r.elemento.hidden = true;
+                }
+            });
+            const espaco = escolhido.elemento.querySelector("[data-espaco-player]");
+            const modelo = espaco && espaco.querySelector("template");
+            if (modelo) {
+                espaco.replaceChildren(modelo.content.cloneNode(true));
+            }
+            escolhido.elemento.hidden = false;
+            if (apiPronta) {
+                escolhido.iniciar();
+            }
+            container.querySelectorAll("[data-selecionar-video]").forEach(function (item) {
+                const ativo = item.dataset.selecionarVideo === videoId;
+                item.classList.toggle("active", ativo);
+                if (ativo) {
+                    item.setAttribute("aria-current", "true");
+                } else {
+                    item.removeAttribute("aria-current");
+                }
+            });
+            try {
+                const url = new URL(window.location.href);
+                url.searchParams.set("video", videoId);
+                url.hash = "video-" + videoId;
+                window.history.replaceState(null, "", url);
+            } catch (erro) {}
+            if (rolar) {
+                const palco = document.getElementById("palco-videos");
+                if (palco && palco.getBoundingClientRect().top < 0) {
+                    palco.scrollIntoView({behavior: "smooth", block: "start"});
+                }
+            }
+        }
+
+        container.querySelectorAll("[data-selecionar-video]").forEach(function (item) {
+            item.addEventListener("click", function (evento) {
+                evento.preventDefault();
+                selecionarVideo(item.dataset.selecionarVideo, true);
+            });
+        });
+
+        const videoDoEndereco = (window.location.hash.match(/^#video-(.+)$/) || [])[1];
+        if (videoDoEndereco) {
+            const alvo = document.getElementById("video-" + videoDoEndereco);
+            if (alvo && alvo.hidden) {
+                selecionarVideo(videoDoEndereco, false);
+            }
+        }
 
         function enviarTodos() {
             rastreadores.forEach(function (r) {
@@ -252,6 +362,7 @@
         window.addEventListener("pagehide", enviarTodos);
 
         function iniciarPlayers() {
+            apiPronta = true;
             rastreadores.forEach(function (r) { r.iniciar(); });
         }
         if (window.YT && window.YT.Player) {

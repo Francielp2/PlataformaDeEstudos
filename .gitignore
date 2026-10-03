@@ -20,9 +20,6 @@ media/
 staticfiles/
 /data/
 
-# Referências visuais usadas no redesign (imagens temporárias, não vão para o repositório)
-Docs/referencias_design/
-
 # Testes e cobertura
 .pytest_cache/
 .coverage
@@ -41,3 +38,6 @@ Thumbs.db
 # Arquivos temporários
 *.tmp
 *.temp
+
+# Configurações locais do Claude Code
+.claude

@@ -13,8 +13,8 @@ class VideoConteudoAdmin(admin.ModelAdmin):
 
 @admin.register(ProgressoVideo)
 class ProgressoVideoAdmin(admin.ModelAdmin):
-    list_display = ("usuario", "video", "percentual", "concluido", "atualizado_em")
-    list_filter = ("concluido", "video__conteudo__materia")
+    list_display = ("usuario", "video", "ultima_posicao_segundos", "segundos_assistidos_total", "atualizado_em")
+    list_filter = ("video__conteudo__materia",)
     search_fields = ("usuario__email", "video__titulo")
     readonly_fields = ("iniciado_em", "atualizado_em")
 

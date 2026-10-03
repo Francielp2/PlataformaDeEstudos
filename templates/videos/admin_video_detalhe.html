@@ -15,9 +15,8 @@
     </div>
 
     <div class="row g-3 mb-4">
-        <div class="col-md-4"><div class="metric"><div class="metric-icon"><i class="bi bi-play-circle"></i></div><span>Iniciaram</span><strong>{{ iniciaram }}</strong><span>estudantes</span></div></div>
-        <div class="col-md-4"><div class="metric"><div class="metric-icon"><i class="bi bi-check2-circle"></i></div><span>Concluíram</span><strong>{{ concluiram }}</strong><span>estudantes</span></div></div>
-        <div class="col-md-4"><div class="metric"><div class="metric-icon"><i class="bi bi-clock"></i></div><span>Duração</span><strong>{% if video.duracao_segundos %}{{ video.duracao_segundos|segundos_mmss }}{% else %}-{% endif %}</strong><span>informada pelo player</span></div></div>
+        <div class="col-md-6"><div class="metric"><div class="metric-icon"><i class="bi bi-play-circle"></i></div><span>Iniciaram</span><strong>{{ iniciaram }}</strong><span>estudantes</span></div></div>
+        <div class="col-md-6"><div class="metric"><div class="metric-icon"><i class="bi bi-clock"></i></div><span>Tempo assistido</span><strong>{{ segundos_assistidos|default:0|segundos_mmss }}</strong><span>somando todos os estudantes</span></div></div>
     </div>
 
     <div class="row g-3">

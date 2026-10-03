@@ -36,7 +36,6 @@
                     <th>Conteúdo</th>
                     <th>Trecho assistido</th>
                     <th>Tempo assistido</th>
-                    <th>Progresso do vídeo</th>
                     <th>Ação</th>
                 </tr>
             </thead>
@@ -60,10 +59,6 @@
                             <td>{{ sessao.inicio_segundos|segundos_mmss }} – {{ sessao.fim_segundos|segundos_mmss }}</td>
                             <td>{{ sessao.segundos_assistidos|segundos_mmss }}</td>
                             <td>
-                                {{ sessao.progresso.percentual|default:0|floatformat:0 }}%
-                                {% if sessao.progresso.concluido %}<span class="badge text-bg-success">Concluído</span>{% endif %}
-                            </td>
-                            <td>
                                 {% if video.ativo and conteudo.status == "published" and conteudo.materia.ativa %}
                                     <a class="btn btn-sm btn-outline-primary" href="{% url 'curriculo:conteudo_detalhe' conteudo.materia.slug conteudo.slug %}#video-{{ video.pk }}">Continuar</a>
                                 {% endif %}
@@ -71,7 +66,7 @@
                         </tr>
                     {% endwith %}
                 {% empty %}
-                    <tr><td colspan="7">Você ainda não assistiu a nenhum vídeo.</td></tr>
+                    <tr><td colspan="6">Você ainda não assistiu a nenhum vídeo.</td></tr>
                 {% endfor %}
             </tbody>
         </table>

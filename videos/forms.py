@@ -33,21 +33,15 @@ class VideoEditarForm(_BootstrapMixin, forms.ModelForm):
 
     class Meta:
         model = VideoConteudo
-        fields = ("conteudo", "nota_curador", "ordem", "ativo", "duracao_segundos")
+        fields = ("conteudo", "nota_curador", "ordem", "ativo")
         labels = {
             "conteudo": "Matéria - Conteúdo",
             "nota_curador": "Nota do curador",
             "ordem": "Ordem",
             "ativo": "Vídeo ativo",
-            "duracao_segundos": "Duração (em segundos)",
         }
         help_texts = {
             "nota_curador": "Explique ao estudante por que este vídeo foi escolhido.",
-            "duracao_segundos": (
-                "Preenchida automaticamente pelo primeiro player que abrir o vídeo. "
-                "Corrija se estiver diferente da duração real no YouTube; deixe em branco "
-                "para o próximo player informar de novo."
-            ),
         }
         widgets = {
             "nota_curador": forms.Textarea(attrs={"rows": 3}),
@@ -56,18 +50,10 @@ class VideoEditarForm(_BootstrapMixin, forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["conteudo"].queryset = _conteudos_para_select()
-        if "duracao_segundos" in self.fields:
-            self.fields["duracao_segundos"].widget.attrs.update({"min": 1, "max": 21600})
         self._aplicar_classes()
 
     def _youtube_id(self):
         return self.instance.youtube_id
-
-    def clean_duracao_segundos(self):
-        duracao = self.cleaned_data.get("duracao_segundos")
-        if duracao is not None and not 1 <= duracao <= 21600:
-            raise ValidationError("Informe uma duração entre 1 segundo e 6 horas.")
-        return duracao
 
     def clean(self):
         cleaned_data = super().clean()
@@ -83,9 +69,6 @@ class VideoEditarForm(_BootstrapMixin, forms.ModelForm):
 
 
 class VideoCriarForm(VideoEditarForm):
-    class Meta(VideoEditarForm.Meta):
-        fields = ("conteudo", "nota_curador", "ordem", "ativo")
-
     url = forms.CharField(
         label="Link do YouTube",
         max_length=500,

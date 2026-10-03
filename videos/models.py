@@ -27,7 +27,6 @@ class VideoConteudo(models.Model):
     canal_nome = models.CharField(max_length=255)
     canal_url = models.URLField(max_length=500)
     thumbnail_url = models.URLField(max_length=500, blank=True)
-    duracao_segundos = models.PositiveIntegerField(null=True, blank=True)
     nota_curador = models.TextField(blank=True)
     ordem = models.PositiveSmallIntegerField(default=0)
     ativo = models.BooleanField(default=True)
@@ -80,13 +79,8 @@ class ProgressoVideo(models.Model):
         on_delete=models.PROTECT,
         related_name="progressos",
     )
-    segmentos_assistidos = models.JSONField(default=list, blank=True)
-    percentual = models.DecimalField(max_digits=5, decimal_places=2, default=0)
     ultima_posicao_segundos = models.PositiveIntegerField(default=0)
     segundos_assistidos_total = models.PositiveIntegerField(default=0)
-    concluido = models.BooleanField(default=False)
-    concluido_em = models.DateTimeField(null=True, blank=True)
-    marcou_conteudo_estudado = models.BooleanField(default=False)
     iniciado_em = models.DateTimeField(auto_now_add=True)
     atualizado_em = models.DateTimeField(auto_now=True)
 
@@ -104,7 +98,7 @@ class ProgressoVideo(models.Model):
         verbose_name_plural = "progressos em vídeos"
 
     def __str__(self):
-        return f"{self.usuario} - {self.video} ({self.percentual}%)"
+        return f"{self.usuario} - {self.video}"
 
 
 class SessaoVideo(models.Model):
@@ -123,7 +117,6 @@ class SessaoVideo(models.Model):
     inicio_segundos = models.PositiveIntegerField()
     fim_segundos = models.PositiveIntegerField()
     segundos_assistidos = models.PositiveIntegerField()
-    percentual_video = models.DecimalField(max_digits=5, decimal_places=2)
     iniciado_em = models.DateTimeField(auto_now_add=True)
     atualizado_em = models.DateTimeField(auto_now=True)
 

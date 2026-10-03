@@ -5,8 +5,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
 from django.core.paginator import Paginator
-from django.db import transaction
-from django.db.models import Count, Q
+from django.db.models import Count, Q, Sum
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -18,13 +17,8 @@ from curriculo.views import staff_required
 from . import youtube
 from .forms import ImportarVideosJsonForm, VideoCriarForm, VideoEditarForm
 from .importacao_json import importar_videos_json
-from .models import ProgressoVideo, SessaoVideo, VideoConteudo
-from .services import (
-    aplicar_metadados,
-    recalcular_percentuais,
-    registrar_progresso,
-    validar_dados_progresso,
-)
+from .models import SessaoVideo, VideoConteudo
+from .services import aplicar_metadados, registrar_progresso, validar_dados_progresso
 
 
 TAMANHO_MAXIMO_CORPO_PROGRESSO = 20 * 1024
@@ -81,15 +75,6 @@ def historico(request):
 
     paginator = Paginator(sessoes, 20)
     page_obj = paginator.get_page(request.GET.get("page"))
-    progressos = {
-        progresso.video_id: progresso
-        for progresso in ProgressoVideo.objects.filter(
-            usuario=request.user,
-            video_id__in={sessao.video_id for sessao in page_obj},
-        )
-    }
-    for sessao in page_obj:
-        sessao.progresso = progressos.get(sessao.video_id)
 
     query_params = request.GET.copy()
     query_params.pop("page", None)
@@ -212,7 +197,7 @@ def admin_video_detalhe(request, pk):
     )
     numeros = video.progressos.aggregate(
         iniciaram=Count("id"),
-        concluiram=Count("id", filter=Q(concluido=True)),
+        segundos_assistidos=Sum("segundos_assistidos_total"),
     )
     return render(
         request,
@@ -224,22 +209,12 @@ def admin_video_detalhe(request, pk):
 @staff_required
 def admin_video_editar(request, pk):
     video = get_object_or_404(VideoConteudo, pk=pk)
-    duracao_original = video.duracao_segundos
     form = VideoEditarForm(request.POST or None, instance=video)
     if request.method == "POST" and form.is_valid():
-        with transaction.atomic():
-            video = form.save(commit=False)
-            video.full_clean()
-            video.save()
-            recalculados = 0
-            if video.duracao_segundos != duracao_original:
-                recalculados = recalcular_percentuais(video)
+        video = form.save(commit=False)
+        video.full_clean()
+        video.save()
         messages.success(request, "Vídeo atualizado com sucesso.")
-        if recalculados:
-            messages.info(
-                request,
-                f"Duração alterada: o progresso de {recalculados} estudante(s) foi recalculado.",
-            )
         return redirect("videos_admin:detalhe", pk=video.pk)
     return render(
         request,

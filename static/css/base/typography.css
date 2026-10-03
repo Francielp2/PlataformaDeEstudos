@@ -20,6 +20,7 @@ p { margin-top: 0; }
 small, .small { font-size: var(--texto-sm); }
 strong, b { font-weight: 700; }
 code, kbd, pre, .font-monospace { font-family: var(--fonte-mono); }
+code { color: var(--verde-800); font-size: 0.9em; }
 
 a { color: var(--cor-link); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
 a:hover { color: var(--verde-900); text-decoration-thickness: 2px; }

@@ -136,6 +136,8 @@
 
 /* Grade de duas colunas com lateral (conteúdo + dicas). */
 .com-lateral { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: var(--esp-5); align-items: start; }
-.com-lateral > aside { display: grid; gap: var(--esp-4); position: sticky; top: calc(var(--altura-topbar) + var(--esp-4)); }
+.com-lateral > * { min-width: 0; }
+.com-lateral > aside { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--esp-4); position: sticky; top: calc(var(--altura-topbar) + var(--esp-4)); }
+.com-lateral--metade { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
 @media (max-width: 1199.98px) { .com-lateral { grid-template-columns: minmax(0, 1fr); } .com-lateral > aside { position: static; } }
 .painel-icone--coral { background: var(--vermelho-50); color: var(--vermelho-600); }

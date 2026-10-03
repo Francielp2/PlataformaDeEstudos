@@ -20,8 +20,13 @@
 .copiavel.copiado { border-color: var(--verde-500); background: var(--verde-100); }
 .copiavel.copiado i { color: var(--verde-700); }
 
-.botao-copiar { position: absolute; top: var(--esp-2); right: var(--esp-2); }
-.exemplo-codigo .botao-copiar { --bs-btn-bg: rgb(255 255 255 / 0.12); --bs-btn-color: #fff; --bs-btn-border-color: transparent; --bs-btn-hover-bg: rgb(255 255 255 / 0.22); --bs-btn-hover-color: #fff; }
+/* Botão copiar sobre o bloco de código escuro (contraste branco sobre verde-900). */
+.botao-copiar {
+    position: absolute; top: var(--esp-2); right: var(--esp-2);
+    --bs-btn-bg: #ffffff; --bs-btn-color: var(--verde-900); --bs-btn-border-color: #ffffff;
+    --bs-btn-hover-bg: var(--verde-100); --bs-btn-hover-color: var(--verde-900); --bs-btn-hover-border-color: var(--verde-100);
+    --bs-btn-active-bg: var(--verde-200); --bs-btn-active-color: var(--verde-900);
+}
 
 .secao { margin-top: var(--esp-6); }
 .secao-topo { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--esp-2) var(--esp-4); margin-bottom: var(--esp-4); }

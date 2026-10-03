@@ -1,75 +1,79 @@
 {% extends "usuarios/base_interno.html" %}
+{% load static ui %}
 
 {% block title %}Conteúdos estudados{% endblock %}
 
 {% block content %}
-    <div class="page-heading">
-        <h1>Conteúdos estudados</h1>
-        <p>Conteúdos que você marcou manualmente como estudados.</p>
-    </div>
+    <section class="faixa" aria-labelledby="titulo-pagina">
+        <div>
+            <h1 id="titulo-pagina">Conteúdos estudados</h1>
+            <p class="faixa-texto">Conteúdos que você marcou manualmente como estudados. Você está indo bem!</p>
+        </div>
+        <img class="faixa-ilustracao" src="{% static 'images/illustrations/alvo.svg' %}" alt="" width="220" height="165">
+    </section>
 
-    <form method="get" class="filters-box">
-        <h2 class="h6 mb-3">Filtros</h2>
-        <div class="row g-2">
-        <div class="col-md-4">
-            <input class="form-control" type="search" name="q" value="{{ busca }}" placeholder="Buscar por título">
+    <form method="get" class="filtros" data-filtro-automatico role="search" aria-label="Filtrar conteúdos estudados">
+        <div class="filtro-busca">
+            <i class="bi bi-search" aria-hidden="true"></i>
+            <input class="form-control" type="search" name="q" value="{{ busca }}" placeholder="Buscar por título" aria-label="Buscar por título">
         </div>
-        <div class="col-md-3">
-            <select class="form-select" name="materia" aria-label="Filtrar por matéria">
-                <option value="" {% if not materia_slug %}selected{% endif %}>Todas as matérias</option>
-                {% for materia in materias %}
-                    <option value="{{ materia.slug }}" {% if materia_slug == materia.slug %}selected{% endif %}>{{ materia.nome }}</option>
-                {% endfor %}
-            </select>
-        </div>
-        <div class="col-md-3">
-            <select class="form-select" name="dificuldade" aria-label="Filtrar por dificuldade">
-                <option value="" {% if not dificuldade %}selected{% endif %}>Todas as dificuldades</option>
-                {% for item in dificuldades %}
-                    <option value="{{ item.value }}" {% if dificuldade == item.value %}selected{% endif %}>{{ item.label }}</option>
-                {% endfor %}
-            </select>
-        </div>
-        <div class="col-md-2 d-grid">
-            <button class="btn btn-outline-primary" type="submit">Filtrar</button>
-        </div>
-        </div>
+        <select class="form-select" name="materia" aria-label="Filtrar por matéria">
+            <option value="" {% if not materia_slug %}selected{% endif %}>Todas as matérias</option>
+            {% for materia in materias %}
+                <option value="{{ materia.slug }}" {% if materia_slug == materia.slug %}selected{% endif %}>{{ materia.nome }}</option>
+            {% endfor %}
+        </select>
+        <select class="form-select" name="dificuldade" aria-label="Filtrar por dificuldade">
+            <option value="" {% if not dificuldade %}selected{% endif %}>Todas as dificuldades</option>
+            {% for item in dificuldades %}
+                <option value="{{ item.value }}" {% if dificuldade == item.value %}selected{% endif %}>{{ item.label }}</option>
+            {% endfor %}
+        </select>
+        <button class="btn btn-outline-primary botao-filtrar" type="submit"><i class="bi bi-funnel" aria-hidden="true"></i> Filtrar</button>
     </form>
 
-    <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-3">
-        {% for estudado in estudados %}
-            {% with conteudo=estudado.conteudo %}
-                <div class="col">
-                    <div class="app-card h-100 d-flex flex-column">
-                        <p class="small text-muted mb-1">{{ conteudo.materia.nome }}</p>
-                        <h2 class="h5">{{ conteudo.titulo }}</h2>
-                        <span class="badge text-bg-secondary mb-2">{{ conteudo.get_dificuldade_display }}</span>
-                        {% if conteudo.pk in ids_conteudos_minha_lista %}
-                            <span class="badge text-bg-primary mb-2">Minha Lista</span>
-                        {% endif %}
-                        <p class="small text-muted">Marcado em {{ estudado.marcado_em|date:"d/m/Y H:i" }}</p>
-                        <p class="text-muted">{{ conteudo.resumo|truncatewords:24 }}</p>
-                        {% if conteudo.materia.ativa and conteudo.status == "published" %}
-                            <a class="btn btn-sm btn-primary" href="{% url 'curriculo:conteudo_detalhe' conteudo.materia.slug conteudo.slug %}">Acessar</a>
-                        {% else %}
-                            <span class="badge text-bg-warning">Indisponível</span>
-                        {% endif %}
-                        <form method="post" action="{% url 'estudos:alternar_conteudo_estudado' conteudo.pk %}" class="d-inline">
-                            {% csrf_token %}
-                            <input type="hidden" name="next" value="{{ request.get_full_path }}">
-                            <button class="btn btn-sm btn-outline-danger" type="submit">Desmarcar como estudado</button>
-                        </form>
-                    </div>
-                </div>
-            {% endwith %}
-        {% empty %}
-            <div class="col-12">
-                <div class="empty-state">
-                    <i class="bi bi-check-circle"></i>
-                    <strong>Nenhum conteúdo marcado como estudado.</strong>
-                    <p class="mb-0">Marque conteúdos como estudados quando concluir a revisão.</p>
-                </div>
-            </div>
-        {% endfor %}
+    <div class="filtros-resumo" aria-live="polite">
+        <span><strong>{{ estudados|length }}</strong> {% if estudados|length == 1 %}conteúdo estudado{% else %}conteúdos estudados{% endif %}</span>
+        {% if busca or materia_slug or dificuldade %}<a class="limpar-filtros" href="{% url 'estudos:conteudos_estudados' %}">Limpar filtros</a>{% endif %}
     </div>
+
+    {% if estudados %}
+        <h2 class="visually-hidden">Lista de conteúdos estudados</h2>
+        <div class="grade-cartoes">
+            {% for estudado in estudados %}
+                {% with conteudo=estudado.conteudo %}
+                    <article class="item esta-estudado">
+                        <div class="item-topo">
+                            {% include "components/selo_materia.html" with materia=conteudo.materia %}
+                            <div class="item-cabeca">
+                                <span class="item-materia">{{ conteudo.materia.nome }}</span>
+                                <h3 class="item-titulo">{{ conteudo.titulo }}</h3>
+                            </div>
+                        </div>
+                        <div class="item-meta">
+                            {% include "components/chip_dificuldade.html" with valor=conteudo.dificuldade rotulo=conteudo.get_dificuldade_display %}
+                            {% if conteudo.pk in ids_conteudos_minha_lista %}<span class="chip tom-sol"><i class="bi bi-star-fill" aria-hidden="true"></i> Minha Lista</span>{% endif %}
+                        </div>
+                        <span class="selo-estudado"><i class="bi bi-check-circle-fill" aria-hidden="true"></i> Marcado em {{ estudado.marcado_em|date:"d/m/Y H:i" }}</span>
+                        <p class="item-texto">{{ conteudo.resumo|truncatewords:24 }}</p>
+                        <div class="item-acoes">
+                            {% if conteudo.materia.ativa and conteudo.status == "published" %}
+                                <a class="btn btn-sm btn-primary acao-principal" href="{% url 'curriculo:conteudo_detalhe' conteudo.materia.slug conteudo.slug %}">Acessar</a>
+                            {% else %}
+                                <span class="chip tom-sol"><i class="bi bi-slash-circle" aria-hidden="true"></i> Indisponível</span>
+                            {% endif %}
+                            <form method="post" action="{% url 'estudos:alternar_conteudo_estudado' conteudo.pk %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                                <button class="btn btn-sm btn-ghost" type="submit"><i class="bi bi-arrow-counterclockwise" aria-hidden="true"></i> Desmarcar como estudado</button>
+                            </form>
+                        </div>
+                    </article>
+                {% endwith %}
+            {% endfor %}
+        </div>
+    {% else %}
+        {% url 'curriculo:conteudos_lista' as url_conteudos %}
+        {% include "components/vazio.html" with titulo="Nenhum conteúdo marcado como estudado." texto="Marque conteúdos como estudados quando concluir a revisão." ilustracao="alvo" acao_url=url_conteudos acao_rotulo="Ver conteúdos" acao_icone="bi-book" %}
+    {% endif %}
 {% endblock %}

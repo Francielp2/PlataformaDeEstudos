@@ -1,0 +1,26 @@
+/* Players de vídeo na página do conteúdo: player principal e lista compacta. */
+
+.video-conteudo .ratio { border-radius: var(--raio-lg); overflow: hidden; background: #0d1a10; box-shadow: var(--sombra-2); }
+.video-titulo { font-size: var(--texto-lg); margin: var(--esp-3) 0 var(--esp-1); }
+.nota-curador {
+    margin: var(--esp-2) 0;
+    padding: var(--esp-2) var(--esp-3);
+    border-left: 4px solid var(--sol);
+    border-radius: 0 var(--raio-sm) var(--raio-sm) 0;
+    background: var(--sol-fundo);
+    font-size: var(--texto-sm);
+}
+.video-lista-titulo { font-size: var(--texto-md); margin-bottom: var(--esp-2); display: flex; align-items: center; gap: var(--esp-2); }
+.lista-videos { border-radius: var(--raio-md); }
+.lista-videos .list-group-item { padding: var(--esp-2); border-color: var(--linha); text-decoration: none; }
+.lista-videos .list-group-item:hover { background: var(--verde-50); }
+.lista-videos .list-group-item.active { color: #fff; }
+.lista-videos .list-group-item.active:hover { background: var(--verde-800); }
+.lista-videos img { width: 96px; height: 54px; }
+
+/* A grade do player segue a largura disponível, não a da janela:
+   numa coluna estreita a lista de vídeos vai para baixo do player. */
+#videos-conteudo { container-type: inline-size; }
+@container (max-width: 760px) {
+    #videos-conteudo .row > [class*="col-lg"] { flex: 0 0 auto; width: 100%; }
+}

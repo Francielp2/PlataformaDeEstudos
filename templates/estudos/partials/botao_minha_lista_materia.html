@@ -1,9 +1,16 @@
-<form method="post" action="{% url 'estudos:alternar_materia_minha_lista' materia.pk %}" class="d-inline">
+{% comment %}Alterna "Minha Lista". Funciona sem JS (POST normal); com JS muda na hora (components/alternancias.js).{% endcomment %}
+<form method="post" action="{% url 'estudos:alternar_materia_minha_lista' materia.pk %}" class="d-inline-flex"
+      data-alternar="lista" data-ligado="{% if materia.pk in ids_materias_minha_lista %}true{% else %}false{% endif %}"
+      data-rotulo-ligado="Na Minha Lista" data-rotulo-desligado="Minha Lista"
+      data-icone-ligado="bi-star-fill" data-icone-desligado="bi-star"
+      data-classe-ligado="btn btn-sm btn-alternar btn-alternar--lista" data-classe-desligado="btn btn-sm btn-alternar btn-alternar--lista"
+      data-titulo-ligado="Remover da Minha Lista" data-titulo-desligado="Adicionar à Minha Lista"
+      data-anuncio-ligado="Adicionado à Minha Lista." data-anuncio-desligado="Removido da Minha Lista.">
     {% csrf_token %}
     <input type="hidden" name="next" value="{{ request.get_full_path }}">
     {% if materia.pk in ids_materias_minha_lista %}
-        <button class="btn btn-sm btn-outline-secondary" type="submit" title="Remover da Minha Lista"><i class="bi bi-star-fill"></i> Na Minha Lista</button>
+        <button class="btn btn-sm btn-alternar btn-alternar--lista" type="submit" title="Remover da Minha Lista" aria-pressed="true"><i class="bi bi-star-fill" aria-hidden="true"></i> <span>Na Minha Lista</span></button>
     {% else %}
-        <button class="btn btn-sm btn-outline-primary" type="submit" title="Adicionar à Minha Lista"><i class="bi bi-star"></i> Minha Lista</button>
+        <button class="btn btn-sm btn-alternar btn-alternar--lista" type="submit" title="Adicionar à Minha Lista" aria-pressed="false"><i class="bi bi-star" aria-hidden="true"></i> <span>Minha Lista</span></button>
     {% endif %}
 </form>

@@ -1,0 +1,26 @@
+{% comment %}
+Cartão de conteúdo do estudante. Parâmetros: conteudo, materia (opcional; padrão conteudo.materia),
+mostrar_materia (bool), mostrar_pai (bool).
+Uma ação principal ("Estudar") e as secundárias discretas (Minha Lista, Estudado).
+{% endcomment %}
+{% with m=materia|default:conteudo.materia %}
+<article class="item{% if conteudo.pk in ids_conteudos_estudados %} esta-estudado{% endif %}" data-cartao-estudado data-paleta-item data-paleta-titulo="{{ conteudo.titulo }}" data-paleta-grupo="Conteúdos nesta página" data-paleta-detalhe="{{ m.nome }}" data-paleta-icone="bi bi-book" data-paleta-url="{% url 'curriculo:conteudo_detalhe' m.slug conteudo.slug %}">
+    <div class="item-topo">
+        {% include "components/selo_materia.html" with materia=m %}
+        <div class="item-cabeca">
+            {% if mostrar_materia %}<span class="item-materia">{{ m.nome }}</span>{% endif %}
+            <h3 class="item-titulo"><a href="{% url 'curriculo:conteudo_detalhe' m.slug conteudo.slug %}">{{ conteudo.titulo }}</a></h3>
+            {% if mostrar_pai and conteudo.pai %}<span class="item-materia">Pertence a: {{ conteudo.pai.titulo }}</span>{% endif %}
+        </div>
+    </div>
+    <div class="item-meta">
+        {% include "components/chip_dificuldade.html" with valor=conteudo.dificuldade rotulo=conteudo.get_dificuldade_display %}
+    </div>
+    {% if conteudo.resumo %}<p class="item-texto">{{ conteudo.resumo|truncatewords:24 }}</p>{% endif %}
+    <div class="item-acoes">
+        <a class="btn btn-sm btn-primary acao-principal" href="{% url 'curriculo:conteudo_detalhe' m.slug conteudo.slug %}"><i class="bi bi-book" aria-hidden="true"></i> Estudar</a>
+        {% include "estudos/partials/botao_minha_lista_conteudo.html" %}
+        {% include "estudos/partials/botao_estudado_conteudo.html" %}
+    </div>
+</article>
+{% endwith %}

@@ -1,106 +1,119 @@
 {% extends "usuarios/base_interno.html" %}
+{% load static ui %}
 
 {% block title %}Minha Lista{% endblock %}
 
 {% block content %}
-    <div class="page-heading">
-        <h1>Minha Lista</h1>
-        <p>Itens salvos manualmente para organizar seus estudos.</p>
-    </div>
+    <section class="faixa faixa--sol" aria-labelledby="titulo-pagina">
+        <div>
+            <h1 id="titulo-pagina">Minha Lista</h1>
+            <p class="faixa-texto">Itens salvos manualmente para organizar seus estudos.</p>
+        </div>
+        <img class="faixa-ilustracao" src="{% static 'images/illustrations/estrela.svg' %}" alt="" width="220" height="165">
+    </section>
 
-    <form method="get" class="filters-box">
-        <div class="row g-2">
-        <div class="col-md-10">
-            <select class="form-select" name="tipo" aria-label="Filtrar por tipo">
-                <option value="" {% if not tipo %}selected{% endif %}>Todos</option>
-                <option value="materias" {% if tipo == "materias" %}selected{% endif %}>Matérias</option>
-                <option value="conteudos" {% if tipo == "conteudos" %}selected{% endif %}>Conteúdos</option>
-                <option value="questoes" {% if tipo == "questoes" %}selected{% endif %}>Questões</option>
-                <option value="simulados" {% if tipo == "simulados" %}selected{% endif %}>Simulados</option>
-            </select>
-        </div>
-        <div class="col-md-2 d-grid">
-            <button class="btn btn-outline-primary" type="submit">Filtrar</button>
-        </div>
-        </div>
+    <form method="get" class="filtros" data-filtro-automatico aria-label="Filtrar a lista">
+        <label class="visually-hidden" for="filtro-tipo">Filtrar por tipo</label>
+        <select class="form-select" id="filtro-tipo" name="tipo" style="max-width: 320px;">
+            <option value="" {% if not tipo %}selected{% endif %}>Todos os tipos</option>
+            <option value="materias" {% if tipo == "materias" %}selected{% endif %}>Matérias</option>
+            <option value="conteudos" {% if tipo == "conteudos" %}selected{% endif %}>Conteúdos</option>
+            <option value="questoes" {% if tipo == "questoes" %}selected{% endif %}>Questões</option>
+            <option value="simulados" {% if tipo == "simulados" %}selected{% endif %}>Simulados</option>
+        </select>
+        <button class="btn btn-outline-primary botao-filtrar" type="submit"><i class="bi bi-funnel" aria-hidden="true"></i> Filtrar</button>
+        {% if tipo %}<a class="limpar-filtros ms-2" href="{% url 'estudos:minha_lista' %}">Limpar filtro</a>{% endif %}
     </form>
 
-    <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-3">
-        {% for item in itens %}
-            <div class="col">
-                <div class="app-card h-100 d-flex flex-column">
-                    <span class="badge text-bg-secondary mb-2">{{ item.tipo_display }}</span>
-
+    {% if itens %}
+        <p class="contagem"><strong>{{ itens|length }}</strong> {% if itens|length == 1 %}item salvo{% else %}itens salvos{% endif %}</p>
+        <h2 class="visually-hidden">Itens salvos</h2>
+        <div class="grade-cartoes">
+            {% for item in itens %}
+                <article class="item">
                     {% if item.materia %}
-                        <h2 class="h5">{{ item.materia.nome }}</h2>
-                        {% if item.materia.descricao %}
-                            <p class="text-muted">{{ item.materia.descricao|truncatewords:24 }}</p>
-                        {% endif %}
-                        {% if item.materia.ativa %}
-                            <a class="btn btn-sm btn-primary" href="{% url 'curriculo:materia_detalhe' item.materia.slug %}">Acessar</a>
-                        {% else %}
-                            <span class="badge text-bg-warning">Indisponível</span>
-                        {% endif %}
+                        <div class="item-topo">
+                            {% include "components/selo_materia.html" with materia=item.materia %}
+                            <div class="item-cabeca">
+                                <span class="item-materia">{{ item.tipo_display }}</span>
+                                <h3 class="item-titulo">{{ item.materia.nome }}</h3>
+                            </div>
+                        </div>
+                        {% if item.materia.descricao %}<p class="item-texto">{{ item.materia.descricao|truncatewords:24 }}</p>{% endif %}
+                        <div class="item-acoes">
+                            {% if item.materia.ativa %}
+                                <a class="btn btn-sm btn-primary acao-principal" href="{% url 'curriculo:materia_detalhe' item.materia.slug %}">Acessar</a>
+                            {% else %}
+                                <span class="chip tom-sol"><i class="bi bi-slash-circle" aria-hidden="true"></i> Indisponível</span>
+                            {% endif %}
                     {% elif item.conteudo %}
-                        <h2 class="h5">{{ item.conteudo.titulo }}</h2>
-                        <p class="small text-muted mb-1">{{ item.conteudo.materia.nome }}</p>
-                        <span class="badge text-bg-secondary mb-2">{{ item.conteudo.get_dificuldade_display }}</span>
-                        {% if item.conteudo.pk in ids_conteudos_estudados %}
-                            <span class="badge text-bg-success mb-2">Estudado</span>
-                        {% endif %}
-                        <p class="text-muted">{{ item.conteudo.resumo|truncatewords:24 }}</p>
-                        {% if item.conteudo.materia.ativa and item.conteudo.status == "published" %}
-                            <a class="btn btn-sm btn-primary" href="{% url 'curriculo:conteudo_detalhe' item.conteudo.materia.slug item.conteudo.slug %}">Acessar</a>
-                        {% else %}
-                            <span class="badge text-bg-warning">Indisponível</span>
-                        {% endif %}
+                        <div class="item-topo">
+                            {% include "components/selo_materia.html" with materia=item.conteudo.materia %}
+                            <div class="item-cabeca">
+                                <span class="item-materia">{{ item.tipo_display }}, {{ item.conteudo.materia.nome }}</span>
+                                <h3 class="item-titulo">{{ item.conteudo.titulo }}</h3>
+                            </div>
+                        </div>
+                        <div class="item-meta">
+                            {% include "components/chip_dificuldade.html" with valor=item.conteudo.dificuldade rotulo=item.conteudo.get_dificuldade_display %}
+                            {% if item.conteudo.pk in ids_conteudos_estudados %}<span class="chip tom-menta"><i class="bi bi-check-circle-fill" aria-hidden="true"></i> Estudado</span>{% endif %}
+                        </div>
+                        <p class="item-texto">{{ item.conteudo.resumo|truncatewords:24 }}</p>
+                        <div class="item-acoes">
+                            {% if item.conteudo.materia.ativa and item.conteudo.status == "published" %}
+                                <a class="btn btn-sm btn-primary acao-principal" href="{% url 'curriculo:conteudo_detalhe' item.conteudo.materia.slug item.conteudo.slug %}">Acessar</a>
+                            {% else %}
+                                <span class="chip tom-sol"><i class="bi bi-slash-circle" aria-hidden="true"></i> Indisponível</span>
+                            {% endif %}
                     {% elif item.questao %}
-                        <h2 class="h5">{{ item.questao.codigo }}</h2>
-                        <p class="small text-muted mb-1">{{ item.questao.materia.nome }}</p>
-                        <span class="badge text-bg-secondary mb-2">{{ item.questao.get_dificuldade_display }}</span>
-                        <p class="small text-muted">
-                            {% for relacao in item.questao.questao_conteudos.all %}
-                                {{ relacao.conteudo.titulo }}{% if not forloop.last %}, {% endif %}
-                            {% endfor %}
-                        </p>
-                        <p>{{ item.questao.enunciado|truncatewords:24 }}</p>
-                        {% if item.questao.materia.ativa and item.questao.status == "published" %}
-                            <a class="btn btn-sm btn-primary" href="{% url 'questoes:questao_detalhe' item.questao.pk %}">Resolver</a>
-                        {% else %}
-                            <span class="badge text-bg-warning">Indisponível</span>
-                        {% endif %}
+                        <div class="item-topo">
+                            {% include "components/selo_materia.html" with materia=item.questao.materia %}
+                            <div class="item-cabeca">
+                                <span class="item-materia">{{ item.tipo_display }}, {{ item.questao.materia.nome }}</span>
+                                <h3 class="item-titulo">{{ item.questao.codigo }}</h3>
+                            </div>
+                        </div>
+                        <div class="item-meta">
+                            {% include "components/chip_dificuldade.html" with valor=item.questao.dificuldade rotulo=item.questao.get_dificuldade_display %}
+                            {% for relacao in item.questao.questao_conteudos.all %}<span class="chip chip--contorno">{{ relacao.conteudo.titulo }}</span>{% endfor %}
+                        </div>
+                        <p class="item-texto">{{ item.questao.enunciado|truncatewords:24 }}</p>
+                        <div class="item-acoes">
+                            {% if item.questao.materia.ativa and item.questao.status == "published" %}
+                                <a class="btn btn-sm btn-primary acao-principal" href="{% url 'questoes:questao_detalhe' item.questao.pk %}">Resolver</a>
+                            {% else %}
+                                <span class="chip tom-sol"><i class="bi bi-slash-circle" aria-hidden="true"></i> Indisponível</span>
+                            {% endif %}
                     {% elif item.simulado %}
-                        <h2 class="h5">{{ item.simulado.titulo }}</h2>
-                        <p class="small text-muted mb-1">
-                            {{ item.simulado.get_tipo_display }}
-                            {% if item.simulado.materia %} - {{ item.simulado.materia.nome }}{% endif %}
-                        </p>
-                        <p class="text-muted">{{ item.simulado.descricao|default:"Simulado salvo para realizar depois."|truncatewords:24 }}</p>
-                        {% if item.simulado.status == "published" %}
-                            <form method="post" action="{% url 'simulados:iniciar_simulado' item.simulado.slug %}">
-                                {% csrf_token %}
-                                <button class="btn btn-sm btn-primary" type="submit">Iniciar</button>
-                            </form>
-                        {% else %}
-                            <span class="badge text-bg-warning">Indisponível</span>
-                        {% endif %}
+                        <div class="item-topo">
+                            <span class="selo tom-lilas" aria-hidden="true"><i class="bi bi-clipboard-check"></i></span>
+                            <div class="item-cabeca">
+                                <span class="item-materia">{{ item.tipo_display }}, {{ item.simulado.get_tipo_display }}{% if item.simulado.materia %} - {{ item.simulado.materia.nome }}{% endif %}</span>
+                                <h3 class="item-titulo">{{ item.simulado.titulo }}</h3>
+                            </div>
+                        </div>
+                        <p class="item-texto">{{ item.simulado.descricao|default:"Simulado salvo para realizar depois."|truncatewords:24 }}</p>
+                        <div class="item-acoes">
+                            {% if item.simulado.status == "published" %}
+                                <form method="post" action="{% url 'simulados:iniciar_simulado' item.simulado.slug %}" class="acao-principal">
+                                    {% csrf_token %}
+                                    <button class="btn btn-sm btn-primary w-100" type="submit">Iniciar</button>
+                                </form>
+                            {% else %}
+                                <span class="chip tom-sol"><i class="bi bi-slash-circle" aria-hidden="true"></i> Indisponível</span>
+                            {% endif %}
                     {% endif %}
-
-                    <form method="post" action="{% url 'estudos:remover_item_minha_lista' item.pk %}" class="mt-3">
-                        {% csrf_token %}
-                        <input type="hidden" name="next" value="{{ request.get_full_path }}">
-                        <button class="btn btn-sm btn-outline-danger" type="submit">Remover da Minha Lista</button>
-                    </form>
-                </div>
-            </div>
-        {% empty %}
-            <div class="col-12">
-                <div class="empty-state">
-                    <i class="bi bi-star"></i>
-                    <strong>Sua lista está vazia.</strong>
-                    <p class="mb-0">Use a estrela nas matérias, conteúdos, questões ou simulados para salvá-los aqui.</p>
-                </div>
-            </div>
-        {% endfor %}
-    </div>
+                            <form method="post" action="{% url 'estudos:remover_item_minha_lista' item.pk %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                                <button class="btn btn-sm btn-ghost" type="submit" title="Remover da Minha Lista"><i class="bi bi-trash3" aria-hidden="true"></i> <span>Remover da Minha Lista</span></button>
+                            </form>
+                        </div>
+                </article>
+            {% endfor %}
+        </div>
+    {% else %}
+        {% url 'curriculo:conteudos_lista' as url_conteudos %}
+        {% include "components/vazio.html" with titulo="Sua lista está vazia." texto="Use a estrela nas matérias, conteúdos, questões ou simulados para salvá-los aqui." ilustracao="estrela" acao_url=url_conteudos acao_rotulo="Explorar conteúdos" acao_icone="bi-book" %}
+    {% endif %}
 {% endblock %}

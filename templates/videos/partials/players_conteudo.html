@@ -18,15 +18,15 @@
                         </div>
 
                         <div class="mt-2">
-                            <h3 class="h6 mb-1">{{ video.titulo }}</h3>
+                            <h3 class="video-titulo">{{ video.titulo }}</h3>
                             <p class="small mb-2">
                                 Canal: <a href="{{ video.canal_url }}" target="_blank" rel="noopener">{{ video.canal_nome }}</a>
                             </p>
                             <a class="btn btn-sm btn-outline-danger mb-2" href="{{ video.url_youtube }}" target="_blank" rel="noopener">
-                                <i class="bi bi-youtube"></i> Assistir no YouTube
+                                <i class="bi bi-youtube" aria-hidden="true"></i> Assistir no YouTube
                             </a>
                             {% if video.nota_curador %}
-                                <div class="small border-start border-3 ps-2 mb-2">
+                                <div class="nota-curador">
                                     <strong>Nota do curador:</strong> {{ video.nota_curador|linebreaksbr }}
                                 </div>
                             {% endif %}
@@ -41,8 +41,8 @@
 
         {% if videos_conteudo|length > 1 %}
             <div class="col-lg-4">
-                <h3 class="h6 mb-2">Vídeos deste conteúdo <span class="badge text-bg-secondary">{{ videos_conteudo|length }}</span></h3>
-                <div class="list-group lista-videos" style="--bs-list-group-active-bg: var(--app-primary); --bs-list-group-active-border-color: var(--app-primary);">
+                <h3 class="video-lista-titulo">Vídeos deste conteúdo <span class="chip tom-neutro">{{ videos_conteudo|length }}</span></h3>
+                <div class="list-group lista-videos" style="--bs-list-group-active-bg: var(--verde-700); --bs-list-group-active-border-color: var(--verde-700);">
                     {% for item in videos_conteudo %}
                         {% with video=item.video %}
                             <a class="list-group-item list-group-item-action d-flex gap-2 align-items-start{% if item.selecionado %} active{% endif %}"

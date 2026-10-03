@@ -5,81 +5,65 @@
 {% block voltar_url %}{% url 'curriculo:materias_lista' %}{% endblock %}
 
 {% block content %}
-    <div class="page-heading">
-        <h1>{{ materia.nome }}</h1>
-        <p>Detalhes da matéria.</p>
-    </div>
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'curriculo:materias_lista' %}">Matérias</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ materia.nome }}</li>
+        </ol>
+    </nav>
 
-    <section class="section-box">
-        {% if materia.descricao %}
-            <p class="mb-0">{{ materia.descricao }}</p>
-        {% else %}
-            <p class="mb-0 text-muted">Nenhuma descrição cadastrada.</p>
-        {% endif %}
-        <div class="mt-3">
+    <header class="cabecalho">
+        <div class="cabecalho-selo">
+            {% include "components/selo_materia.html" with materia=materia tamanho="lg" %}
+            <div>
+                <h1>{{ materia.nome }}</h1>
+                {% if materia.descricao %}
+                    <p class="cabecalho-texto">{{ materia.descricao }}</p>
+                {% else %}
+                    <p class="cabecalho-texto">Nenhuma descrição cadastrada.</p>
+                {% endif %}
+            </div>
+        </div>
+        <div class="cabecalho-acoes">
             {% include "estudos/partials/botao_minha_lista_materia.html" %}
+            <a class="btn btn-primary" href="{% url 'questoes:exercicios_lista' %}?materia={{ materia.slug }}"><i class="bi bi-pencil-square" aria-hidden="true"></i> Praticar questões desta matéria</a>
         </div>
-    </section>
+    </header>
 
-    <section class="mt-4">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h2 class="h5 mb-0">Conteúdos</h2>
-            <a class="btn btn-sm btn-outline-primary" href="{% url 'questoes:exercicios_lista' %}?materia={{ materia.slug }}">Praticar questões desta matéria</a>
+    <section aria-labelledby="titulo-conteudos">
+        <div class="secao-topo">
+            <h2 class="secao-titulo" id="titulo-conteudos">Conteúdos</h2>
         </div>
-        <div class="row g-3">
-            {% for conteudo in conteudos_raiz %}
-                <div class="col-md-4">
-                    <div class="section-box h-100">
-                        <h3 class="h6">{{ conteudo.titulo }}</h3>
-                        <span class="badge text-bg-secondary mb-2">{{ conteudo.get_dificuldade_display }}</span>
-                        <p class="text-muted">{{ conteudo.resumo|truncatewords:24 }}</p>
-                        <div class="d-flex flex-wrap gap-2">
-                            <a class="btn btn-sm btn-outline-primary" href="{% url 'curriculo:conteudo_detalhe' materia.slug conteudo.slug %}">Estudar</a>
-                            {% include "estudos/partials/botao_minha_lista_conteudo.html" %}
-                            {% include "estudos/partials/botao_estudado_conteudo.html" %}
-                        </div>
-
+        {% if conteudos_raiz or conteudos_sem_pai_publicado %}
+            <div class="grade-cartoes">
+                {% for conteudo in conteudos_raiz %}
+                    <div class="d-flex flex-column gap-2">
+                        {% include "components/cartao_conteudo.html" with conteudo=conteudo materia=materia %}
                         {% with filhos=conteudo.subconteudos.all %}
                             {% if filhos %}
-                                <div class="mt-3">
-                                    <strong class="small">Subconteúdos</strong>
-                                    <ul class="mb-0 ps-3">
-                                        {% for filho in filhos %}
-                                            <li><a href="{% url 'curriculo:conteudo_detalhe' materia.slug filho.slug %}">{{ filho.titulo }}</a></li>
-                                        {% endfor %}
-                                    </ul>
-                                </div>
+                                <details class="recolhivel">
+                                    <summary><i class="bi bi-diagram-3" aria-hidden="true"></i> Subconteúdos ({{ filhos|length }})</summary>
+                                    <div class="recolhivel-corpo">
+                                        <ul class="atividades">
+                                            {% for filho in filhos %}
+                                                <li class="atividade">
+                                                    <span class="atividade-corpo"><a class="atividade-titulo" href="{% url 'curriculo:conteudo_detalhe' materia.slug filho.slug %}">{{ filho.titulo }}</a></span>
+                                                    {% if filho.pk in ids_conteudos_estudados %}<span class="chip tom-menta"><i class="bi bi-check-lg" aria-hidden="true"></i> Estudado</span>{% endif %}
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                </details>
                             {% endif %}
                         {% endwith %}
                     </div>
-                </div>
-            {% empty %}
-                <div class="col-12">
-                    <div class="section-box">
-                        <p class="mb-0">Nenhum conteúdo publicado para esta matéria.</p>
-                    </div>
-                </div>
-            {% endfor %}
-
-            {% for conteudo in conteudos_sem_pai_publicado %}
-                <div class="col-md-4">
-                    <div class="section-box h-100">
-                        <h3 class="h6">{{ conteudo.titulo }}</h3>
-                        <p class="small text-muted mb-1">Pertence a: {{ conteudo.pai.titulo }}</p>
-                        <span class="badge text-bg-secondary mb-2">{{ conteudo.get_dificuldade_display }}</span>
-                        <p class="text-muted">{{ conteudo.resumo|truncatewords:24 }}</p>
-                        <div class="d-flex flex-wrap gap-2">
-                            <a class="btn btn-sm btn-outline-primary" href="{% url 'curriculo:conteudo_detalhe' materia.slug conteudo.slug %}">Estudar</a>
-                            {% include "estudos/partials/botao_minha_lista_conteudo.html" %}
-                            {% include "estudos/partials/botao_estudado_conteudo.html" %}
-                        </div>
-                    </div>
-                </div>
-            {% endfor %}
-        </div>
+                {% endfor %}
+                {% for conteudo in conteudos_sem_pai_publicado %}
+                    {% include "components/cartao_conteudo.html" with conteudo=conteudo materia=materia mostrar_pai=True %}
+                {% endfor %}
+            </div>
+        {% else %}
+            {% include "components/vazio.html" with titulo="Nenhum conteúdo publicado para esta matéria." texto="Volte em breve: novos conteúdos são publicados pela equipe." ilustracao="vazio" %}
+        {% endif %}
     </section>
-
-    <div class="mt-3">
-        <a class="btn btn-outline-secondary" href="{% url 'curriculo:materias_lista' %}">Voltar</a>
-    </div>
 {% endblock %}

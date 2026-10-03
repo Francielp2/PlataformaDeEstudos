@@ -9,7 +9,7 @@ function coletarItens() {
     const itens = [];
     const vistos = new Set();
     document.querySelectorAll(".sidebar-desktop .menu-link, [data-paleta-item]").forEach(function (elemento) {
-        const url = elemento.getAttribute("href");
+        const url = elemento.dataset.paletaUrl || elemento.getAttribute("href");
         const titulo = elemento.dataset.paletaTitulo || elemento.textContent.trim();
         if (!url || vistos.has(url + titulo)) {
             return;

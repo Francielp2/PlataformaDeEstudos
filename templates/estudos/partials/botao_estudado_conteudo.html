@@ -1,9 +1,16 @@
-<form method="post" action="{% url 'estudos:alternar_conteudo_estudado' conteudo.pk %}" class="d-inline">
+{% comment %}Alterna "Estudado". Funciona sem JS (POST normal); com JS muda na hora (components/alternancias.js).{% endcomment %}
+<form method="post" action="{% url 'estudos:alternar_conteudo_estudado' conteudo.pk %}" class="d-inline-flex"
+      data-alternar="estudado" data-ligado="{% if conteudo.pk in ids_conteudos_estudados %}true{% else %}false{% endif %}"
+      data-rotulo-ligado="Estudado" data-rotulo-desligado="Estudado"
+      data-icone-ligado="bi-check-circle-fill" data-icone-desligado="bi-check-circle"
+      data-classe-ligado="btn btn-sm btn-alternar btn-alternar--estudado" data-classe-desligado="btn btn-sm btn-alternar btn-alternar--estudado"
+      data-titulo-ligado="Desmarcar como estudado" data-titulo-desligado="Marcar como estudado"
+      data-anuncio-ligado="Conteúdo marcado como estudado." data-anuncio-desligado="Conteúdo removido dos estudados.">
     {% csrf_token %}
     <input type="hidden" name="next" value="{{ request.get_full_path }}">
     {% if conteudo.pk in ids_conteudos_estudados %}
-        <button class="btn btn-sm btn-success" type="submit" title="Desmarcar como estudado"><i class="bi bi-check-circle-fill"></i> Estudado</button>
+        <button class="btn btn-sm btn-alternar btn-alternar--estudado" type="submit" title="Desmarcar como estudado" aria-pressed="true"><i class="bi bi-check-circle-fill" aria-hidden="true"></i> <span>Estudado</span></button>
     {% else %}
-        <button class="btn btn-sm btn-outline-success" type="submit" title="Marcar como estudado"><i class="bi bi-check-circle"></i> Estudado</button>
+        <button class="btn btn-sm btn-alternar btn-alternar--estudado" type="submit" title="Marcar como estudado" aria-pressed="false"><i class="bi bi-check-circle" aria-hidden="true"></i> <span>Estudado</span></button>
     {% endif %}
 </form>

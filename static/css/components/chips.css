@@ -39,3 +39,37 @@
 .selo--sm { width: 36px; height: 36px; border-radius: 11px; font-size: 1.05rem; }
 .selo--lg { width: 64px; height: 64px; border-radius: 20px; font-size: 1.9rem; }
 :root[data-contraste="alto"] .selo { box-shadow: inset 0 0 0 2px currentColor; }
+
+/* Botões de alternância ("Estudado" e "Minha Lista"): discretos quando
+   desligados, evidentes quando ligados (cor + ícone preenchido + aria-pressed). */
+.btn-alternar {
+    --bs-btn-bg: var(--superficie);
+    --bs-btn-color: var(--tinta-2);
+    --bs-btn-border-color: var(--linha);
+    --bs-btn-hover-bg: var(--fundo-2);
+    --bs-btn-hover-color: var(--tinta);
+    --bs-btn-hover-border-color: #b9c8ba;
+    --bs-btn-active-bg: var(--linha-suave);
+    --bs-btn-active-border-color: #b9c8ba;
+}
+.btn-alternar--estudado[aria-pressed="true"] {
+    --bs-btn-bg: var(--verde-700);
+    --bs-btn-color: #fff;
+    --bs-btn-border-color: var(--verde-700);
+    --bs-btn-hover-bg: var(--verde-800);
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-border-color: var(--verde-800);
+    --bs-btn-active-bg: var(--verde-900);
+    --bs-btn-active-color: #fff;
+}
+.btn-alternar--lista[aria-pressed="true"] {
+    --bs-btn-bg: var(--sol-fundo);
+    --bs-btn-color: #5c4400;
+    --bs-btn-border-color: #f0cf5f;
+    --bs-btn-hover-bg: #fdeba8;
+    --bs-btn-hover-color: #4d3800;
+    --bs-btn-hover-border-color: var(--sol);
+    --bs-btn-active-bg: #fbe08a;
+    --bs-btn-active-color: #4d3800;
+}
+.btn-alternar--lista[aria-pressed="true"] i { color: #b88a00; }

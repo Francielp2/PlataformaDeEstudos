@@ -1,50 +1,142 @@
 {% extends "usuarios/base_interno.html" %}
+{% load static %}
 
 {% block title %}Painel do estudante{% endblock %}
 
 {% block content %}
-    <div class="page-heading">
-        <h1>Painel do estudante</h1>
-        <p>Olá, {{ request.user.first_name|default:"estudante" }}. Organize seus estudos e continue praticando.</p>
-    </div>
-
-    <div class="row g-3 mb-4">
-        <div class="col-md-3"><div class="metric"><div class="metric-icon"><i class="bi bi-star"></i></div><span>Minha Lista</span><strong>{{ total_minha_lista }}</strong><span>itens salvos</span></div></div>
-        <div class="col-md-3"><div class="metric"><div class="metric-icon"><i class="bi bi-check-circle"></i></div><span>Estudados</span><strong>{{ total_estudados }}</strong><span>conteúdos marcados</span></div></div>
-        <div class="col-md-3"><div class="metric"><div class="metric-icon"><i class="bi bi-pencil-square"></i></div><span>Exercícios</span><strong>{{ total_respostas }}</strong><span>respostas realizadas</span></div></div>
-        <div class="col-md-3"><div class="metric"><div class="metric-icon"><i class="bi bi-clipboard-check"></i></div><span>Simulados</span><strong>{{ total_simulados }}</strong><span>realizados</span></div></div>
-    </div>
-
-    <section class="section-box mb-4">
-        <h2 class="h5">Dados da conta</h2>
-        <dl class="row mb-0">
-            <dt class="col-sm-3">Nome</dt>
-            <dd class="col-sm-9">{{ request.user.get_full_name|default:"Não informado" }}</dd>
-            <dt class="col-sm-3">E-mail</dt>
-            <dd class="col-sm-9">{{ request.user.email }}</dd>
-            <dt class="col-sm-3">Etapa escolar</dt>
-            <dd class="col-sm-9">{{ perfil.get_etapa_escolar_display|default:"Não informada" }}</dd>
-        </dl>
-    </section>
-
-    <section>
-        <h2 class="h5 mb-3">Atalhos</h2>
-        <div class="row g-3">
-            <div class="col-md-3">
-                <a class="shortcut" href="{% url 'curriculo:materias_lista' %}"><strong><i class="bi bi-journal-bookmark"></i> Matérias</strong><span>Explore as disciplinas disponíveis</span></a>
-            </div>
-            <div class="col-md-3">
-                <a class="shortcut" href="{% url 'questoes:exercicios_lista' %}"><strong><i class="bi bi-pencil-square"></i> Exercícios</strong><span>Pratique questões por matéria</span></a>
-            </div>
-            <div class="col-md-3">
-                <a class="shortcut" href="{% url 'estudos:minha_lista' %}"><strong><i class="bi bi-star"></i> Minha lista</strong><span>Veja o que você salvou</span></a>
-            </div>
-            <div class="col-md-3">
-                <a class="shortcut" href="{% url 'estudos:conteudos_estudados' %}"><strong><i class="bi bi-check-circle"></i> Estudados</strong><span>Consulte conteúdos concluídos</span></a>
-            </div>
-            <div class="col-md-3">
-                <a class="shortcut" href="{% url 'simulados:simulados_lista' %}"><strong><i class="bi bi-clipboard-check"></i> Simulados</strong><span>Faça avaliações publicadas</span></a>
+    <section class="faixa" aria-labelledby="saudacao">
+        <div>
+            <h1 id="saudacao">Olá, {{ request.user.first_name|default:"estudante" }}!</h1>
+            <p class="faixa-texto">Organize seus estudos e continue praticando. Cada questão resolvida te deixa mais perto do ENEM.</p>
+            <div class="faixa-acoes">
+                {% if tentativa_em_andamento %}
+                    <a class="btn btn-primary btn-lg" href="{% url 'simulados:tentativa_questao' tentativa_em_andamento.pk 1 %}"><i class="bi bi-play-fill" aria-hidden="true"></i> Continuar simulado</a>
+                {% else %}
+                    <a class="btn btn-primary btn-lg" href="{% url 'questoes:exercicios_lista' %}"><i class="bi bi-play-fill" aria-hidden="true"></i> Bora praticar</a>
+                {% endif %}
+                <a class="btn btn-outline-secondary btn-lg" href="{% url 'questoes:desempenho' %}"><i class="bi bi-graph-up" aria-hidden="true"></i> Ver desempenho</a>
             </div>
         </div>
+        <img class="faixa-ilustracao" src="{% static 'images/illustrations/livros-sol.svg' %}" alt="" width="220" height="165">
+    </section>
+
+    <h2 class="visually-hidden">Seus números</h2>
+    <div class="numeros">
+        {% url 'questoes:desempenho' as url_desempenho %}
+        {% url 'simulados:meus_simulados' as url_simulados %}
+        {% url 'estudos:conteudos_estudados' as url_estudados %}
+        {% url 'estudos:minha_lista' as url_lista %}
+        {% include "components/numero.html" with valor=total_respostas rotulo="Exercícios" detalhe="respostas realizadas" icone="bi-pencil-square" tom="tom-menta" url=url_desempenho %}
+        {% include "components/numero.html" with valor=total_simulados rotulo="Simulados" detalhe="realizados" icone="bi-clipboard-check" tom="tom-coral" url=url_simulados %}
+        {% include "components/numero.html" with valor=total_estudados rotulo="Estudados" detalhe="conteúdos marcados" icone="bi-check-circle" tom="tom-ceu" url=url_estudados %}
+        {% include "components/numero.html" with valor=total_minha_lista rotulo="Minha Lista" detalhe="itens salvos" icone="bi-star" tom="tom-sol" url=url_lista %}
+    </div>
+
+    <div class="row g-4">
+        <div class="col-xl-7">
+            <section class="painel h-100" aria-labelledby="proximos-passos">
+                <div class="painel-topo">
+                    <div class="painel-cabeca">
+                        <span class="painel-icone" aria-hidden="true"><i class="bi bi-signpost-split"></i></span>
+                        <h2 class="painel-titulo" id="proximos-passos">Próximos passos</h2>
+                    </div>
+                </div>
+                <ul class="atividades">
+                    {% if tentativa_em_andamento %}
+                        <li class="atividade">
+                            <span class="selo selo--sm tom-coral" aria-hidden="true"><i class="bi bi-clipboard-check"></i></span>
+                            <span class="atividade-corpo">
+                                <span class="atividade-titulo">Terminar o simulado {{ tentativa_em_andamento.simulado.titulo }}</span>
+                                <span class="atividade-meta">Começado em {{ tentativa_em_andamento.iniciada_em|date:"d/m/Y" }}</span>
+                            </span>
+                            <a class="btn btn-sm btn-outline-primary" href="{% url 'simulados:tentativa_questao' tentativa_em_andamento.pk 1 %}">Continuar</a>
+                        </li>
+                    {% endif %}
+                    {% if conteudo_da_lista %}
+                        <li class="atividade">
+                            {% include "components/selo_materia.html" with materia=conteudo_da_lista.materia tamanho="sm" %}
+                            <span class="atividade-corpo">
+                                <span class="atividade-titulo">Estudar {{ conteudo_da_lista.titulo }}</span>
+                                <span class="atividade-meta">{{ conteudo_da_lista.materia.nome }}, salvo na sua lista</span>
+                            </span>
+                            <a class="btn btn-sm btn-outline-primary" href="{% url 'curriculo:conteudo_detalhe' conteudo_da_lista.materia.slug conteudo_da_lista.slug %}">Estudar</a>
+                        </li>
+                    {% endif %}
+                    <li class="atividade">
+                        <span class="selo selo--sm tom-menta" aria-hidden="true"><i class="bi bi-pencil-square"></i></span>
+                        <span class="atividade-corpo">
+                            <span class="atividade-titulo">{% if total_respostas %}Resolver mais questões{% else %}Resolver sua primeira questão{% endif %}</span>
+                            <span class="atividade-meta">{% if percentual_acertos is not None %}Você acerta {{ percentual_acertos }}% das questões até agora{% else %}Escolha uma matéria e comece pelo básico{% endif %}</span>
+                        </span>
+                        <a class="btn btn-sm btn-outline-primary" href="{% url 'questoes:exercicios_lista' %}">Praticar</a>
+                    </li>
+                    {% if not tentativa_em_andamento %}
+                        <li class="atividade">
+                            <span class="selo selo--sm tom-lilas" aria-hidden="true"><i class="bi bi-stopwatch"></i></span>
+                            <span class="atividade-corpo">
+                                <span class="atividade-titulo">Testar seus conhecimentos num simulado</span>
+                                <span class="atividade-meta">Treine no formato de prova</span>
+                            </span>
+                            <a class="btn btn-sm btn-outline-primary" href="{% url 'simulados:simulados_lista' %}">Ver simulados</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </section>
+        </div>
+
+        <div class="col-xl-5">
+            <section class="painel h-100" aria-labelledby="atividade-recente">
+                <div class="painel-topo">
+                    <div class="painel-cabeca">
+                        <span class="painel-icone" aria-hidden="true"><i class="bi bi-clock-history"></i></span>
+                        <h2 class="painel-titulo" id="atividade-recente">Atividade recente</h2>
+                    </div>
+                    {% if respostas_recentes %}<a class="btn btn-sm btn-ghost" href="{% url 'questoes:historico' %}">Ver todas</a>{% endif %}
+                </div>
+                {% if respostas_recentes %}
+                    <ul class="atividades">
+                        {% for resposta in respostas_recentes %}
+                            <li class="atividade">
+                                {% include "components/selo_materia.html" with materia=resposta.questao.materia tamanho="sm" %}
+                                <span class="atividade-corpo">
+                                    <a class="atividade-titulo" href="{% url 'questoes:resposta_detalhe' resposta.pk %}">{{ resposta.questao.codigo }}</a>
+                                    <span class="atividade-meta">{{ resposta.questao.materia.nome }}, {{ resposta.respondida_em|date:"d/m \à\s H:i" }}</span>
+                                </span>
+                                {% if resposta.correta %}
+                                    <span class="chip tom-menta"><i class="bi bi-check-lg" aria-hidden="true"></i> Acertou</span>
+                                {% else %}
+                                    <span class="chip tom-coral"><i class="bi bi-x-lg" aria-hidden="true"></i> Errou</span>
+                                {% endif %}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    {% include "components/vazio.html" with titulo="Nada por aqui ainda" texto="Suas últimas respostas aparecem aqui assim que você resolver uma questão." icone="bi-pencil" compacto=True nivel="h3" %}
+                {% endif %}
+            </section>
+        </div>
+    </div>
+
+    <section class="secao" aria-labelledby="atalhos">
+        <div class="secao-topo"><h2 class="secao-titulo" id="atalhos">Atalhos</h2></div>
+        <div class="grade-cartoes">
+            <a class="atalho" href="{% url 'curriculo:materias_lista' %}"><span class="selo tom-ceu" aria-hidden="true"><i class="bi bi-journal-bookmark"></i></span><span class="atalho-texto"><strong>Matérias</strong><span>Explore as disciplinas disponíveis</span></span><i class="bi bi-chevron-right" aria-hidden="true"></i></a>
+            <a class="atalho" href="{% url 'questoes:exercicios_lista' %}"><span class="selo tom-menta" aria-hidden="true"><i class="bi bi-pencil-square"></i></span><span class="atalho-texto"><strong>Exercícios</strong><span>Pratique questões por matéria</span></span><i class="bi bi-chevron-right" aria-hidden="true"></i></a>
+            <a class="atalho" href="{% url 'estudos:minha_lista' %}"><span class="selo tom-sol" aria-hidden="true"><i class="bi bi-star"></i></span><span class="atalho-texto"><strong>Minha lista</strong><span>Veja o que você salvou</span></span><i class="bi bi-chevron-right" aria-hidden="true"></i></a>
+            <a class="atalho" href="{% url 'estudos:conteudos_estudados' %}"><span class="selo tom-lilas" aria-hidden="true"><i class="bi bi-check-circle"></i></span><span class="atalho-texto"><strong>Estudados</strong><span>Consulte conteúdos concluídos</span></span><i class="bi bi-chevron-right" aria-hidden="true"></i></a>
+            <a class="atalho" href="{% url 'simulados:simulados_lista' %}"><span class="selo tom-coral" aria-hidden="true"><i class="bi bi-clipboard-check"></i></span><span class="atalho-texto"><strong>Simulados</strong><span>Faça avaliações publicadas</span></span><i class="bi bi-chevron-right" aria-hidden="true"></i></a>
+        </div>
+    </section>
+
+    <section class="painel secao" aria-labelledby="dados-conta">
+        <div class="painel-topo">
+            <h2 class="painel-titulo" id="dados-conta">Dados da conta</h2>
+            <a class="btn btn-sm btn-outline-secondary" href="{% url 'usuarios:perfil' %}"><i class="bi bi-pencil" aria-hidden="true"></i> Editar perfil</a>
+        </div>
+        <dl class="ficha">
+            <dt>Nome</dt><dd>{{ request.user.get_full_name|default:"Não informado" }}</dd>
+            <dt>E-mail</dt><dd>{{ request.user.email }}</dd>
+            <dt>Etapa escolar</dt><dd>{{ perfil.get_etapa_escolar_display|default:"Não informada" }}</dd>
+        </dl>
     </section>
 {% endblock %}

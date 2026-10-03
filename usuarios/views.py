@@ -168,6 +168,34 @@ def painel_estudante(request):
         usuario=request.user,
         status=TentativaSimulado.StatusTentativa.FINALIZADA,
     ).count()
+    # Dados somente leitura para os "próximos passos" e a atividade recente do painel.
+    total_acertos = RespostaQuestao.objects.filter(usuario=request.user, correta=True).count()
+    tentativa_em_andamento = (
+        TentativaSimulado.objects.filter(
+            usuario=request.user,
+            status=TentativaSimulado.StatusTentativa.EM_ANDAMENTO,
+        )
+        .select_related("simulado")
+        .order_by("-iniciada_em")
+        .first()
+    )
+    conteudo_da_lista = (
+        ItemMinhaLista.objects.filter(
+            usuario=request.user,
+            conteudo__isnull=False,
+            conteudo__status="published",
+            conteudo__materia__ativa=True,
+        )
+        .exclude(conteudo__marcacoes_estudado__usuario=request.user)
+        .select_related("conteudo", "conteudo__materia")
+        .order_by("adicionado_em")
+        .first()
+    )
+    respostas_recentes = (
+        RespostaQuestao.objects.filter(usuario=request.user)
+        .select_related("questao", "questao__materia")
+        .order_by("-respondida_em")[:4]
+    )
     return render(
         request,
         "usuarios/painel_estudante.html",
@@ -177,6 +205,10 @@ def painel_estudante(request):
             "total_estudados": total_estudados,
             "total_respostas": total_respostas,
             "total_simulados": total_simulados,
+            "percentual_acertos": round(total_acertos / total_respostas * 100) if total_respostas else None,
+            "tentativa_em_andamento": tentativa_em_andamento,
+            "conteudo_da_lista": conteudo_da_lista.conteudo if conteudo_da_lista else None,
+            "respostas_recentes": respostas_recentes,
             "active": "inicio",
         },
     )

@@ -3,68 +3,82 @@
 {% block title %}Painel administrativo{% endblock %}
 
 {% block content %}
-    <div class="page-heading">
-        <h1>Painel administrativo</h1>
-        <p>Visão geral das contas e atalhos de gerenciamento.</p>
+    <header class="cabecalho">
+        <div>
+            <h1>Painel administrativo</h1>
+            <p class="cabecalho-texto">Visão geral das contas e atalhos de gerenciamento.</p>
+        </div>
+        <div class="cabecalho-acoes">
+            <a class="btn btn-outline-secondary" href="{% url 'usuarios:admin_usuario_criar' %}"><i class="bi bi-person-plus" aria-hidden="true"></i> Criar usuário</a>
+            <a class="btn btn-primary" href="{% url 'questoes_admin:admin_questao_criar' %}"><i class="bi bi-plus-lg" aria-hidden="true"></i> Nova questão</a>
+        </div>
+    </header>
+
+    <h2 class="visually-hidden">Números das contas</h2>
+    <div class="numeros">
+        {% include "components/numero.html" with valor=total_usuarios rotulo="Total" detalhe="contas" icone="bi-people" tom="tom-neutro" %}
+        {% include "components/numero.html" with valor=total_estudantes rotulo="Estudantes" detalhe="contas" icone="bi-mortarboard" tom="tom-menta" %}
+        {% include "components/numero.html" with valor=total_staff rotulo="Staff" detalhe="administrativos" icone="bi-person-gear" tom="tom-ceu" %}
+        {% include "components/numero.html" with valor=total_ativos rotulo="Ativos" detalhe="contas ativas" icone="bi-person-check" tom="tom-menta" %}
+        {% include "components/numero.html" with valor=total_inativos rotulo="Inativos" detalhe="contas inativas" icone="bi-person-dash" tom="tom-sol" %}
+        {% include "components/numero.html" with valor=total_simulados rotulo="Simulados" detalhe="cadastrados" icone="bi-clipboard-check" tom="tom-lilas" %}
     </div>
 
-    <div class="row g-3 mb-4">
-        <div class="col-md-2"><div class="metric"><div class="metric-icon"><i class="bi bi-people"></i></div><span>Total</span><strong>{{ total_usuarios }}</strong><span>contas</span></div></div>
-        <div class="col-md-2"><div class="metric"><div class="metric-icon"><i class="bi bi-mortarboard"></i></div><span>Estudantes</span><strong>{{ total_estudantes }}</strong><span>contas</span></div></div>
-        <div class="col-md-2"><div class="metric"><div class="metric-icon"><i class="bi bi-person-gear"></i></div><span>Staff</span><strong>{{ total_staff }}</strong><span>administrativos</span></div></div>
-        <div class="col-md-2"><div class="metric"><div class="metric-icon"><i class="bi bi-person-check"></i></div><span>Ativos</span><strong>{{ total_ativos }}</strong><span>contas ativas</span></div></div>
-        <div class="col-md-2"><div class="metric"><div class="metric-icon"><i class="bi bi-person-dash"></i></div><span>Inativos</span><strong>{{ total_inativos }}</strong><span>contas inativas</span></div></div>
-        <div class="col-md-2"><div class="metric"><div class="metric-icon"><i class="bi bi-clipboard-check"></i></div><span>Simulados</span><strong>{{ total_simulados }}</strong><span>cadastrados</span></div></div>
+    <div class="row g-4">
+        <div class="col-xl-8">
+            <section class="tabela-card" aria-labelledby="cadastros-recentes">
+                <div class="painel-topo px-4 pt-3 mb-2">
+                    <h2 class="painel-titulo" id="cadastros-recentes">Cadastros recentes</h2>
+                    <a class="btn btn-sm btn-outline-secondary" href="{% url 'usuarios:admin_usuarios_lista' %}"><i class="bi bi-people" aria-hidden="true"></i> Ver usuários</a>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th scope="col">Nome</th>
+                                <th scope="col">E-mail</th>
+                                <th scope="col">Tipo</th>
+                                <th scope="col">Cadastro</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for usuario in cadastros_recentes %}
+                                <tr>
+                                    <td><a class="celula-titulo" href="{% url 'usuarios:admin_usuario_detalhe' usuario.pk %}">{{ usuario.get_full_name|default:"Não informado" }}</a></td>
+                                    <td>{{ usuario.email }}</td>
+                                    <td>
+                                        {% if usuario.is_superuser %}
+                                            <span class="chip tom-lilas"><i class="bi bi-shield-lock" aria-hidden="true"></i> Superusuário</span>
+                                        {% elif usuario.is_staff %}
+                                            <span class="chip tom-ceu"><i class="bi bi-person-gear" aria-hidden="true"></i> Administrador</span>
+                                        {% else %}
+                                            <span class="chip tom-menta"><i class="bi bi-mortarboard" aria-hidden="true"></i> Estudante</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="celula-data">{{ usuario.date_joined|date:"d/m/Y H:i" }}</td>
+                                </tr>
+                            {% empty %}
+                                <tr><td colspan="4" class="tabela-vazia">Nenhum usuário cadastrado.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+
+        <div class="col-xl-4">
+            <section class="painel h-100" aria-labelledby="atalhos-admin">
+                <h2 class="painel-titulo mb-3" id="atalhos-admin">Atalhos administrativos</h2>
+                <div class="d-grid gap-2">
+                    <a class="atalho" href="{% url 'usuarios:admin_usuarios_lista' %}"><span class="selo selo--sm tom-neutro" aria-hidden="true"><i class="bi bi-people"></i></span><span class="atalho-texto"><strong>Usuários</strong><span>Gerenciar contas</span></span><i class="bi bi-chevron-right" aria-hidden="true"></i></a>
+                    <a class="atalho" href="{% url 'usuarios:admin_usuario_criar' %}"><span class="selo selo--sm tom-neutro" aria-hidden="true"><i class="bi bi-person-plus"></i></span><span class="atalho-texto"><strong>Criar usuário</strong><span>Novo cadastro administrativo</span></span><i class="bi bi-chevron-right" aria-hidden="true"></i></a>
+                    <a class="atalho" href="{% url 'curriculo_admin:admin_materias_lista' %}"><span class="selo selo--sm tom-ceu" aria-hidden="true"><i class="bi bi-journal-bookmark"></i></span><span class="atalho-texto"><strong>Matérias</strong><span>Gerenciar disciplinas</span></span><i class="bi bi-chevron-right" aria-hidden="true"></i></a>
+                    <a class="atalho" href="{% url 'curriculo_admin:admin_conteudos_lista' %}"><span class="selo selo--sm tom-menta" aria-hidden="true"><i class="bi bi-book"></i></span><span class="atalho-texto"><strong>Conteúdos</strong><span>Temas de estudo</span></span><i class="bi bi-chevron-right" aria-hidden="true"></i></a>
+                    <a class="atalho" href="{% url 'videos_admin:lista' %}"><span class="selo selo--sm tom-coral" aria-hidden="true"><i class="bi bi-play-btn"></i></span><span class="atalho-texto"><strong>Vídeos</strong><span>Curadoria do YouTube</span></span><i class="bi bi-chevron-right" aria-hidden="true"></i></a>
+                    <a class="atalho" href="{% url 'questoes_admin:admin_questoes_lista' %}"><span class="selo selo--sm tom-sol" aria-hidden="true"><i class="bi bi-question-circle"></i></span><span class="atalho-texto"><strong>Questões</strong><span>Banco de exercícios</span></span><i class="bi bi-chevron-right" aria-hidden="true"></i></a>
+                    <a class="atalho" href="{% url 'simulados_admin:admin_simulados_lista' %}"><span class="selo selo--sm tom-lilas" aria-hidden="true"><i class="bi bi-clipboard-check"></i></span><span class="atalho-texto"><strong>Simulados</strong><span>Gerenciar avaliações</span></span><i class="bi bi-chevron-right" aria-hidden="true"></i></a>
+                </div>
+            </section>
+        </div>
     </div>
-
-    <section class="section-box mb-4">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h2 class="h5 mb-0">Cadastros recentes</h2>
-            <a class="btn btn-sm btn-outline-primary" href="{% url 'usuarios:admin_usuarios_lista' %}"><i class="bi bi-people"></i> Ver usuários</a>
-        </div>
-        <div class="table-responsive">
-            <table class="table table-sm table-hover align-middle mb-0">
-                <thead>
-                    <tr>
-                        <th>Nome</th>
-                        <th>E-mail</th>
-                        <th>Tipo</th>
-                        <th>Cadastro</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for usuario in cadastros_recentes %}
-                        <tr>
-                            <td>{{ usuario.get_full_name|default:"Não informado" }}</td>
-                            <td>{{ usuario.email }}</td>
-                            <td>
-                                {% if usuario.is_superuser %}
-                                    <span class="badge text-bg-dark">Superusuário</span>
-                                {% elif usuario.is_staff %}
-                                    <span class="badge text-bg-primary">Administrador</span>
-                                {% else %}
-                                    <span class="badge text-bg-secondary">Estudante</span>
-                                {% endif %}
-                            </td>
-                            <td>{{ usuario.date_joined|date:"d/m/Y H:i" }}</td>
-                        </tr>
-                    {% empty %}
-                        <tr><td colspan="4">Nenhum usuário cadastrado.</td></tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </section>
-
-    <section>
-        <h2 class="h5 mb-3">Atalhos administrativos</h2>
-        <div class="row g-3">
-            <div class="col-md-3"><a class="shortcut" href="{% url 'usuarios:admin_usuarios_lista' %}"><strong><i class="bi bi-people"></i> Usuários</strong><span>Gerenciar contas</span></a></div>
-            <div class="col-md-3"><a class="shortcut" href="{% url 'usuarios:admin_usuario_criar' %}"><strong><i class="bi bi-person-plus"></i> Criar usuário</strong><span>Novo cadastro administrativo</span></a></div>
-            <div class="col-md-3"><a class="shortcut" href="{% url 'curriculo_admin:admin_materias_lista' %}"><strong><i class="bi bi-journal-bookmark"></i> Matérias</strong><span>Gerenciar disciplinas</span></a></div>
-            <div class="col-md-3"><a class="shortcut" href="{% url 'curriculo_admin:admin_conteudos_lista' %}"><strong><i class="bi bi-book"></i> Conteúdos</strong><span>Temas de estudo</span></a></div>
-            <div class="col-md-3"><a class="shortcut" href="{% url 'questoes_admin:admin_questoes_lista' %}"><strong><i class="bi bi-question-circle"></i> Questões</strong><span>Banco de exercícios</span></a></div>
-            <div class="col-md-3"><a class="shortcut" href="{% url 'simulados_admin:admin_simulados_lista' %}"><strong><i class="bi bi-clipboard-check"></i> Simulados</strong><span>Gerenciar avaliações</span></a></div>
-        </div>
-    </section>
 {% endblock %}

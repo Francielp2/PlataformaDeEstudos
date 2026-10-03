@@ -1,20 +1,16 @@
-{% extends "base.html" %}
+{% extends "usuarios/base_publico.html" %}
 
-{% block title %}
-    Plataforma Inteligente de Estudos
-{% endblock %}
+{% block title %}Plataforma Inteligente de Estudos{% endblock %}
 
 {% block content %}
-    <section class="home-intro">
-        <h1>Plataforma Inteligente de Estudos</h1>
-        <p>
-            Protótipo acadêmico para acompanhamento de estudos voltado ao ENEM
-            e vestibulares.
-        </p>
-
-        <div class="d-flex gap-2 flex-wrap">
-            <a class="btn btn-primary" href="{% url 'usuarios:login' %}">Entrar</a>
-            <a class="btn btn-outline-primary" href="{% url 'usuarios:cadastro' %}">Criar cadastro</a>
-        </div>
-    </section>
+    <h1 class="h2">Plataforma Inteligente de Estudos</h1>
+    <p class="subtitulo">
+        Protótipo acadêmico para acompanhamento de estudos voltado ao ENEM
+        e vestibulares.
+    </p>
+    <div class="d-grid gap-2">
+        <a class="btn btn-primary btn-lg" href="{% url 'usuarios:login' %}"><i class="bi bi-box-arrow-in-right" aria-hidden="true"></i> Entrar</a>
+        <a class="btn btn-outline-primary btn-lg" href="{% url 'usuarios:cadastro' %}"><i class="bi bi-person-plus" aria-hidden="true"></i> Criar cadastro</a>
+    </div>
+    <p class="troca-auth">É estudante? Crie sua conta e comece agora.</p>
 {% endblock %}

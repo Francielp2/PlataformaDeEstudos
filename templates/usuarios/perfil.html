@@ -1,76 +1,54 @@
 {% extends "usuarios/base_interno.html" %}
+{% load ui %}
 
 {% block title %}Meu perfil{% endblock %}
 
 {% block content %}
-    <div class="page-heading">
-        <h1>Meu perfil</h1>
-        <p>Gerencie seus dados pessoais e sua senha.</p>
-    </div>
+    <header class="cabecalho">
+        <div class="cabecalho-selo">
+            <span class="avatar" style="width:64px;height:64px;font-size:1.6rem;" aria-hidden="true">{{ request.user|iniciais }}</span>
+            <div>
+                <h1>Meu perfil</h1>
+                <p class="cabecalho-texto">Gerencie seus dados pessoais e sua senha.</p>
+            </div>
+        </div>
+    </header>
 
-    <div class="form-panel">
-        <section class="form-section">
-            <h2 class="form-section-title">Dados da conta</h2>
-            <dl class="row mb-0">
-                <dt class="col-sm-3">E-mail</dt>
-                <dd class="col-sm-9">{{ request.user.email }}</dd>
+    <form method="post" class="formulario" novalidate>
+        {% csrf_token %}
+        {% include "components/resumo_erros.html" with form=form %}
+
+        <section class="secao-form" aria-labelledby="secao-conta">
+            <h2 class="secao-form-titulo" id="secao-conta">Dados da conta</h2>
+            <p class="secao-form-descricao">O e-mail é usado para entrar e não pode ser alterado aqui.</p>
+            <dl class="ficha">
+                <dt>E-mail</dt>
+                <dd>{{ request.user.email }}</dd>
             </dl>
         </section>
 
-        <form method="post" novalidate>
-            {% csrf_token %}
-            {% if form.non_field_errors %}
-                <div class="alert alert-danger">
-                    {% for error in form.non_field_errors %}
-                        <div>{{ error }}</div>
-                    {% endfor %}
-                </div>
-            {% endif %}
+        <fieldset class="secao-form">
+            <legend>Informações pessoais</legend>
+            <p class="secao-form-descricao">Como você aparece na plataforma.</p>
+            <div class="grade-form">
+                {% include "components/campo.html" with field=form.first_name col="col-meio" %}
+                {% include "components/campo.html" with field=form.last_name col="col-meio" %}
+                {% include "components/campo.html" with field=form.etapa_escolar col="col-meio" %}
+            </div>
+        </fieldset>
 
-            <section class="form-section">
-                <h2 class="form-section-title">Informações pessoais</h2>
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <label class="form-label" for="{{ form.first_name.id_for_label }}">{{ form.first_name.label }}</label>
-                        {{ form.first_name }}
-                        {% for error in form.first_name.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label" for="{{ form.last_name.id_for_label }}">{{ form.last_name.label }}</label>
-                        {{ form.last_name }}
-                        {% for error in form.last_name.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label" for="{{ form.etapa_escolar.id_for_label }}">{{ form.etapa_escolar.label }}</label>
-                        {{ form.etapa_escolar }}
-                        {% for error in form.etapa_escolar.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
-                    </div>
-                </div>
-            </section>
+        <fieldset class="secao-form">
+            <legend>Alterar senha</legend>
+            <p class="secao-form-descricao">Preencha estes campos somente se quiser trocar sua senha.</p>
+            <div class="grade-form">
+                {% include "components/campo.html" with field=form.senha_atual col="col-terco" %}
+                {% include "components/campo.html" with field=form.nova_senha1 col="col-terco" %}
+                {% include "components/campo.html" with field=form.nova_senha2 col="col-terco" %}
+            </div>
+        </fieldset>
 
-            <section class="form-section">
-                <h2 class="form-section-title">Alterar senha</h2>
-                <p class="form-text mb-3">Preencha estes campos somente se quiser trocar sua senha.</p>
-                <div class="row g-3">
-                    <div class="col-md-4">
-                        <label class="form-label" for="{{ form.senha_atual.id_for_label }}">{{ form.senha_atual.label }}</label>
-                        {{ form.senha_atual }}
-                        {% for error in form.senha_atual.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
-                    </div>
-                    <div class="col-md-4">
-                        <label class="form-label" for="{{ form.nova_senha1.id_for_label }}">{{ form.nova_senha1.label }}</label>
-                        {{ form.nova_senha1 }}
-                        {% for error in form.nova_senha1.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
-                    </div>
-                    <div class="col-md-4">
-                        <label class="form-label" for="{{ form.nova_senha2.id_for_label }}">{{ form.nova_senha2.label }}</label>
-                        {{ form.nova_senha2 }}
-                        {% for error in form.nova_senha2.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
-                    </div>
-                </div>
-            </section>
-
-            <button class="btn btn-primary" type="submit"><i class="bi bi-check2"></i> Salvar alterações</button>
-        </form>
-    </div>
+        <div class="barra-acoes">
+            <button class="btn btn-primary" type="submit"><i class="bi bi-check2" aria-hidden="true"></i> Salvar alterações</button>
+        </div>
+    </form>
 {% endblock %}

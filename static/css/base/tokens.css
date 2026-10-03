@@ -112,10 +112,10 @@
     /* Medidas do layout. */
     --largura-sidebar: 268px;
     --altura-topbar: 68px;
-    --largura-conteudo: 1240px;
+    --largura-conteudo: 1440px;
     --alvo-toque: 44px;
     /* Respiro entre a sidebar e o conteúdo (e o fim da tela). */
-    --respiro-lateral: 1.25rem;
+    --respiro-lateral: 0.75rem;
 }
 
 /* Alto contraste: escolhido no controle de acessibilidade (salvo no navegador). */

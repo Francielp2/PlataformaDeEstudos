@@ -16,6 +16,11 @@ TAMANHO_BLOCO_SEGUNDOS = 5
 MAXIMO_SEGMENTOS_POR_REQUISICAO = 2000
 DURACAO_MAXIMA_SEGUNDOS = 21600
 MAXIMO_SEGUNDOS_POR_REQUISICAO = 60
+# Antifraude: o tempo creditado não cresce mais rápido que a reprodução em 2x
+# desde o último registro, e o total de blocos de um aluno num vídeo não passa
+# do tempo creditado (em blocos) mais uma folga fixa para as bordas dos trechos.
+VELOCIDADE_MAXIMA = 2
+FOLGA_BLOCOS = 4
 # O player só retoma de onde o aluno parou se houver pelo menos isso de vídeo antes e depois.
 MARGEM_INICIO_RETOMADA = 5
 MARGEM_FIM_RETOMADA = 10
@@ -106,6 +111,41 @@ def _percentual(blocos, total_blocos):
     return Decimal(str(round(valor, 2)))
 
 
+def _total_blocos(duracao):
+    return math.ceil(duracao / TAMANHO_BLOCO_SEGUNDOS)
+
+
+def _credito_de_segundos(progresso, criado, agora):
+    """Segundos que podem ser creditados agora, pelo tempo real desde o último registro."""
+    decorrido = 0 if criado else max(0, (agora - progresso.atualizado_em).total_seconds())
+    return int(min(MAXIMO_SEGUNDOS_POR_REQUISICAO, decorrido * VELOCIDADE_MAXIMA))
+
+
+def _limitar_blocos_novos(blocos_recebidos, blocos_ja_assistidos, segundos_total):
+    """Aceita só os blocos novos que cabem no tempo total já creditado ao aluno."""
+    limite = math.ceil(segundos_total / TAMANHO_BLOCO_SEGUNDOS) + FOLGA_BLOCOS
+    vagas = max(0, limite - len(blocos_ja_assistidos))
+    novos = sorted(blocos_recebidos - blocos_ja_assistidos)
+    return set(novos[:vagas])
+
+
+def recalcular_percentuais(video):
+    """Recalcula o percentual de todos os alunos depois que a duração do vídeo muda.
+
+    Não altera `concluido` nem as marcações de estudado já feitas.
+    """
+    if not video.duracao_segundos:
+        return 0
+    total_blocos = _total_blocos(video.duracao_segundos)
+    progressos = list(ProgressoVideo.objects.filter(video=video))
+    for progresso in progressos:
+        blocos = [bloco for bloco in progresso.segmentos_assistidos if 0 <= bloco < total_blocos]
+        progresso.segmentos_assistidos = blocos
+        progresso.percentual = _percentual(blocos, total_blocos)
+    ProgressoVideo.objects.bulk_update(progressos, ["segmentos_assistidos", "percentual"])
+    return len(progressos)
+
+
 def registrar_progresso(video, usuario, dados):
     """Consolida o progresso e a sessão do aluno. `dados` vem de validar_dados_progresso."""
     with transaction.atomic():
@@ -114,13 +154,18 @@ def registrar_progresso(video, usuario, dados):
             video.duracao_segundos = max(1, round(dados["duracao"]))
             video.save(update_fields=["duracao_segundos", "atualizado_em"])
         duracao = video.duracao_segundos
-        total_blocos = math.ceil(duracao / TAMANHO_BLOCO_SEGUNDOS)
-        blocos_recebidos = {bloco for bloco in dados["segmentos"] if 0 <= bloco < total_blocos}
+        total_blocos = _total_blocos(duracao)
         posicao = min(dados["posicao"], duracao)
-        segundos = dados["segundos_assistidos"]
 
-        progresso, _ = ProgressoVideo.objects.select_for_update().get_or_create(usuario=usuario, video=video)
-        blocos = set(progresso.segmentos_assistidos) | blocos_recebidos
+        agora = timezone.now()
+        progresso, criado = ProgressoVideo.objects.select_for_update().get_or_create(usuario=usuario, video=video)
+        ja_assistidos = set(progresso.segmentos_assistidos)
+        segundos = min(dados["segundos_assistidos"], _credito_de_segundos(progresso, criado, agora))
+        blocos_recebidos = {bloco for bloco in dados["segmentos"] if 0 <= bloco < total_blocos}
+        blocos_recebidos = (blocos_recebidos & ja_assistidos) | _limitar_blocos_novos(
+            blocos_recebidos, ja_assistidos, progresso.segundos_assistidos_total + segundos
+        )
+        blocos = ja_assistidos | blocos_recebidos
         progresso.segmentos_assistidos = sorted(blocos)
         progresso.percentual = _percentual(blocos, total_blocos)
         progresso.ultima_posicao_segundos = posicao

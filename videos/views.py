@@ -5,6 +5,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
 from django.core.paginator import Paginator
+from django.db import transaction
 from django.db.models import Count, Q
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -18,7 +19,12 @@ from . import youtube
 from .forms import ImportarVideosJsonForm, VideoCriarForm, VideoEditarForm
 from .importacao_json import importar_videos_json
 from .models import ProgressoVideo, SessaoVideo, VideoConteudo
-from .services import aplicar_metadados, registrar_progresso, validar_dados_progresso
+from .services import (
+    aplicar_metadados,
+    recalcular_percentuais,
+    registrar_progresso,
+    validar_dados_progresso,
+)
 
 
 TAMANHO_MAXIMO_CORPO_PROGRESSO = 20 * 1024
@@ -218,12 +224,22 @@ def admin_video_detalhe(request, pk):
 @staff_required
 def admin_video_editar(request, pk):
     video = get_object_or_404(VideoConteudo, pk=pk)
+    duracao_original = video.duracao_segundos
     form = VideoEditarForm(request.POST or None, instance=video)
     if request.method == "POST" and form.is_valid():
-        video = form.save(commit=False)
-        video.full_clean()
-        video.save()
+        with transaction.atomic():
+            video = form.save(commit=False)
+            video.full_clean()
+            video.save()
+            recalculados = 0
+            if video.duracao_segundos != duracao_original:
+                recalculados = recalcular_percentuais(video)
         messages.success(request, "Vídeo atualizado com sucesso.")
+        if recalculados:
+            messages.info(
+                request,
+                f"Duração alterada: o progresso de {recalculados} estudante(s) foi recalculado.",
+            )
         return redirect("videos_admin:detalhe", pk=video.pk)
     return render(
         request,

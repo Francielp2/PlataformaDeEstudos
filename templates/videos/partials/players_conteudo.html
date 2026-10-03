@@ -113,6 +113,7 @@
                 intervalo: null,
                 enviando: false,
                 envioAdiado: false,
+                inicioAvisado: false,
             };
 
             function tempoAtual() {
@@ -186,17 +187,19 @@
                 }
             }
 
-            function enviar(keepalive) {
+            // `avisoInicio` registra o começo da reprodução sem blocos: o servidor
+            // mede o tempo real a partir daí para não aceitar progresso forjado.
+            function enviar(keepalive, avisoInicio) {
                 if (!r.player) {
-                    return;
+                    return false;
                 }
-                if (r.enviando && !keepalive) {
+                if (r.enviando && !keepalive && !avisoInicio) {
                     // Um envio já está em andamento: este sai assim que ele terminar.
                     r.envioAdiado = true;
-                    return;
+                    return false;
                 }
-                if (r.pendentes.size === 0 && r.segundosPendentes < 1) {
-                    return;
+                if (!avisoInicio && r.pendentes.size === 0 && r.segundosPendentes < 1) {
+                    return false;
                 }
                 let duracao = 0;
                 try {
@@ -205,10 +208,10 @@
                     duracao = 0;
                 }
                 if (duracao <= 0) {
-                    return;
+                    return false;
                 }
-                const blocos = Array.from(r.pendentes);
-                const segundos = Math.floor(r.segundosPendentes);
+                const blocos = avisoInicio ? [] : Array.from(r.pendentes);
+                const segundos = avisoInicio ? 0 : Math.floor(r.segundosPendentes);
                 const posicao = tempoAtual();
                 r.enviando = true;
                 fetch(r.url, {
@@ -239,6 +242,7 @@
                         enviar(false);
                     }
                 });
+                return true;
             }
 
             function aoMudarEstado(evento) {
@@ -253,6 +257,9 @@
                     r.ultimaLeitura = tempoAtual();
                     if (!r.intervalo) {
                         r.intervalo = setInterval(ler, 1000);
+                    }
+                    if (!r.inicioAvisado) {
+                        r.inicioAvisado = enviar(false, true);
                     }
                 } else if (evento.data === estados.PAUSED || evento.data === estados.BUFFERING || evento.data === estados.ENDED) {
                     pararLeitura();

@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     'curriculo',
     'questoes',
     'estudos',
+    'videos',
     'simulados',
 ]
 

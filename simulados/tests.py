@@ -5,7 +5,7 @@ import cloudinary
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError, transaction
-from django.test import TestCase
+from django.test import SimpleTestCase, TestCase
 from django.urls import reverse
 
 from curriculo.models import Conteudo, Materia
@@ -13,7 +13,12 @@ from estudos.models import ItemMinhaLista
 from questoes.models import Alternativa, Questao, QuestaoConteudo
 
 from .models import AlternativaSimulado, QuestaoSimulado, RespostaSimulado, Simulado, TentativaSimulado
-from .services import criar_snapshot_de_questao, diagnostico_tentativa, importar_json
+from .services import (
+    conteudos_que_merecem_atencao,
+    criar_snapshot_de_questao,
+    diagnostico_tentativa,
+    importar_json,
+)
 
 
 Usuario = get_user_model()
@@ -538,3 +543,47 @@ class BotoesStatusSimuladoTests(SimuladoTestMixin, TestCase):
         self.assertContains(response, "Este simulado já está arquivado.")
         simulado.refresh_from_db()
         self.assertEqual(simulado.atualizado_em, atualizado_em)
+
+
+class ConteudosQueMerecemAtencaoTests(SimpleTestCase):
+    def diagnostico(self, *percentuais):
+        return [{"titulo": f"Conteúdo {indice}", "percentual": percentual} for indice, percentual in enumerate(sorted(percentuais))]
+
+    def percentuais(self, itens):
+        return [item["percentual"] for item in itens]
+
+    def test_mostra_todos_os_conteudos_abaixo_de_60(self):
+        atencao = conteudos_que_merecem_atencao(self.diagnostico(0, 20, 40, 50, 59.99, 60, 80))
+        self.assertEqual(self.percentuais(atencao), [0, 20, 40, 50, 59.99])
+
+    def test_sem_conteudo_abaixo_de_60_mostra_os_tres_menores(self):
+        atencao = conteudos_que_merecem_atencao(self.diagnostico(60, 70, 75, 80, 90, 100))
+        self.assertEqual(self.percentuais(atencao), [60, 70, 75])
+
+    def test_empate_no_ultimo_lugar_mostra_todos_os_empatados(self):
+        atencao = conteudos_que_merecem_atencao(self.diagnostico(60, 70, 75, 75, 75, 90))
+        self.assertEqual(self.percentuais(atencao), [60, 70, 75, 75, 75])
+
+    def test_conteudos_com_100_nunca_aparecem_entre_os_menores(self):
+        atencao = conteudos_que_merecem_atencao(self.diagnostico(80, 100, 100, 100))
+        self.assertEqual(self.percentuais(atencao), [80])
+
+    def test_todos_com_100_nao_mostra_nenhum(self):
+        self.assertEqual(conteudos_que_merecem_atencao(self.diagnostico(100, 100)), [])
+
+
+class ResultadoSimuladoAtencaoTests(SimuladoTestMixin, TestCase):
+    def test_aproveitamento_total_mostra_parabens(self):
+        tentativa = self.finalizar_com_resposta(correta=True)
+        self.client.force_login(self.estudante)
+        response = self.client.get(reverse("simulados:resultado_tentativa", args=[tentativa.pk]))
+        self.assertContains(response, "Parabéns!")
+        self.assertNotContains(response, "Revisar conteúdo")
+
+    def test_conteudo_abaixo_de_60_aparece_para_revisao(self):
+        tentativa = self.finalizar_com_resposta(correta=False)
+        self.client.force_login(self.estudante)
+        response = self.client.get(reverse("simulados:resultado_tentativa", args=[tentativa.pk]))
+        self.assertNotContains(response, "Parabéns!")
+        self.assertContains(response, "Revisar conteúdo")
+        self.assertEqual(len(response.context["atencao"]), 1)

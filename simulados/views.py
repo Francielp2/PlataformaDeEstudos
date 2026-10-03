@@ -29,6 +29,7 @@ from .models import AlternativaSimulado, QuestaoSimulado, RespostaSimulado, Simu
 from .services import (
     criar_snapshot_de_questao,
     criar_snapshot_manual,
+    conteudos_que_merecem_atencao,
     diagnostico_tentativa,
     garantir_edicao_estrutural,
     importar_json,
@@ -296,7 +297,7 @@ def resultado_tentativa(request, pk):
     if not tentativa.finalizada:
         return redirect("simulados:tentativa_questao", pk=tentativa.pk, ordem=1)
     diagnostico = diagnostico_tentativa(tentativa)
-    atencao = diagnostico[:3]
+    atencao = conteudos_que_merecem_atencao(diagnostico)
     return render(
         request,
         "simulados/resultado_tentativa.html",

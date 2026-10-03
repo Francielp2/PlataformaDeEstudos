@@ -17,6 +17,8 @@ from .models import (
 
 
 CHAVES_VALIDAS = {chr(codigo) for codigo in range(ord("A"), ord("Z") + 1)}
+PERCENTUAL_MINIMO_ATENCAO = 60
+QUANTIDADE_ATENCAO = 3
 
 
 def proxima_ordem(simulado):
@@ -365,3 +367,20 @@ def diagnostico_tentativa(tentativa):
             }
         )
     return sorted(resultado, key=lambda item: (item["percentual"], -item["questoes"], item["relacao"].conteudo_titulo))
+
+
+def conteudos_que_merecem_atencao(diagnostico):
+    """Seleciona os conteúdos destacados no resultado do simulado.
+
+    Todos os conteúdos abaixo de 60% são exibidos. Se não houver nenhum, exibe os
+    3 de menor aproveitamento que não estejam em 100%, incluindo os empatados com
+    o terceiro. Espera o diagnóstico ordenado por percentual crescente.
+    """
+    abaixo_do_minimo = [item for item in diagnostico if item["percentual"] < PERCENTUAL_MINIMO_ATENCAO]
+    if abaixo_do_minimo:
+        return abaixo_do_minimo
+    candidatos = [item for item in diagnostico if item["percentual"] < 100]
+    if len(candidatos) <= QUANTIDADE_ATENCAO:
+        return candidatos
+    percentual_corte = candidatos[QUANTIDADE_ATENCAO - 1]["percentual"]
+    return [item for item in candidatos if item["percentual"] <= percentual_corte]

@@ -300,6 +300,33 @@ def historico(request):
     )
 
 
+def _conteudos_com_erros(usuario):
+    """Conteúdos das questões que o aluno errou, do mais errado para o menos.
+
+    Cada resposta conta como uma tentativa, mesmo quando a questão foi respondida
+    mais de uma vez. Conteúdos sem nenhum erro ficam de fora.
+    """
+    conteudos = (
+        Conteudo.objects.filter(questao_conteudos__questao__respostas__usuario=usuario)
+        .select_related("materia")
+        .annotate(
+            tentativas=Count("questao_conteudos__questao__respostas"),
+            erros=Count(
+                "questao_conteudos__questao__respostas",
+                filter=Q(questao_conteudos__questao__respostas__correta=False),
+            ),
+        )
+        .filter(erros__gt=0)
+    )
+    resultado = list(conteudos)
+    for conteudo in resultado:
+        acertos = conteudo.tentativas - conteudo.erros
+        conteudo.acertos = acertos
+        conteudo.percentual = round((acertos / conteudo.tentativas) * 100)
+    resultado.sort(key=lambda conteudo: (-conteudo.erros, conteudo.percentual, conteudo.titulo))
+    return resultado
+
+
 @login_required(login_url="usuarios:login")
 def desempenho(request):
     respostas = _respostas_usuario(request.user)
@@ -319,6 +346,7 @@ def desempenho(request):
         "questoes/desempenho.html",
         {
             "page_obj": page_obj,
+            "conteudos_com_erros": _conteudos_com_erros(request.user),
             "total_respostas": total,
             "total_acertos": acertos,
             "total_erros": resumo["erros"] or 0,

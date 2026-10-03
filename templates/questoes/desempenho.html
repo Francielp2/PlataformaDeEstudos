@@ -15,6 +15,39 @@
         <div class="col-md-3"><div class="metric"><div class="metric-icon"><i class="bi bi-percent"></i></div><span>Aproveitamento</span><strong>{{ percentual }}%</strong><span>de acertos</span></div></div>
     </div>
 
+    <section class="section-box mb-4">
+        <h2 class="h5">Conteúdos com mais erros</h2>
+        <p class="text-muted small">Cada tentativa conta, inclusive quando a mesma questão foi respondida mais de uma vez. Conteúdos sem erros não aparecem.</p>
+        {% if conteudos_com_erros %}
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead><tr><th>Conteúdo</th><th>Matéria</th><th>Tentativas</th><th>Erros</th><th>Aproveitamento</th><th>Ações</th></tr></thead>
+                    <tbody>
+                        {% for conteudo in conteudos_com_erros %}
+                            <tr>
+                                <td>{{ conteudo.titulo }}</td>
+                                <td>{{ conteudo.materia.nome }}</td>
+                                <td>{{ conteudo.tentativas }}</td>
+                                <td><span class="badge text-bg-secondary">{{ conteudo.erros }}</span></td>
+                                <td>{{ conteudo.percentual }}%</td>
+                                <td>
+                                    {% if conteudo.materia.ativa and conteudo.status == "published" %}
+                                        <a class="btn btn-sm btn-outline-primary" href="{% url 'curriculo:conteudo_detalhe' conteudo.materia.slug conteudo.slug %}">Revisar conteúdo</a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% elif total_respostas %}
+            <p class="text-muted mb-0">Você não errou nenhuma questão até agora. Parabéns!</p>
+        {% else %}
+            <p class="text-muted mb-0">Responda algumas questões para ver quais conteúdos merecem mais atenção.</p>
+        {% endif %}
+    </section>
+
+    <h2 class="h5">Respostas</h2>
     {% include "questoes/partials/tabela_respostas.html" %}
     {% include "partials/paginacao.html" %}
 {% endblock %}

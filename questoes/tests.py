@@ -1263,3 +1263,48 @@ class BotoesStatusQuestaoTests(QuestaoTestMixin, TestCase):
         self.assertContains(response, "A questão já está com o status publicada.")
         questao.refresh_from_db()
         self.assertEqual(questao.atualizado_em, atualizado_em)
+
+
+class DesempenhoConteudosComErrosTests(QuestaoTestMixin, TestCase):
+    def responder(self, questao, correta):
+        RespostaQuestao.objects.create(
+            usuario=self.estudante,
+            questao=questao,
+            alternativa_escolhida=self.alternativa(questao, correta=correta),
+            correta=correta,
+        )
+
+    def test_lista_conteudos_com_erros_contando_cada_tentativa(self):
+        porcentagem = self.criar_questao("MAT-DES-1", conteudos=[self.conteudo])
+        razao = self.criar_questao("MAT-DES-2", conteudos=[self.outro_conteudo])
+        cinematica = self.criar_questao("FIS-DES-1", materia=self.fisica, conteudos=[self.conteudo_fisica])
+        self.responder(porcentagem, correta=False)
+        self.responder(porcentagem, correta=False)
+        self.responder(porcentagem, correta=True)
+        self.responder(razao, correta=False)
+        self.responder(razao, correta=True)
+        self.responder(cinematica, correta=True)
+        self.responder(cinematica, correta=True)
+
+        self.client.force_login(self.estudante)
+        response = self.client.get(reverse("questoes:desempenho"))
+        conteudos = response.context["conteudos_com_erros"]
+
+        self.assertEqual([conteudo.pk for conteudo in conteudos], [self.conteudo.pk, self.outro_conteudo.pk])
+        self.assertEqual((conteudos[0].tentativas, conteudos[0].erros, conteudos[0].percentual), (3, 2, 33))
+        self.assertEqual((conteudos[1].tentativas, conteudos[1].erros, conteudos[1].percentual), (2, 1, 50))
+        self.assertContains(response, "Conteúdos com mais erros")
+
+    def test_respostas_de_outros_alunos_nao_entram_na_lista(self):
+        questao = self.criar_questao("MAT-DES-3")
+        RespostaQuestao.objects.create(
+            usuario=self.staff,
+            questao=questao,
+            alternativa_escolhida=self.alternativa(questao, correta=False),
+            correta=False,
+        )
+        self.responder(questao, correta=True)
+        self.client.force_login(self.estudante)
+        response = self.client.get(reverse("questoes:desempenho"))
+        self.assertEqual(response.context["conteudos_com_erros"], [])
+        self.assertContains(response, "Você não errou nenhuma questão até agora.")

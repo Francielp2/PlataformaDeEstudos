@@ -21,11 +21,18 @@
 
     <section class="section-box mb-4">
         <h2 class="h5">Conteúdos que merecem atenção</h2>
-        {% for item in atencao %}
-            <p class="mb-2">{{ item.relacao.conteudo_titulo }} - {{ item.percentual }}% <a class="btn btn-sm btn-outline-primary ms-2" href="{% url 'curriculo:conteudo_detalhe' item.relacao.conteudo.materia.slug item.relacao.conteudo.slug %}">Revisar conteúdo</a></p>
-        {% empty %}
-            <p class="text-muted mb-0">Nenhum diagnóstico disponível.</p>
-        {% endfor %}
+        {% if tentativa.percentual == 100 or diagnostico and not atencao %}
+            <div class="alert alert-success d-flex align-items-center gap-2 mb-0" role="status">
+                <i class="bi bi-trophy"></i>
+                <span><strong>Parabéns!</strong> Você acertou todas as questões{% if tentativa.percentual != 100 %} dos conteúdos avaliados{% endif %} deste simulado. Continue assim!</span>
+            </div>
+        {% else %}
+            {% for item in atencao %}
+                <p class="mb-2">{{ item.relacao.conteudo_titulo }} - {{ item.percentual }}% <a class="btn btn-sm btn-outline-primary ms-2" href="{% url 'curriculo:conteudo_detalhe' item.relacao.conteudo.materia.slug item.relacao.conteudo.slug %}">Revisar conteúdo</a></p>
+            {% empty %}
+                <p class="text-muted mb-0">Nenhum diagnóstico disponível.</p>
+            {% endfor %}
+        {% endif %}
     </section>
 
     <section class="section-box">

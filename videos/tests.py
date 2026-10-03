@@ -3,7 +3,6 @@ import json
 import socket
 import uuid
 from datetime import timedelta
-from decimal import Decimal
 from unittest.mock import patch
 from urllib.error import HTTPError, URLError
 
@@ -85,7 +84,7 @@ class VideosTestMixin:
             criado_por=self.staff,
         )
 
-    def criar_video(self, youtube_id=YOUTUBE_ID, conteudo=None, ativo=True, duracao=None, **extra):
+    def criar_video(self, youtube_id=YOUTUBE_ID, conteudo=None, ativo=True, **extra):
         return VideoConteudo.objects.create(
             conteudo=conteudo or self.conteudo,
             youtube_id=youtube_id,
@@ -93,7 +92,6 @@ class VideosTestMixin:
             canal_nome="Canal Oficial",
             canal_url="https://www.youtube.com/@canaloficial",
             ativo=ativo,
-            duracao_segundos=duracao,
             criado_por=self.staff,
             **extra,
         )
@@ -324,8 +322,8 @@ class AdminVideoTests(VideosTestMixin, TestCase):
     def test_lista_filtros_e_detalhe(self, oembed):
         video = self.criar_video()
         self.criar_video(OUTRO_ID, conteudo=self.conteudo_fisica, ativo=False)
-        ProgressoVideo.objects.create(usuario=self.usuario, video=video, concluido=True)
-        ProgressoVideo.objects.create(usuario=self.outro_usuario, video=video)
+        ProgressoVideo.objects.create(usuario=self.usuario, video=video, segundos_assistidos_total=90)
+        ProgressoVideo.objects.create(usuario=self.outro_usuario, video=video, segundos_assistidos_total=30)
 
         lista = self.client.get(reverse("videos_admin:lista") + "?materia=fisica&status=inativos")
         self.assertEqual([item.youtube_id for item in lista.context["page_obj"]], [OUTRO_ID])
@@ -333,7 +331,8 @@ class AdminVideoTests(VideosTestMixin, TestCase):
         self.assertEqual([item.youtube_id for item in busca.context["page_obj"]], [YOUTUBE_ID])
 
         detalhe = self.client.get(reverse("videos_admin:detalhe", args=[video.pk]))
-        self.assertEqual((detalhe.context["iniciaram"], detalhe.context["concluiram"]), (2, 1))
+        self.assertEqual((detalhe.context["iniciaram"], detalhe.context["segundos_assistidos"]), (2, 120))
+        self.assertContains(detalhe, "02:00")
         self.assertContains(detalhe, 'referrerpolicy="strict-origin-when-cross-origin"')
 
     def test_conteudo_admin_lista_videos(self, oembed):
@@ -521,7 +520,12 @@ class PaginaConteudoVideosTests(VideosTestMixin, TestCase):
         self.assertContains(response, reverse("videos:registrar_progresso", args=[video.pk]))
         self.assertNotContains(response, "controls=0")
         self.assertNotContains(response, "origin=")
-        self.assertContains(response, f'data-estudado-conteudo="{self.conteudo.pk}"')
+
+    def test_assistir_nao_tem_progresso_nem_concluido(self):
+        self.criar_video()
+        response = self.client.get(self.url)
+        self.assertNotContains(response, 'class="progress')
+        self.assertNotContains(response, "Concluído")
 
     def test_video_inativo_nao_aparece(self):
         self.criar_video(ativo=False)
@@ -530,38 +534,34 @@ class PaginaConteudoVideosTests(VideosTestMixin, TestCase):
         self.assertContains(response, "Materiais de estudo serão disponibilizados futuramente neste espaço.")
 
     def test_player_retoma_de_onde_parou(self):
-        video = self.criar_video(duracao=600)
+        video = self.criar_video()
         ProgressoVideo.objects.create(usuario=self.usuario, video=video, ultima_posicao_segundos=125)
         response = self.client.get(self.url)
         self.assertContains(response, "&amp;start=125")
         self.assertContains(response, "Você parou em <span>02:05</span>")
 
-    def test_player_nao_retoma_no_fim_nem_quando_concluido(self):
-        video = self.criar_video(duracao=600)
-        progresso = ProgressoVideo.objects.create(usuario=self.usuario, video=video, ultima_posicao_segundos=595)
-        self.assertNotContains(self.client.get(self.url), "start=")
-        progresso.ultima_posicao_segundos = 100
-        progresso.concluido = True
-        progresso.save()
+    def test_player_nao_retoma_nos_primeiros_segundos(self):
+        video = self.criar_video()
+        ProgressoVideo.objects.create(usuario=self.usuario, video=video, ultima_posicao_segundos=4)
         self.assertNotContains(self.client.get(self.url), "start=")
 
     def test_progresso_de_outro_aluno_nao_aparece(self):
-        video = self.criar_video(duracao=600)
-        ProgressoVideo.objects.create(usuario=self.outro_usuario, video=video, ultima_posicao_segundos=125, percentual=50)
+        video = self.criar_video()
+        ProgressoVideo.objects.create(usuario=self.outro_usuario, video=video, ultima_posicao_segundos=125)
         response = self.client.get(self.url)
         self.assertNotContains(response, "start=")
         self.assertNotContains(response, "Você parou em <span>02:05</span>")
 
     def test_consultas_sem_n_mais_1(self):
         for indice in range(5):
-            video = self.criar_video(f"video{indice:06d}", duracao=300)
+            video = self.criar_video(f"video{indice:06d}")
             ProgressoVideo.objects.create(usuario=self.usuario, video=video, ultima_posicao_segundos=60)
         from videos.services import videos_do_conteudo_para_usuario
 
         with self.assertNumQueries(2):
             itens = videos_do_conteudo_para_usuario(self.conteudo, self.usuario)
         self.assertEqual(len(itens), 5)
-        self.assertTrue(all(item["progresso"] for item in itens))
+        self.assertTrue(all(item["inicio"] == 60 for item in itens))
 
 
 class ProgressoVideoEndpointTests(VideosTestMixin, TestCase):
@@ -575,37 +575,26 @@ class ProgressoVideoEndpointTests(VideosTestMixin, TestCase):
     def enviar(self, cliente=None, url=None, **dados):
         corpo = {
             "sessao_id": self.sessao_id,
-            "segmentos": [0, 1, 2],
+            "inicio": 0,
             "posicao": 15,
-            "duracao": 100,
             "segundos_assistidos": 15,
         }
         corpo.update(dados)
         return (cliente or self.client).post(url or self.url, json.dumps(corpo), content_type="application/json")
 
     def iniciar(self, cliente=None, **dados):
-        """Aviso de início de reprodução enviado pelo player (sem blocos)."""
-        return self.enviar(cliente=cliente, segmentos=[], posicao=0, segundos_assistidos=0, **dados)
+        """Aviso de início de reprodução enviado pelo player (sem tempo assistido)."""
+        corpo = {"inicio": 0, "posicao": 0, "segundos_assistidos": 0}
+        corpo.update(dados)
+        return self.enviar(cliente=cliente, **corpo)
 
     def passar_tempo(self, segundos, usuario=None):
         ProgressoVideo.objects.filter(usuario=usuario or self.usuario, video=self.video).update(
             atualizado_em=F("atualizado_em") - timedelta(seconds=segundos)
         )
 
-    def assistir(self, blocos, cliente=None, usuario=None, **dados):
-        """Simula reprodução real: lotes de até 10 blocos, com 30 s de relógio entre eles."""
-        resposta = None
-        for inicio in range(0, len(blocos), 10):
-            lote = blocos[inicio:inicio + 10]
-            self.passar_tempo(30, usuario=usuario)
-            resposta = self.enviar(
-                cliente=cliente,
-                segmentos=lote,
-                posicao=(lote[-1] + 1) * 5,
-                segundos_assistidos=len(lote) * 5,
-                **dados,
-            )
-        return resposta
+    def progresso(self, usuario=None):
+        return ProgressoVideo.objects.get(usuario=usuario or self.usuario, video=self.video)
 
     def test_sem_login_responde_401_em_json(self):
         self.client.logout()
@@ -636,14 +625,13 @@ class ProgressoVideoEndpointTests(VideosTestMixin, TestCase):
         self.assertEqual(self.client.post(self.url, "x" * (21 * 1024), content_type="application/json").status_code, 400)
         invalidos = [
             {"sessao_id": "nao-e-uuid"},
-            {"segmentos": "0,1"},
-            {"segmentos": [0, "1"]},
-            {"segmentos": [True]},
-            {"segmentos": list(range(2001))},
             {"posicao": -1},
-            {"duracao": 0},
-            {"duracao": 21601},
+            {"posicao": 21601},
+            {"posicao": "15"},
+            {"inicio": -1},
+            {"inicio": 20, "posicao": 10},
             {"segundos_assistidos": "muito"},
+            {"terminou": "sim"},
         ]
         for dados in invalidos:
             with self.subTest(dados=dados):
@@ -654,7 +642,7 @@ class ProgressoVideoEndpointTests(VideosTestMixin, TestCase):
     def test_sessao_de_outro_usuario_responde_400(self):
         self.assertEqual(self.enviar().status_code, 200)
         self.client.force_login(self.outro_usuario)
-        response = self.enviar(segmentos=[3])
+        response = self.enviar(posicao=30)
         self.assertEqual(response.status_code, 400)
         self.assertFalse(ProgressoVideo.objects.filter(usuario=self.outro_usuario).exists())
 
@@ -665,200 +653,115 @@ class ProgressoVideoEndpointTests(VideosTestMixin, TestCase):
         self.assertEqual(self.enviar(url=url).status_code, 400)
 
     def test_aviso_de_inicio_cria_progresso_e_sessao_zerados(self):
-        response = self.iniciar()
-        self.assertEqual(response.json()["percentual"], 0.0)
-        progresso = ProgressoVideo.objects.get()
-        self.assertEqual((progresso.segmentos_assistidos, progresso.segundos_assistidos_total), ([], 0))
-        self.assertEqual(SessaoVideo.objects.get().segundos_assistidos, 0)
+        response = self.iniciar(posicao=40, inicio=40)
+        self.assertEqual(response.json(), {"ultima_posicao": 40})
+        self.assertEqual(self.progresso().segundos_assistidos_total, 0)
+        sessao = SessaoVideo.objects.get()
+        self.assertEqual((sessao.inicio_segundos, sessao.fim_segundos, sessao.segundos_assistidos), (40, 40, 0))
 
-    def test_uniao_de_blocos_entre_requisicoes_e_sessao(self):
+    def test_registra_trecho_tempo_e_posicao(self):
         self.iniciar()
         self.passar_tempo(15)
-        response = self.enviar(segmentos=[0, 1, 2], posicao=15, segundos_assistidos=15)
-        self.assertEqual(
-            response.json(),
-            {"percentual": 15.0, "concluido": False, "marcou_estudado": False, "ultima_posicao": 15},
-        )
+        response = self.enviar(inicio=0, posicao=15, segundos_assistidos=15)
+        self.assertEqual(response.json(), {"ultima_posicao": 15})
         self.passar_tempo(10)
-        response = self.enviar(segmentos=[2, 3, 4], posicao=25, segundos_assistidos=10)
-        self.assertEqual(response.json()["percentual"], 25.0)
+        self.enviar(inicio=15, posicao=25, segundos_assistidos=10)
 
-        progresso = ProgressoVideo.objects.get(usuario=self.usuario, video=self.video)
-        self.assertEqual(progresso.segmentos_assistidos, [0, 1, 2, 3, 4])
-        self.assertEqual(progresso.percentual, Decimal("25.00"))
+        progresso = self.progresso()
         self.assertEqual(progresso.ultima_posicao_segundos, 25)
         self.assertEqual(progresso.segundos_assistidos_total, 25)
-
         sessao = SessaoVideo.objects.get()
         self.assertEqual(str(sessao.pk), self.sessao_id)
-        self.assertEqual((sessao.inicio_segundos, sessao.fim_segundos), (0, 25))
-        self.assertEqual(sessao.segundos_assistidos, 25)
-        self.assertEqual(sessao.percentual_video, Decimal("25.00"))
+        self.assertEqual((sessao.inicio_segundos, sessao.fim_segundos, sessao.segundos_assistidos), (0, 25, 25))
 
         self.passar_tempo(10)
-        self.enviar(sessao_id=str(uuid.uuid4()), segmentos=[10, 11], posicao=60, segundos_assistidos=10)
+        self.enviar(sessao_id=str(uuid.uuid4()), inicio=50, posicao=60, segundos_assistidos=10)
         self.assertEqual(SessaoVideo.objects.count(), 2)
         nova = SessaoVideo.objects.exclude(pk=self.sessao_id).get()
         self.assertEqual((nova.inicio_segundos, nova.fim_segundos), (50, 60))
 
-    def test_blocos_fora_do_intervalo_sao_descartados_e_segundos_limitados(self):
+    def test_ao_terminar_o_video_proxima_vez_comeca_do_inicio(self):
+        self.iniciar()
+        self.passar_tempo(10)
+        response = self.enviar(inicio=580, posicao=600, segundos_assistidos=20, terminou=True)
+        self.assertEqual(response.json(), {"ultima_posicao": 0})
+        self.assertEqual(self.progresso().ultima_posicao_segundos, 0)
+        self.assertEqual(SessaoVideo.objects.get().fim_segundos, 600)
+
+    def test_segundos_limitados_a_60_por_requisicao(self):
         self.iniciar()
         self.passar_tempo(300)
-        self.enviar(segmentos=[-1, 0, 19, 20, 500], posicao=999, segundos_assistidos=500)
-        progresso = ProgressoVideo.objects.get()
-        self.assertEqual(progresso.segmentos_assistidos, [0, 19])
-        self.assertEqual(progresso.ultima_posicao_segundos, 100)
-        self.assertEqual(progresso.segundos_assistidos_total, 60)
+        self.enviar(segundos_assistidos=500)
+        self.assertEqual(self.progresso().segundos_assistidos_total, 60)
 
-    def test_duracao_gravada_nao_muda_depois_da_primeira(self):
-        self.iniciar(duracao=100.4)
-        self.video.refresh_from_db()
-        self.assertEqual(self.video.duracao_segundos, 100)
-        self.passar_tempo(10)
-        response = self.enviar(duracao=10, segmentos=[0, 1, 2, 3], posicao=20, segundos_assistidos=20)
-        self.video.refresh_from_db()
-        self.assertEqual(self.video.duracao_segundos, 100)
-        self.assertEqual(response.json()["percentual"], 20.0)
-
-    def test_progresso_forjado_numa_unica_requisicao_e_limitado(self):
-        # Mesmo declarando 60 s e todos os blocos, o servidor só credita o tempo real.
-        response = self.enviar(segmentos=list(range(20)), posicao=100, segundos_assistidos=60)
+    def test_tempo_forjado_numa_unica_requisicao_nao_e_creditado(self):
+        response = self.enviar(posicao=600, segundos_assistidos=60)
         self.assertEqual(response.status_code, 200)
-        self.assertLessEqual(response.json()["percentual"], 20)
-        self.assertEqual(ProgressoVideo.objects.get().segundos_assistidos_total, 0)
-        self.assertFalse(ConteudoEstudado.objects.exists())
+        self.assertEqual(self.progresso().segundos_assistidos_total, 0)
+        self.assertEqual(SessaoVideo.objects.get().segundos_assistidos, 0)
 
-    def test_rajada_de_requisicoes_nao_acumula_credito(self):
+    def test_rajada_de_requisicoes_nao_acumula_tempo(self):
         self.iniciar()
         for indice in range(20):
-            self.enviar(sessao_id=str(uuid.uuid4()), segmentos=list(range(20)), posicao=100, segundos_assistidos=60)
-        progresso = ProgressoVideo.objects.get()
-        self.assertLessEqual(progresso.percentual, 20)
-        self.assertFalse(progresso.concluido)
-        self.assertFalse(ConteudoEstudado.objects.exists())
+            self.enviar(sessao_id=str(uuid.uuid4()), posicao=600, segundos_assistidos=60)
+        self.assertEqual(self.progresso().segundos_assistidos_total, 0)
 
     def test_velocidade_ate_2x_e_aceita(self):
         self.iniciar()
         # 15 s de vídeo assistidos em 7,5 s de relógio (2x).
         self.passar_tempo(7.5)
-        response = self.enviar(segmentos=[0, 1, 2], posicao=15, segundos_assistidos=15)
-        self.assertEqual(response.json()["percentual"], 15.0)
-        self.assertEqual(ProgressoVideo.objects.get().segundos_assistidos_total, 15)
+        self.enviar(segundos_assistidos=15)
+        self.assertEqual(self.progresso().segundos_assistidos_total, 15)
 
-    def test_ao_passar_de_95_por_cento_marca_conteudo_como_estudado(self):
+    def test_assistir_nunca_marca_conteudo_como_estudado(self):
         self.iniciar()
-        self.assistir(list(range(18)))
+        for indice in range(30):
+            self.passar_tempo(30)
+            self.enviar(inicio=indice * 20, posicao=(indice + 1) * 20, segundos_assistidos=20)
+        response = self.enviar(posicao=600, segundos_assistidos=0, terminou=True)
+        self.assertEqual(response.status_code, 200)
         self.assertFalse(ConteudoEstudado.objects.exists())
-        response = self.assistir([18])
-        self.assertEqual(response.json()["percentual"], 95.0)
-        self.assertTrue(response.json()["concluido"])
-        self.assertTrue(response.json()["marcou_estudado"])
-        self.assertTrue(ConteudoEstudado.objects.filter(usuario=self.usuario, conteudo=self.conteudo).exists())
-        progresso = ProgressoVideo.objects.get()
-        self.assertTrue(progresso.marcou_conteudo_estudado)
-        self.assertIsNotNone(progresso.concluido_em)
 
-        response = self.assistir([19])
-        self.assertTrue(response.json()["concluido"])
-        self.assertFalse(response.json()["marcou_estudado"])
-
-    def test_conteudo_ja_marcado_nao_duplica(self):
-        ConteudoEstudado.objects.create(usuario=self.usuario, conteudo=self.conteudo)
+    def test_desmarcar_estudado_nao_apaga_progresso_nem_historico(self):
         self.iniciar()
-        response = self.assistir(list(range(20)))
-        self.assertTrue(response.json()["concluido"])
-        self.assertFalse(response.json()["marcou_estudado"])
-        self.assertEqual(ConteudoEstudado.objects.filter(usuario=self.usuario).count(), 1)
-        self.assertFalse(ProgressoVideo.objects.get().marcou_conteudo_estudado)
-
-    def test_desmarcar_manualmente_nao_e_desfeito_pelo_video(self):
-        self.iniciar()
-        self.assistir(list(range(20)))
+        self.passar_tempo(15)
+        self.enviar()
+        self.client.post(reverse("estudos:alternar_conteudo_estudado", args=[self.conteudo.pk]))
+        self.assertTrue(ConteudoEstudado.objects.exists())
         self.client.post(reverse("estudos:alternar_conteudo_estudado", args=[self.conteudo.pk]))
         self.assertFalse(ConteudoEstudado.objects.exists())
-
-        response = self.assistir(list(range(20)), sessao_id=str(uuid.uuid4()))
-        self.assertFalse(response.json()["marcou_estudado"])
-        self.assertFalse(ConteudoEstudado.objects.exists())
-        self.assertTrue(ProgressoVideo.objects.get().concluido)
-        self.assertEqual(SessaoVideo.objects.count(), 2)
+        self.assertEqual(self.progresso().segundos_assistidos_total, 15)
+        self.assertEqual(SessaoVideo.objects.count(), 1)
 
     def test_progresso_de_um_usuario_nao_afeta_outro(self):
         self.iniciar()
-        self.assistir(list(range(20)))
+        self.passar_tempo(15)
+        self.enviar(posicao=300)
         outro_cliente = self.client_class()
         outro_cliente.force_login(self.outro_usuario)
-        response = self.enviar(cliente=outro_cliente, sessao_id=str(uuid.uuid4()), segmentos=[0], segundos_assistidos=5)
-        self.assertEqual(response.json()["percentual"], 5.0)
-        self.assertFalse(response.json()["concluido"])
-        self.assertFalse(ConteudoEstudado.objects.filter(usuario=self.outro_usuario).exists())
-        self.assertEqual(ProgressoVideo.objects.get(usuario=self.usuario).percentual, Decimal("100.00"))
-
-
-class DuracaoVideoAdminTests(VideosTestMixin, TestCase):
-    def test_admin_corrige_duracao_e_percentuais_sao_recalculados(self):
-        video = self.criar_video(duracao=5)
-        progresso = ProgressoVideo.objects.create(
-            usuario=self.usuario, video=video, segmentos_assistidos=[0], percentual=100, concluido=True,
-        )
-        self.client.force_login(self.staff)
-        response = self.client.post(
-            reverse("videos_admin:editar", args=[video.pk]),
-            {"conteudo": self.conteudo.pk, "ordem": 0, "ativo": "on", "duracao_segundos": 100},
-            follow=True,
-        )
-        self.assertContains(response, "o progresso de 1 estudante(s) foi recalculado")
-        video.refresh_from_db()
-        progresso.refresh_from_db()
-        self.assertEqual(video.duracao_segundos, 100)
-        self.assertEqual(progresso.percentual, Decimal("5.00"))
-        self.assertTrue(progresso.concluido)
-
-    def test_duracao_invalida_e_recusada(self):
-        video = self.criar_video(duracao=100)
-        self.client.force_login(self.staff)
-        response = self.client.post(
-            reverse("videos_admin:editar", args=[video.pk]),
-            {"conteudo": self.conteudo.pk, "ordem": 0, "ativo": "on", "duracao_segundos": 0},
-        )
-        self.assertContains(response, "Informe uma duração entre 1 segundo e 6 horas.")
-        video.refresh_from_db()
-        self.assertEqual(video.duracao_segundos, 100)
-
-    def test_duracao_em_branco_volta_a_ser_informada_pelo_player(self):
-        video = self.criar_video(duracao=5)
-        self.client.force_login(self.staff)
-        self.client.post(
-            reverse("videos_admin:editar", args=[video.pk]),
-            {"conteudo": self.conteudo.pk, "ordem": 0, "ativo": "on", "duracao_segundos": ""},
-        )
-        video.refresh_from_db()
-        self.assertIsNone(video.duracao_segundos)
-
-    def test_formulario_de_criacao_nao_tem_duracao(self):
-        self.client.force_login(self.staff)
-        response = self.client.get(reverse("videos_admin:criar"))
-        self.assertNotIn("duracao_segundos", response.context["form"].fields)
+        self.iniciar(cliente=outro_cliente, sessao_id=str(uuid.uuid4()), posicao=10, inicio=10)
+        self.assertEqual(self.progresso(self.outro_usuario).ultima_posicao_segundos, 10)
+        self.assertEqual(self.progresso().ultima_posicao_segundos, 300)
+        self.assertEqual(self.progresso().segundos_assistidos_total, 15)
 
 
 class HistoricoVideosTests(VideosTestMixin, TestCase):
     def setUp(self):
         super().setUp()
-        self.video = self.criar_video(duracao=600)
-        self.video_fisica = self.criar_video(OUTRO_ID, conteudo=self.conteudo_fisica, duracao=600)
+        self.video = self.criar_video()
+        self.video_fisica = self.criar_video(OUTRO_ID, conteudo=self.conteudo_fisica)
         SessaoVideo.objects.create(
             id=uuid.uuid4(), usuario=self.usuario, video=self.video,
-            inicio_segundos=65, fim_segundos=3725, segundos_assistidos=90, percentual_video=20,
+            inicio_segundos=65, fim_segundos=3725, segundos_assistidos=90,
         )
         SessaoVideo.objects.create(
             id=uuid.uuid4(), usuario=self.usuario, video=self.video_fisica,
-            inicio_segundos=0, fim_segundos=30, segundos_assistidos=30, percentual_video=5,
+            inicio_segundos=0, fim_segundos=30, segundos_assistidos=30,
         )
         SessaoVideo.objects.create(
             id=uuid.uuid4(), usuario=self.outro_usuario, video=self.video,
-            inicio_segundos=0, fim_segundos=10, segundos_assistidos=10, percentual_video=1,
+            inicio_segundos=0, fim_segundos=10, segundos_assistidos=10,
         )
-        ProgressoVideo.objects.create(usuario=self.usuario, video=self.video, percentual=97, concluido=True)
         self.client.force_login(self.usuario)
 
     def test_mostra_apenas_sessoes_do_usuario_com_minutagem(self):
@@ -868,7 +771,6 @@ class HistoricoVideosTests(VideosTestMixin, TestCase):
         self.assertTrue(all(sessao.usuario == self.usuario for sessao in sessoes))
         self.assertContains(response, "01:05 – 1:02:05")
         self.assertContains(response, "01:30")
-        self.assertContains(response, "Concluído")
         self.assertContains(response, f"#video-{self.video.pk}")
 
     def test_filtro_por_materia(self):

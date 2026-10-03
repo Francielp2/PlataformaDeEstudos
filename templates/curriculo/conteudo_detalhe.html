@@ -31,12 +31,16 @@
         <p>{{ conteudo.resumo }}</p>
 
         <h2 class="h5 mt-4">Materiais de estudo</h2>
+        {% if videos_conteudo %}
+            {% include "videos/partials/players_conteudo.html" %}
+        {% else %}
         <div class="alert alert-light border mb-0">
             <p class="mb-1">Materiais de estudo serão disponibilizados futuramente neste espaço.</p>
             <p class="mb-0 small text-muted">
                 Aqui poderão ser disponibilizados apostilas, materiais complementares e videoaulas relacionadas a este conteúdo.
             </p>
         </div>
+        {% endif %}
     </section>
 
     <div class="mb-4">

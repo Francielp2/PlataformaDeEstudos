@@ -1,0 +1,323 @@
+{% load l10n videos_extras %}
+<div id="videos-conteudo" class="d-flex flex-column gap-4" data-csrf="{{ csrf_token }}" data-conteudo-id="{{ conteudo.pk }}">
+    {% for item in videos_conteudo %}
+        {% with video=item.video progresso=item.progresso inicio=item.inicio %}
+            <article id="video-{{ video.pk }}" class="video-conteudo"
+                     data-video-id="{{ video.pk }}"
+                     data-url-progresso="{% url 'videos:registrar_progresso' video.pk %}"
+                     data-duracao="{{ video.duracao_segundos|default_if_none:''|unlocalize }}">
+                {% include "videos/partials/iframe_player.html" %}
+
+                <div class="mt-2">
+                    <h3 class="h6 mb-1">{{ video.titulo }}</h3>
+                    <p class="small mb-2">
+                        Canal: <a href="{{ video.canal_url }}" target="_blank" rel="noopener">{{ video.canal_nome }}</a>
+                    </p>
+                    <a class="btn btn-sm btn-outline-danger mb-2" href="{{ video.url_youtube }}" target="_blank" rel="noopener">
+                        <i class="bi bi-youtube"></i> Assistir no YouTube
+                    </a>
+                    {% if video.nota_curador %}
+                        <div class="small border-start border-3 ps-2 mb-2">
+                            <strong>Nota do curador:</strong> {{ video.nota_curador|linebreaksbr }}
+                        </div>
+                    {% endif %}
+
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="progress flex-grow-1" role="progressbar" aria-label="Seu progresso no vídeo"
+                             aria-valuemin="0" aria-valuemax="100"
+                             aria-valuenow="{{ progresso.percentual|default:0|unlocalize }}" data-progresso-barra>
+                            <div class="progress-bar" style="width: {{ progresso.percentual|default:0|unlocalize }}%"></div>
+                        </div>
+                        <span class="small text-muted" data-progresso-texto>{{ progresso.percentual|default:0|floatformat:0 }}%</span>
+                        <span class="badge text-bg-success{% if not progresso.concluido %} d-none{% endif %}" data-badge-concluido>Concluído</span>
+                    </div>
+                    <p class="small text-muted mb-0 mt-1{% if not progresso.ultima_posicao_segundos %} d-none{% endif %}" data-parou-em>
+                        Você parou em <span>{{ progresso.ultima_posicao_segundos|default:0|segundos_mmss }}</span>
+                    </p>
+                    <div data-alerta></div>
+                </div>
+            </article>
+        {% endwith %}
+    {% endfor %}
+</div>
+
+<script>
+    (function () {
+        // Rastreia o que o estudante realmente assistiu, em blocos de 5 segundos.
+        // Saltos (pular ou voltar no vídeo) não contam como trecho assistido.
+        const container = document.getElementById("videos-conteudo");
+        if (!container || container.dataset.rastreamento) {
+            return;
+        }
+        container.dataset.rastreamento = "1";
+
+        const TAMANHO_BLOCO = 5;
+        const SALTO_MAXIMO = 3;
+        const INTERVALO_ENVIO = 15;
+        const csrf = container.dataset.csrf;
+        const rastreadores = [];
+
+        function gerarUuid() {
+            if (window.crypto && typeof window.crypto.randomUUID === "function") {
+                return window.crypto.randomUUID();
+            }
+            // Fallback para contextos não seguros (HTTP sem localhost): UUID v4.
+            const bytes = new Uint8Array(16);
+            if (window.crypto && typeof window.crypto.getRandomValues === "function") {
+                window.crypto.getRandomValues(bytes);
+            } else {
+                for (let i = 0; i < bytes.length; i++) {
+                    bytes[i] = Math.floor(Math.random() * 256);
+                }
+            }
+            bytes[6] = (bytes[6] & 0x0f) | 0x40;
+            bytes[8] = (bytes[8] & 0x3f) | 0x80;
+            const hex = Array.from(bytes, function (b) { return b.toString(16).padStart(2, "0"); }).join("");
+            return hex.slice(0, 8) + "-" + hex.slice(8, 12) + "-" + hex.slice(12, 16) + "-" + hex.slice(16, 20) + "-" + hex.slice(20);
+        }
+
+        function formatarTempo(total) {
+            total = Math.max(0, Math.floor(total));
+            const horas = Math.floor(total / 3600);
+            const minutos = Math.floor((total % 3600) / 60);
+            const segundos = total % 60;
+            const mmss = String(minutos).padStart(2, "0") + ":" + String(segundos).padStart(2, "0");
+            return horas ? horas + ":" + mmss : mmss;
+        }
+
+        function marcarBotaoEstudado() {
+            const formulario = document.querySelector('form[data-estudado-conteudo="' + container.dataset.conteudoId + '"]');
+            const botao = formulario && formulario.querySelector("button");
+            if (!botao) {
+                return;
+            }
+            botao.classList.remove("btn-outline-success");
+            botao.classList.add("btn-success");
+            botao.title = "Desmarcar como estudado";
+            const icone = botao.querySelector("i");
+            if (icone) {
+                icone.className = "bi bi-check-circle-fill";
+            }
+        }
+
+        function criarRastreador(elemento) {
+            const r = {
+                elemento: elemento,
+                url: elemento.dataset.urlProgresso,
+                sessaoId: gerarUuid(),
+                player: null,
+                pendentes: new Set(),
+                segundosPendentes: 0,
+                desdeUltimoEnvio: 0,
+                ultimaLeitura: null,
+                intervalo: null,
+                enviando: false,
+                envioAdiado: false,
+            };
+
+            function tempoAtual() {
+                try {
+                    return r.player.getCurrentTime() || 0;
+                } catch (erro) {
+                    return null;
+                }
+            }
+
+            function ler() {
+                const t = tempoAtual();
+                if (t === null) {
+                    return;
+                }
+                if (r.ultimaLeitura !== null) {
+                    const diferenca = t - r.ultimaLeitura;
+                    if (diferenca >= 0 && diferenca <= SALTO_MAXIMO) {
+                        const primeiro = Math.floor(r.ultimaLeitura / TAMANHO_BLOCO);
+                        const ultimo = Math.floor(t / TAMANHO_BLOCO);
+                        for (let bloco = primeiro; bloco <= ultimo; bloco++) {
+                            r.pendentes.add(bloco);
+                        }
+                        r.segundosPendentes += diferenca;
+                        r.desdeUltimoEnvio += diferenca;
+                    }
+                }
+                r.ultimaLeitura = t;
+                if (r.desdeUltimoEnvio >= INTERVALO_ENVIO) {
+                    r.desdeUltimoEnvio = 0;
+                    enviar(false);
+                }
+            }
+
+            function pararLeitura() {
+                if (r.intervalo) {
+                    clearInterval(r.intervalo);
+                    r.intervalo = null;
+                    ler();
+                }
+            }
+
+            function atualizarTela(dados) {
+                const percentual = Math.max(0, Math.min(100, Number(dados.percentual) || 0));
+                const barra = elemento.querySelector("[data-progresso-barra]");
+                if (barra) {
+                    barra.setAttribute("aria-valuenow", percentual);
+                    barra.querySelector(".progress-bar").style.width = percentual + "%";
+                }
+                const texto = elemento.querySelector("[data-progresso-texto]");
+                if (texto) {
+                    texto.textContent = Math.round(percentual) + "%";
+                }
+                const badge = elemento.querySelector("[data-badge-concluido]");
+                if (badge) {
+                    badge.classList.toggle("d-none", !dados.concluido);
+                }
+                const parouEm = elemento.querySelector("[data-parou-em]");
+                if (parouEm && dados.ultima_posicao) {
+                    parouEm.querySelector("span").textContent = formatarTempo(dados.ultima_posicao);
+                    parouEm.classList.remove("d-none");
+                }
+                if (dados.marcou_estudado) {
+                    const alerta = elemento.querySelector("[data-alerta]");
+                    if (alerta) {
+                        alerta.innerHTML = '<div class="alert alert-success alert-dismissible fade show small py-2 mt-2 mb-0" role="status">' +
+                            "Você assistiu a mais de 95% do vídeo. Este conteúdo foi marcado como estudado." +
+                            '<button type="button" class="btn-close py-2" data-bs-dismiss="alert" aria-label="Fechar"></button></div>';
+                    }
+                    marcarBotaoEstudado();
+                }
+            }
+
+            function enviar(keepalive) {
+                if (!r.player) {
+                    return;
+                }
+                if (r.enviando && !keepalive) {
+                    // Um envio já está em andamento: este sai assim que ele terminar.
+                    r.envioAdiado = true;
+                    return;
+                }
+                if (r.pendentes.size === 0 && r.segundosPendentes < 1) {
+                    return;
+                }
+                let duracao = 0;
+                try {
+                    duracao = r.player.getDuration() || 0;
+                } catch (erro) {
+                    duracao = 0;
+                }
+                if (duracao <= 0) {
+                    return;
+                }
+                const blocos = Array.from(r.pendentes);
+                const segundos = Math.floor(r.segundosPendentes);
+                const posicao = tempoAtual();
+                r.enviando = true;
+                fetch(r.url, {
+                    method: "POST",
+                    credentials: "same-origin",
+                    keepalive: keepalive,
+                    headers: {"Content-Type": "application/json", "X-CSRFToken": csrf},
+                    body: JSON.stringify({
+                        sessao_id: r.sessaoId,
+                        segmentos: blocos,
+                        posicao: Math.floor(posicao || 0),
+                        duracao: duracao,
+                        segundos_assistidos: segundos,
+                    }),
+                }).then(function (resposta) {
+                    if (!resposta.ok) {
+                        throw new Error("Falha ao registrar progresso");
+                    }
+                    blocos.forEach(function (bloco) { r.pendentes.delete(bloco); });
+                    r.segundosPendentes = Math.max(0, r.segundosPendentes - segundos);
+                    return resposta.json();
+                }).then(atualizarTela).catch(function () {
+                    // Os pendentes continuam guardados e vão no próximo envio.
+                }).finally(function () {
+                    r.enviando = false;
+                    if (r.envioAdiado) {
+                        r.envioAdiado = false;
+                        enviar(false);
+                    }
+                });
+            }
+
+            function aoMudarEstado(evento) {
+                const estados = window.YT.PlayerState;
+                if (evento.data === estados.PLAYING) {
+                    rastreadores.forEach(function (outro) {
+                        if (outro !== r && outro.player && typeof outro.player.getPlayerState === "function"
+                            && outro.player.getPlayerState() === estados.PLAYING) {
+                            outro.player.pauseVideo();
+                        }
+                    });
+                    r.ultimaLeitura = tempoAtual();
+                    if (!r.intervalo) {
+                        r.intervalo = setInterval(ler, 1000);
+                    }
+                } else if (evento.data === estados.PAUSED || evento.data === estados.BUFFERING || evento.data === estados.ENDED) {
+                    pararLeitura();
+                    if (evento.data === estados.ENDED) {
+                        try {
+                            const duracao = r.player.getDuration() || 0;
+                            if (duracao > 0) {
+                                r.pendentes.add(Math.floor(Math.max(0, duracao - 0.001) / TAMANHO_BLOCO));
+                            }
+                        } catch (erro) {}
+                    }
+                    enviar(false);
+                }
+            }
+
+            r.iniciar = function () {
+                r.player = new window.YT.Player("yt-player-" + elemento.dataset.videoId, {
+                    events: {onStateChange: aoMudarEstado},
+                });
+            };
+            r.enviar = enviar;
+            r.lerSeTocando = function () {
+                if (r.intervalo) {
+                    ler();
+                }
+            };
+            return r;
+        }
+
+        container.querySelectorAll(".video-conteudo").forEach(function (elemento) {
+            if (document.getElementById("yt-player-" + elemento.dataset.videoId)) {
+                rastreadores.push(criarRastreador(elemento));
+            }
+        });
+
+        function enviarTodos() {
+            rastreadores.forEach(function (r) {
+                r.lerSeTocando();
+                r.enviar(true);
+            });
+        }
+        document.addEventListener("visibilitychange", function () {
+            if (document.visibilityState === "hidden") {
+                enviarTodos();
+            }
+        });
+        window.addEventListener("pagehide", enviarTodos);
+
+        function iniciarPlayers() {
+            rastreadores.forEach(function (r) { r.iniciar(); });
+        }
+        if (window.YT && window.YT.Player) {
+            iniciarPlayers();
+        } else {
+            const callbackAnterior = window.onYouTubeIframeAPIReady;
+            window.onYouTubeIframeAPIReady = function () {
+                if (typeof callbackAnterior === "function") {
+                    callbackAnterior();
+                }
+                iniciarPlayers();
+            };
+            const script = document.createElement("script");
+            script.src = "https://www.youtube.com/iframe_api";
+            script.async = true;
+            document.head.appendChild(script);
+        }
+    })();
+</script>

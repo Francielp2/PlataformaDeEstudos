@@ -30,6 +30,31 @@
         </dl>
     </section>
 
+    <section class="section-box mt-3">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <h2 class="h6 mb-0">Vídeos deste conteúdo</h2>
+            <a class="btn btn-sm btn-outline-primary" href="{% url 'videos_admin:criar' %}?conteudo={{ conteudo.pk }}"><i class="bi bi-plus-circle"></i> Adicionar vídeo</a>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead><tr><th>Título</th><th>Canal</th><th>Ordem</th><th>Status</th><th>Ações</th></tr></thead>
+                <tbody>
+                    {% for video in conteudo.videos.all %}
+                        <tr>
+                            <td>{{ video.titulo }}</td>
+                            <td>{{ video.canal_nome }}</td>
+                            <td>{{ video.ordem }}</td>
+                            <td>{% if video.ativo %}<span class="badge text-bg-success">Ativo</span>{% else %}<span class="badge text-bg-secondary">Inativo</span>{% endif %}</td>
+                            <td><a class="btn btn-sm btn-outline-secondary" href="{% url 'videos_admin:detalhe' video.pk %}"><i class="bi bi-eye"></i> Ver</a></td>
+                        </tr>
+                    {% empty %}
+                        <tr><td colspan="5">Nenhum vídeo cadastrado para este conteúdo.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
     <div class="mt-3 actions">
         <a class="btn btn-sm btn-outline-secondary" href="{% url 'curriculo_admin:admin_conteudos_lista' %}">Voltar</a>
         <a class="btn btn-sm btn-outline-primary" href="{% url 'curriculo_admin:admin_conteudo_editar' conteudo.pk %}">Editar</a>

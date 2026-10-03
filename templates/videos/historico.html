@@ -1,0 +1,81 @@
+{% extends "usuarios/base_interno.html" %}
+{% load videos_extras %}
+
+{% block title %}Histórico de vídeos{% endblock %}
+
+{% block content %}
+    <div class="page-heading">
+        <h1>Histórico de vídeos</h1>
+        <p>Cada vez que você assistiu a um vídeo, com o trecho e o tempo assistido.</p>
+    </div>
+
+    {% if materias %}
+        <form method="get" class="filters-box">
+            <div class="row g-2">
+                <div class="col-md-4">
+                    <select class="form-select" name="materia" aria-label="Filtrar por matéria">
+                        <option value="" {% if not materia_slug %}selected{% endif %}>Todas as matérias</option>
+                        {% for materia in materias %}
+                            <option value="{{ materia.slug }}" {% if materia_slug == materia.slug %}selected{% endif %}>{{ materia.nome }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2 d-grid">
+                    <button class="btn btn-outline-primary" type="submit">Filtrar</button>
+                </div>
+            </div>
+        </form>
+    {% endif %}
+
+    <div class="table-responsive section-box">
+        <table class="table table-hover align-middle mb-0">
+            <thead>
+                <tr>
+                    <th>Data</th>
+                    <th>Vídeo</th>
+                    <th>Conteúdo</th>
+                    <th>Trecho assistido</th>
+                    <th>Tempo assistido</th>
+                    <th>Progresso do vídeo</th>
+                    <th>Ação</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for sessao in page_obj %}
+                    {% with video=sessao.video conteudo=sessao.video.conteudo %}
+                        <tr>
+                            <td>{{ sessao.iniciado_em|date:"d/m/Y H:i" }}</td>
+                            <td>
+                                {{ video.titulo }}
+                                <div class="small"><a href="{{ video.canal_url }}" target="_blank" rel="noopener">{{ video.canal_nome }}</a></div>
+                            </td>
+                            <td>
+                                {% if conteudo.status == "published" and conteudo.materia.ativa %}
+                                    <a href="{% url 'curriculo:conteudo_detalhe' conteudo.materia.slug conteudo.slug %}">{{ conteudo.titulo }}</a>
+                                {% else %}
+                                    {{ conteudo.titulo }}
+                                {% endif %}
+                                <div class="small text-muted">{{ conteudo.materia.nome }}</div>
+                            </td>
+                            <td>{{ sessao.inicio_segundos|segundos_mmss }} – {{ sessao.fim_segundos|segundos_mmss }}</td>
+                            <td>{{ sessao.segundos_assistidos|segundos_mmss }}</td>
+                            <td>
+                                {{ sessao.progresso.percentual|default:0|floatformat:0 }}%
+                                {% if sessao.progresso.concluido %}<span class="badge text-bg-success">Concluído</span>{% endif %}
+                            </td>
+                            <td>
+                                {% if video.ativo and conteudo.status == "published" and conteudo.materia.ativa %}
+                                    <a class="btn btn-sm btn-outline-primary" href="{% url 'curriculo:conteudo_detalhe' conteudo.materia.slug conteudo.slug %}#video-{{ video.pk }}">Continuar</a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endwith %}
+                {% empty %}
+                    <tr><td colspan="7">Você ainda não assistiu a nenhum vídeo.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% include "partials/paginacao.html" %}
+{% endblock %}

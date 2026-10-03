@@ -1,4 +1,4 @@
-<form method="post" action="{% url 'estudos:alternar_conteudo_estudado' conteudo.pk %}" class="d-inline">
+<form method="post" action="{% url 'estudos:alternar_conteudo_estudado' conteudo.pk %}" class="d-inline" data-estudado-conteudo="{{ conteudo.pk }}">
     {% csrf_token %}
     <input type="hidden" name="next" value="{{ request.get_full_path }}">
     {% if conteudo.pk in ids_conteudos_estudados %}

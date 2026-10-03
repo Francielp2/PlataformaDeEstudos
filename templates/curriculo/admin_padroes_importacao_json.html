@@ -6,7 +6,7 @@
     <div class="page-heading d-flex justify-content-between align-items-start">
         <div>
             <h1>Padrões para JSON</h1>
-            <p>Referências do banco para montar importações de matérias, conteúdos, questões e simulados.</p>
+            <p>Referências do banco para montar importações de matérias, conteúdos, questões, simulados e vídeos.</p>
         </div>
         <a class="btn btn-outline-secondary" href="{% url 'curriculo_admin:admin_padroes_importacao_json' %}?formato=json{% if request.GET.simulado %}&amp;simulado={{ request.GET.simulado }}{% endif %}">
             <i class="bi bi-download"></i> Baixar JSON
@@ -140,6 +140,30 @@
                         </tr>
                     {% empty %}
                         <tr><td colspan="5">Nenhum simulado cadastrado.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="section-box mt-3">
+        <h2 class="h6">Vídeos já cadastrados</h2>
+        <p class="small text-muted">Título e canal são preenchidos automaticamente a partir do YouTube; no JSON informe apenas <code>materia</code>, <code>conteudo</code> e <code>url</code> ou <code>youtube_id</code>.</p>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead><tr><th>Título</th><th>Canal</th><th>Matéria</th><th>Conteúdo</th><th>youtube_id</th><th>Status</th></tr></thead>
+                <tbody>
+                    {% for video in dados.videos_existentes %}
+                        <tr>
+                            <td>{{ video.titulo }}</td>
+                            <td>{{ video.canal_nome }}</td>
+                            <td><code>{{ video.materia }}</code></td>
+                            <td><code>{{ video.conteudo }}</code></td>
+                            <td><code>{{ video.youtube_id }}</code></td>
+                            <td>{% if video.ativo %}<span class="badge text-bg-success">Ativo</span>{% else %}<span class="badge text-bg-secondary">Inativo</span>{% endif %}</td>
+                        </tr>
+                    {% empty %}
+                        <tr><td colspan="6">Nenhum vídeo cadastrado.</td></tr>
                     {% endfor %}
                 </tbody>
             </table>

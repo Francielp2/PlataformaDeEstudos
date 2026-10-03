@@ -5,6 +5,7 @@
     <a class="{% if active == 'admin_usuarios' %}active{% endif %}" href="{% url 'usuarios:admin_usuarios_lista' %}"><i class="bi bi-people"></i> Usuários</a>
     <a class="{% if active == 'admin_materias' %}active{% endif %}" href="{% url 'curriculo_admin:admin_materias_lista' %}"><i class="bi bi-journal-bookmark"></i> Matérias</a>
     <a class="{% if active == 'admin_conteudos' %}active{% endif %}" href="{% url 'curriculo_admin:admin_conteudos_lista' %}"><i class="bi bi-book"></i> Conteúdos</a>
+    <a class="{% if active == 'admin_videos' %}active{% endif %}" href="{% url 'videos_admin:lista' %}"><i class="bi bi-play-btn"></i> Vídeos</a>
     <a class="{% if active == 'admin_questoes' %}active{% endif %}" href="{% url 'questoes_admin:admin_questoes_lista' %}"><i class="bi bi-question-circle"></i> Questões</a>
     <a class="{% if active == 'admin_simulados' %}active{% endif %}" href="{% url 'simulados_admin:admin_simulados_lista' %}"><i class="bi bi-clipboard-check"></i> Simulados</a>
     <span class="sidebar-group">Conta</span>

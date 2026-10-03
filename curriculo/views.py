@@ -19,6 +19,7 @@ from .forms import (
 from .importacao_json import importar_conteudos_json, importar_materias_json
 from .models import Conteudo, Materia
 from estudos.views import ids_organizacao_usuario
+from videos.services import videos_do_conteudo_para_usuario
 
 
 STATUS_MATERIA = {"", "ativas", "inativas"}
@@ -45,6 +46,7 @@ def _choices_json(choices):
 def _padroes_importacao_json(simulado_id=None):
     from questoes.models import Questao
     from simulados.models import Simulado
+    from videos.models import VideoConteudo
 
     materias = list(Materia.objects.order_by("ordem_exibicao", "nome"))
     conteudos = list(
@@ -62,6 +64,15 @@ def _padroes_importacao_json(simulado_id=None):
     )
     simulados = list(
         Simulado.objects.select_related("materia").order_by("ordem_exibicao", "titulo")
+    )
+    videos = list(
+        VideoConteudo.objects.select_related("conteudo", "conteudo__materia").order_by(
+            "conteudo__materia__ordem_exibicao",
+            "conteudo__materia__nome",
+            "conteudo__titulo",
+            "ordem",
+            "criado_em",
+        )
     )
 
     dados = {
@@ -81,6 +92,10 @@ def _padroes_importacao_json(simulado_id=None):
             "questoes_simulado": {
                 "campos_referencia": ["conteudos", "conteudo_principal"],
                 "observacao": "conteudos e conteudo_principal usam slugs de conteúdos já cadastrados. Em simulados por matéria, use apenas conteúdos da matéria do simulado.",
+            },
+            "videos": {
+                "campos_referencia": ["materia", "conteudo"],
+                "observacao": "materia usa o slug da matéria; conteudo usa o slug de um conteúdo dessa matéria. Título e canal são obtidos automaticamente do YouTube.",
             },
         },
         "valores_aceitos": {
@@ -146,6 +161,17 @@ def _padroes_importacao_json(simulado_id=None):
                 "status": simulado.status,
             }
             for simulado in simulados
+        ],
+        "videos_existentes": [
+            {
+                "materia": video.conteudo.materia.slug,
+                "conteudo": video.conteudo.slug,
+                "youtube_id": video.youtube_id,
+                "titulo": video.titulo,
+                "canal_nome": video.canal_nome,
+                "ativo": video.ativo,
+            }
+            for video in videos
         ],
     }
 
@@ -291,6 +317,7 @@ def conteudo_detalhe(request, materia_slug, conteudo_slug):
             "materia": materia,
             "conteudo": conteudo,
             "subconteudos": subconteudos,
+            "videos_conteudo": videos_do_conteudo_para_usuario(conteudo, request.user),
             "active": "conteudos",
             **ids_organizacao_usuario(request.user),
         },
@@ -335,6 +362,7 @@ VOLTAR_PADROES_IMPORTACAO = {
     "materias": "curriculo_admin:admin_materias_importar_json",
     "conteudos": "curriculo_admin:admin_conteudos_importar_json",
     "questoes": "questoes_admin:admin_questoes_importar_json",
+    "videos": "videos_admin:importar_json",
 }
 
 

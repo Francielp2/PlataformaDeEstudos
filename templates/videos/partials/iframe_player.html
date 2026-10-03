@@ -1,0 +1,13 @@
+{% comment %}
+    Player do YouTube renderizado pelo servidor. O referrerpolicy precisa ficar no iframe:
+    com o Referrer-Policy "same-origin" do Django o YouTube recusa a incorporação (erro 153).
+    Não usar controls=0 nem cobrir o player: as políticas da API do YouTube proíbem.
+{% endcomment %}
+<div class="ratio ratio-16x9">
+    <iframe id="yt-player-{{ video.pk }}"
+            src="{{ video.url_embed }}?enablejsapi=1&amp;rel=0&amp;hl=pt-BR&amp;cc_lang_pref=pt{% if inicio %}&amp;start={{ inicio }}{% endif %}"
+            title="{{ video.titulo }}"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            referrerpolicy="strict-origin-when-cross-origin"
+            allowfullscreen loading="lazy"></iframe>
+</div>

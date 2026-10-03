@@ -7,10 +7,12 @@ urlpatterns = [
     path("exercicios/", include("questoes.urls")),
     path("simulados/", include("simulados.urls")),
     path("estudos/", include("estudos.urls")),
+    path("videos/", include("videos.urls")),
     path("usuarios/administracao/questoes/", include("questoes.admin_urls")),
     path("usuarios/administracao/simulados/", include("simulados.admin_urls")),
     path("materias/", include("curriculo.urls")),
     path("usuarios/administracao/materias/", include("curriculo.admin_urls")),
+    path("usuarios/administracao/videos/", include("videos.admin_urls")),
     path("usuarios/", include("usuarios.urls")),
     path("", include("core.urls")),
 ]

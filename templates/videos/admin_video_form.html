@@ -1,0 +1,93 @@
+{% extends "usuarios/base_interno.html" %}
+
+{% block title %}{{ titulo }}{% endblock %}
+
+{% block content %}
+    <div class="page-heading">
+        <h1>{{ titulo }}</h1>
+        <p>
+            {% if criando %}
+                Título, canal e link do canal são obtidos do YouTube no momento de salvar e não podem ser editados.
+            {% else %}
+                {{ video.titulo }} ({{ video.canal_nome }}). Para trocar o vídeo, cadastre um novo.
+            {% endif %}
+        </p>
+    </div>
+
+    <div class="form-panel">
+        <form method="post" class="form-section" novalidate>
+            {% csrf_token %}
+            {% include "usuarios/partials/form_campos.html" with form=form %}
+
+            {% if criando %}
+                <div class="mb-3">
+                    <button class="btn btn-sm btn-outline-secondary" type="button" id="buscarDadosVideo" data-url-preview="{% url 'videos_admin:preview' %}">
+                        <i class="bi bi-search"></i> Buscar dados do vídeo
+                    </button>
+                    <div id="previewVideo" class="mt-2" aria-live="polite"></div>
+                </div>
+            {% endif %}
+
+            <button class="btn btn-primary" type="submit"><i class="bi bi-check2"></i> Salvar</button>
+            <a class="btn btn-outline-secondary" href="{{ voltar_url }}">Cancelar</a>
+        </form>
+    </div>
+
+    {% if criando %}
+        <script>
+            (function () {
+                const botao = document.getElementById("buscarDadosVideo");
+                const campo = document.getElementById("{{ form.url.id_for_label }}");
+                const destino = document.getElementById("previewVideo");
+                if (!botao || !campo || !destino) {
+                    return;
+                }
+
+                function texto(tag, conteudo, classe) {
+                    const elemento = document.createElement(tag);
+                    elemento.textContent = conteudo;
+                    if (classe) {
+                        elemento.className = classe;
+                    }
+                    return elemento;
+                }
+
+                botao.addEventListener("click", function () {
+                    destino.replaceChildren(texto("span", "Consultando o YouTube...", "small text-muted"));
+                    const url = botao.dataset.urlPreview + "?url=" + encodeURIComponent(campo.value);
+                    fetch(url, {credentials: "same-origin"})
+                        .then(function (resposta) { return resposta.json(); })
+                        .then(function (dados) {
+                            if (!dados.ok) {
+                                destino.replaceChildren(texto("div", dados.erro, "alert alert-warning small py-2 mb-0"));
+                                return;
+                            }
+                            // Prévia somente leitura: ao salvar, o servidor consulta o YouTube de novo.
+                            const cartao = document.createElement("div");
+                            cartao.className = "d-flex gap-3 align-items-center border rounded p-2";
+                            const imagem = document.createElement("img");
+                            imagem.src = dados.thumbnail_url;
+                            imagem.alt = "";
+                            imagem.width = 120;
+                            imagem.className = "rounded";
+                            const info = document.createElement("div");
+                            info.append(texto("strong", dados.titulo, "d-block"));
+                            const canal = document.createElement("a");
+                            canal.href = dados.canal_url;
+                            canal.target = "_blank";
+                            canal.rel = "noopener";
+                            canal.textContent = dados.canal_nome;
+                            const linhaCanal = texto("span", "Canal: ", "small");
+                            linhaCanal.append(canal);
+                            info.append(linhaCanal);
+                            cartao.append(imagem, info);
+                            destino.replaceChildren(cartao);
+                        })
+                        .catch(function () {
+                            destino.replaceChildren(texto("div", "Não foi possível consultar o YouTube agora.", "alert alert-warning small py-2 mb-0"));
+                        });
+                });
+            })();
+        </script>
+    {% endif %}
+{% endblock %}

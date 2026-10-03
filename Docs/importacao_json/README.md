@@ -3,7 +3,7 @@
 Esta estrategia separa estrutura e dados:
 
 - migrations criam e alteram tabelas, campos, indices, constraints e relacionamentos;
-- JSONs guardam dados massivos cadastraveis, como materias, conteudos, questoes e simulados.
+- JSONs guardam dados massivos cadastraveis, como materias, conteudos, videos, questoes e simulados.
 
 Migrations nao devem inserir dados academicos. Um banco novo deve nascer vazio de materias, conteudos, questoes e simulados, e o povoamento deve ser feito pelos importadores do painel administrativo.
 
@@ -18,7 +18,8 @@ data/
 ├── materias/
 ├── conteudos/
 ├── questoes/
-└── simulados/
+├── simulados/
+└── videos/
 ```
 
 ## Ordem de povoamento de um banco novo
@@ -27,8 +28,9 @@ data/
 2. Criar superusuario: `python manage.py createsuperuser`.
 3. Importar materias.
 4. Importar conteudos.
-5. Importar questoes.
-6. Criar ou importar simulados.
+5. Importar videos.
+6. Importar questoes.
+7. Criar ou importar simulados.
 
 ## Uso dos importadores
 
